@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Transportation/User/summary_screen.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/custom_button.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/cutom_app_bar.dart';
@@ -11,12 +12,17 @@ class BookingPage extends StatefulWidget {
   final String pickUpAddress;
   final String finalAddress;
   final String distance;
-  const BookingPage({required this.finalAddress,required this.pickUpAddress,super.key, required this.distance});
+  const BookingPage(
+      {required this.finalAddress,
+      required this.pickUpAddress,
+      super.key,
+      required this.distance});
   @override
   BookingPageState createState() => BookingPageState();
 }
+
 class BookingPageState extends State<BookingPage> {
-  final TextEditingController weightController=TextEditingController();
+  final TextEditingController weightController = TextEditingController();
   final PageController _controller = PageController(viewportFraction: .4);
   int currentIndex = 0;
   int selectedIndex = -1;
@@ -51,7 +57,7 @@ class BookingPageState extends State<BookingPage> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Done',
-                        style: TextStyle(color: Colors.blue)),
+                        style: TextStyle(color: AppTheme.primary)),
                   ),
                 ],
               ),
@@ -62,7 +68,8 @@ class BookingPageState extends State<BookingPage> {
                 initialDateTime: DateTime.now(),
                 onDateTimeChanged: (DateTime dateTime) {
                   setState(() {
-                    _dateController.text = DateFormat('dd-MM-yyyy').format(dateTime);
+                    _dateController.text =
+                        DateFormat('dd-MM-yyyy').format(dateTime);
                   });
                 },
               ),
@@ -113,116 +120,125 @@ class BookingPageState extends State<BookingPage> {
                 height: screenHeight * 0.02,
               ),
               Row(
-        children: [
-        AnimatedOpacity(
-        opacity: currentIndex > 0 ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 300),
-        child: IconButton(
-          icon: Icon(
-            Icons.arrow_circle_left_outlined,
-            size: screenWidth * 0.075,
-            color: Colors.blue,
-          ),
-          onPressed: currentIndex > 0
-              ? () {
-            setState(() {
-              currentIndex--;
-              _controller.animateToPage(
-                currentIndex,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            });
-          }
-              : null,
-        ),
-      ),
-      Expanded(
-        child: SizedBox(
-          height: screenHeight * 0.12,
-          child: PageView.builder(
-            controller: _controller,
-            itemCount: categoryItem.length,
-            onPageChanged: (index) {
-              setState(() {
-                currentIndex = index;
-              });
-            },
-            padEnds: false, // Prevent automatic centering of items
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedIndex = index;
-                    selectedCategoryItem = categoryItem[index]['text']!;
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: EdgeInsets.only(
-                    left: index == 0 ? 0 : screenWidth * 0.02,
-                    right: screenWidth * 0.02,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selectedIndex == index ? Colors.blue : Colors.white,
-                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                    border: Border.all(color: Colors.grey, width: 2),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        categoryItem[index]['image']!,
-                        height: screenHeight * 0.05,
-                        fit: BoxFit.contain,
+                children: [
+                  AnimatedOpacity(
+                    opacity: currentIndex > 0 ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_circle_left_outlined,
+                        size: screenWidth * 0.075,
+                        color: AppTheme.primary,
                       ),
-                      SizedBox(height: screenHeight * 0.01),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          categoryItem[index]['text']!,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: screenWidth * 0.03,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
+                      onPressed: currentIndex > 0
+                          ? () {
+                              setState(() {
+                                currentIndex--;
+                                if (_controller.hasClients) {
+                                  _controller.animateToPage(
+                                    currentIndex,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+                              });
+                            }
+                          : null,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-      AnimatedOpacity(
-        opacity: currentIndex < categoryItem.length - 1 ? 1.0 : 0.0,
-        duration: const Duration(milliseconds: 300),
-        child: IconButton(
-          icon: Icon(
-            Icons.arrow_circle_right_outlined,
-            size: screenWidth * 0.075,
-            color: Colors.blue,
-          ),
-          onPressed: currentIndex < categoryItem.length - 1
-              ? () {
-            setState(() {
-              currentIndex++;
-              _controller.animateToPage(
-                currentIndex,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            });
-          }
-              : null,
-        ),
-      ),
-      ],
-    ),
+                  Expanded(
+                    child: SizedBox(
+                      height: screenHeight * 0.12,
+                      child: PageView.builder(
+                        controller: _controller,
+                        itemCount: categoryItem.length,
+                        onPageChanged: (index) {
+                          setState(() {
+                            currentIndex = index;
+                          });
+                        },
+                        padEnds: false, // Prevent automatic centering of items
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = index;
+                                selectedCategoryItem =
+                                    categoryItem[index]['text']!;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: EdgeInsets.only(
+                                left: index == 0 ? 0 : screenWidth * 0.02,
+                                right: screenWidth * 0.02,
+                              ),
+                              decoration: BoxDecoration(
+                                color: selectedIndex == index
+                                    ? AppTheme.primary
+                                    : Colors.white,
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.02),
+                                border:
+                                    Border.all(color: Colors.grey, width: 2),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    categoryItem[index]['image']!,
+                                    height: screenHeight * 0.05,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  SizedBox(height: screenHeight * 0.01),
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      categoryItem[index]['text']!,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: screenWidth * 0.03,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  AnimatedOpacity(
+                    opacity: currentIndex < categoryItem.length - 1 ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.arrow_circle_right_outlined,
+                        size: screenWidth * 0.075,
+                        color: AppTheme.primary,
+                      ),
+                      onPressed: currentIndex < categoryItem.length - 1
+                          ? () {
+                              setState(() {
+                                currentIndex++;
+                                if (_controller.hasClients) {
+                                  _controller.animateToPage(
+                                    currentIndex,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                }
+                              });
+                            }
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(
                 height: screenHeight * 0.05,
               ),
@@ -264,7 +280,7 @@ class BookingPageState extends State<BookingPage> {
                       onTap: _showDatePicker,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: AppTheme.primary,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.grey, width: 2),
                         ),
@@ -319,7 +335,8 @@ class BookingPageState extends State<BookingPage> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.circular(screenWidth * 0.01),
-                            borderSide: const BorderSide(color: Colors.blue),
+                            borderSide:
+                                const BorderSide(color: AppTheme.primary),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius:
@@ -342,7 +359,7 @@ class BookingPageState extends State<BookingPage> {
                       width: screenWidth * 00.17,
                       height: screenHeight * 0.055,
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: AppTheme.primary,
                         borderRadius: BorderRadius.circular(screenWidth * 0.01),
                         border: Border.all(color: Colors.grey, width: 2),
                       ),
@@ -477,7 +494,7 @@ class BookingPageState extends State<BookingPage> {
                 height: screenHeight * 0.05,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 2),
+                  border: Border.all(color: AppTheme.primary, width: 2),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
@@ -491,7 +508,9 @@ class BookingPageState extends State<BookingPage> {
                             });
                           },
                           child: Container(
-                            color: advancedPayment ? Colors.blue : Colors.white,
+                            color: advancedPayment
+                                ? AppTheme.primary
+                                : Colors.white,
                             alignment: Alignment.center,
                             child: Text(
                               '70%',
@@ -514,7 +533,8 @@ class BookingPageState extends State<BookingPage> {
                           });
                         },
                         child: Container(
-                          color: advancedPayment ? Colors.white : Colors.blue,
+                          color:
+                              advancedPayment ? Colors.white : AppTheme.primary,
                           alignment: Alignment.center,
                           child: Text(
                             '30%',
@@ -535,83 +555,90 @@ class BookingPageState extends State<BookingPage> {
                 height: screenHeight * 0.05,
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
-                height: screenHeight * 0.2,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 2),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-               child: Column(
-                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                 children: [
-                   Padding(
-                     padding:  EdgeInsets.only(left: screenWidth*0.03),
-                     child: const Align(
-                         alignment:Alignment.centerLeft,
-                         child: Text("Pickup Address",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 18),)),
-                   ),
-                   Container(
-                     margin: EdgeInsets.symmetric(horizontal: screenWidth*0.03),
-                     height: screenHeight*0.06,
-                     width: double.infinity,
-                     decoration: BoxDecoration(
-                       border: Border.all(color: Colors.grey,width: 2),
-                       borderRadius: BorderRadius.circular(3)
-                     ),
-                     child: SizedBox(
-                       height: screenHeight*0.06,
-                       child: SingleChildScrollView(
-                         scrollDirection: Axis.horizontal,
-                         child: FittedBox(
-                           fit: BoxFit.scaleDown,
-                           child: Text(
-                             widget.pickUpAddress,
-                             style: const TextStyle(
-                               fontSize: 16,
-                               fontWeight: FontWeight.w500,
-                               color: Colors.grey,
-                             ),
-                           ),
-                         ),
-                       ),
-                     )
-                   ),
-                   Padding(
-                     padding:  EdgeInsets.only(left: screenWidth*0.03),
-                     child: const Align(
-                         alignment:Alignment.centerLeft,
-                         child: Text("Delivery Address",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w500,fontSize: 18))),
-                   ),
-                   Container(
-                     margin: EdgeInsets.symmetric(horizontal: screenWidth*0.03),
-                     height: screenHeight*0.06,
-                     width: double.infinity,
-                     decoration: BoxDecoration(
-                         border: Border.all(color: Colors.grey,width: 2),
-                         borderRadius: BorderRadius.circular(3)
-                     ),
-                     child: SizedBox(
-                       height: screenHeight*0.06,
-                       child: SingleChildScrollView(
-                         scrollDirection: Axis.horizontal,
-                         child: FittedBox(
-                           fit: BoxFit.scaleDown,
-                           child: Text(
-                             widget.finalAddress,
-                             style: const TextStyle(
-                               fontSize: 16,
-                               fontWeight: FontWeight.w500,
-                               color: Colors.grey,
-                             ),
-                           ),
-                         ),
-                       ),
-                     )
-                   ),
-                 ],
-               )
-              ),
+                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+                  height: screenHeight * 0.3,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 2),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: screenWidth * 0.03),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Pickup Address",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18),
+                            )),
+                      ),
+                      Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.03),
+                          height: screenHeight * 0.06,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey, width: 2),
+                              borderRadius: BorderRadius.circular(3)),
+                          child: SizedBox(
+                            height: screenHeight * 0.06,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  widget.pickUpAddress,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )),
+                      Padding(
+                        padding: EdgeInsets.only(left: screenWidth * 0.03),
+                        child: const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Delivery Address",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18))),
+                      ),
+                      Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.03),
+                          height: screenHeight * 0.06,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey, width: 2),
+                              borderRadius: BorderRadius.circular(3)),
+                          child: SizedBox(
+                            height: screenHeight * 0.06,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  widget.finalAddress,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )),
+                    ],
+                  )),
               SizedBox(
                 height: screenHeight * 0.07,
               ),
@@ -622,37 +649,33 @@ class BookingPageState extends State<BookingPage> {
                     const Text(
                       "Estimated Fare",
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 22),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
-                      height: screenHeight * 0.05,
-                      width: screenWidth*0.4,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 2),
-                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
                       ),
-                      child: SizedBox(
-                        height: screenHeight*0.06,
-                        child: const SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              "1000",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey,
-                              ),
+                    ),
+                    SizedBox(width: screenWidth * 0.03),
+                    Flexible(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.03),
+                        height: screenHeight * 0.05,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 2),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "1000",
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.04,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
                             ),
                           ),
                         ),
-                      )
+                      ),
                     ),
-
                   ],
                 ),
               ),
@@ -662,19 +685,75 @@ class BookingPageState extends State<BookingPage> {
               Center(
                 child: CustomButton(
                   text: "Continue",
-                  color: Colors.blue,
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> SummaryScreen(
-                        goodsType:selectedCategoryItem!,
-                        vehicleType:vehicleSelectedItem!,
-                        dateOfTransportation:_dateController.text.toString().trim(),
-                        startingPoint:widget.pickUpAddress,
-                        destination:widget.finalAddress,
-                        totalDistance:widget.distance,
-                        paymentMethod:"",
-                        weight:weightController.text.toString().trim(),
-                        selectedQuantityType:selectedQuantityType
-                    )));
+                  color: AppTheme.primary,
+                  onPressed: () {
+                    if (selectedCategoryItem == null ||
+                        selectedCategoryItem!.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              "Please select a category item before continuing."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    if (vehicleSelectedItem == null ||
+                        vehicleSelectedItem!.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              "Please select a vehicle type before continuing."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    if (weightController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              "Please enter the weight before continuing."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    if (_dateController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text("Please select a date before continuing."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (selectedQuantityType.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                              "Please select a weight unit before continuing."),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SummaryScreen(
+                                goodsType: selectedCategoryItem!,
+                                vehicleType: vehicleSelectedItem!,
+                                dateOfTransportation:
+                                    _dateController.text.toString().trim(),
+                                startingPoint: widget.pickUpAddress,
+                                destination: widget.finalAddress,
+                                totalDistance: widget.distance,
+                                paymentMethod: "",
+                                weight: weightController.text.toString().trim(),
+                                selectedQuantityType: selectedQuantityType)));
                   },
                 ),
               ),
@@ -700,7 +779,7 @@ class BookingPageState extends State<BookingPage> {
       child: Container(
         padding: EdgeInsets.all(screenWidth * 0.02),
         color: isSelected
-            ? Colors.blue.withValues(alpha: 0.2)
+            ? AppTheme.primary.withValues(alpha: 0.2)
             : Colors.transparent,
         child: Row(
           children: [

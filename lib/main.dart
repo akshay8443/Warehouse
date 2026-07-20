@@ -1,4 +1,3 @@
-
 import 'package:Lisofy/Connectivity/network_service.dart';
 import 'package:Lisofy/Localization/languages.dart';
 import 'package:Lisofy/Notification_Service/notification_service.dart';
@@ -20,6 +19,7 @@ import 'package:Lisofy/Warehouse/User/userlogin.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:Lisofy/new_home_page.dart';
 import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -41,6 +41,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     print("Handling a background message: ${message.messageId}");
   }
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -60,7 +61,8 @@ void main() async {
     }
     runApp(const MaterialApp(
       home: Scaffold(
-        body: Center(child: Text('Failed to initialize app. Please restart...')),
+        body:
+            Center(child: Text('Failed to initialize app. Please restart...')),
       ),
     ));
     return;
@@ -70,7 +72,7 @@ void main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.blue,
+      statusBarColor: AppTheme.primary,
       statusBarIconBrightness: Brightness.light,
     ),
   );
@@ -86,7 +88,8 @@ void main() async {
     runApp(
       const MaterialApp(
         home: Scaffold(
-          body: Center(child: Text('Failed to load app data. Please restart...')),
+          body:
+              Center(child: Text('Failed to load app data. Please restart...')),
         ),
       ),
     );
@@ -104,15 +107,23 @@ void main() async {
       providers: [
         /// Warehouse Providers
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
-        ChangeNotifierProvider<AuthUserProvider>(create: (_) => AuthUserProvider()),
-        ChangeNotifierProvider<NetworkConnectionService>(create: (_) => NetworkConnectionService()),
-        ChangeNotifierProvider<LocationProvider>(create: (_) => LocationProvider()),
-        ChangeNotifierProvider<WarehouseProvider>(create: (_) => WarehouseProvider()),
-        ChangeNotifierProvider<LanguageProvider>(create: (_) => LanguageProvider()),
-        ChangeNotifierProvider<SortingProvider>(create: (_) => SortingProvider()),
+        ChangeNotifierProvider<AuthUserProvider>(
+            create: (_) => AuthUserProvider()),
+        ChangeNotifierProvider<NetworkConnectionService>(
+            create: (_) => NetworkConnectionService()),
+        ChangeNotifierProvider<LocationProvider>(
+            create: (_) => LocationProvider()),
+        ChangeNotifierProvider<WarehouseProvider>(
+            create: (_) => WarehouseProvider()),
+        ChangeNotifierProvider<LanguageProvider>(
+            create: (_) => LanguageProvider()),
+        ChangeNotifierProvider<SortingProvider>(
+            create: (_) => SortingProvider()),
         ChangeNotifierProvider<FilterProvider>(create: (_) => FilterProvider()),
-        ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
-        ChangeNotifierProvider<NotificationSettingsProvider>(create: (_) => NotificationSettingsProvider()),
+        ChangeNotifierProvider<ProfileProvider>(
+            create: (_) => ProfileProvider()),
+        ChangeNotifierProvider<NotificationSettingsProvider>(
+            create: (_) => NotificationSettingsProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => PhotoProvider()),
         ChangeNotifierProvider(create: (_) => RatingProvider()),
@@ -132,7 +143,6 @@ void main() async {
     ),
   );
 }
-
 
 class MyApp extends StatefulWidget {
   final bool isLoggedIn;
@@ -156,16 +166,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  final FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance);
-
+  final FirebaseAnalyticsObserver observer =
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance);
 
   @override
   void initState() {
     super.initState();
+
     /// **Initialize Notification Services**
     _notificationServices.requestNotificationPermission();
-    _notificationServices.firebaseInit(context);
-    _notificationServices.initLocalNotifications(context);
+    _notificationServices.firebaseInit();
+    _notificationServices.initLocalNotifications();
     _notificationServices.listenForTokenRefresh();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       requestPermissions();
@@ -182,53 +193,70 @@ class _MyAppState extends State<MyApp> {
       }
     });
   }
+
   Future<void> requestPermissions() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    PermissionStatus notificationPermission = await Permission.notification.request();
-    if (notificationPermission.isDenied || notificationPermission.isPermanentlyDenied) {
+    PermissionStatus notificationPermission =
+        await Permission.notification.request();
+    if (notificationPermission.isDenied ||
+        notificationPermission.isPermanentlyDenied) {
       _showNotificationPermissionDialog();
     }
     if (androidInfo.version.sdkInt >= 33) {
-      PermissionStatus mediaImagesPermission = await Permission.photos.request();
-      PermissionStatus mediaVideosPermission = await Permission.videos.request();
+      PermissionStatus mediaImagesPermission =
+          await Permission.photos.request();
+      PermissionStatus mediaVideosPermission =
+          await Permission.videos.request();
       PermissionStatus cameraPermission = await Permission.camera.request();
-      if (mediaImagesPermission.isDenied || mediaVideosPermission.isDenied || cameraPermission.isDenied) {
+      if (mediaImagesPermission.isDenied ||
+          mediaVideosPermission.isDenied ||
+          cameraPermission.isDenied) {
         _showPermissionDeniedDialog();
-      } else if (mediaImagesPermission.isPermanentlyDenied || cameraPermission.isPermanentlyDenied) {
+      } else if (mediaImagesPermission.isPermanentlyDenied ||
+          cameraPermission.isPermanentlyDenied) {
         openAppSettings();
       }
     } else {
       PermissionStatus photoPermission = await Permission.photos.request();
       PermissionStatus storagePermission = await Permission.storage.request();
       PermissionStatus cameraPermission = await Permission.camera.request();
-      if (photoPermission.isDenied || cameraPermission.isDenied || storagePermission.isDenied) {
+      if (photoPermission.isDenied ||
+          cameraPermission.isDenied ||
+          storagePermission.isDenied) {
         _showPermissionDeniedDialog();
-      } else if (photoPermission.isPermanentlyDenied || cameraPermission.isPermanentlyDenied) {
+      } else if (photoPermission.isPermanentlyDenied ||
+          cameraPermission.isPermanentlyDenied) {
         openAppSettings();
       }
     }
   }
+
+  BuildContext? get _navigatorContext =>
+      _notificationServices.navigatorKey.currentContext;
+
   void _showNotificationPermissionDialog() {
+    final dialogContext = _navigatorContext;
+    if (dialogContext == null) return;
     showDialog(
-      context: context,
+      context: dialogContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Notification Permission Required"),
-          content:  const Text(
+          content: const Text(
               "This app requires notification permissions to send you updates. Please enable notifications in the app settings."),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child:  Text(S.of(context).cancel),
+              child: Text(S.of(context).cancel),
             ),
             TextButton(
               onPressed: () {
                 openAppSettings();
               },
-              child:  Text(S.of(context).open_settings),
+              child: Text(S.of(context).open_settings),
             ),
           ],
         );
@@ -237,30 +265,124 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _showPermissionDeniedDialog() {
+    final dialogContext = _navigatorContext;
+    if (dialogContext == null) return;
     showDialog(
-      context: context,
+      context: dialogContext,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Permission Denied"),
-          content: const Text("To upload photos and videos, please grant permission to access photos and the camera."),
+          content: const Text(
+              "To upload photos and videos, please grant permission to access photos and the camera."),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child:  Text(S.of(context).ok),
+              child: Text(S.of(context).ok),
             ),
             TextButton(
               onPressed: () {
                 openAppSettings();
               },
-              child:  Text(S.of(context).open_settings),
+              child: Text(S.of(context).open_settings),
             ),
           ],
         );
       },
     );
   }
+
+  // Future<void> requestPermissions() async {
+  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  //
+  //   // ✅ Notification Permission (Android 13+ Required)
+  //   PermissionStatus notificationPermission = await Permission.notification.request();
+  //   if (notificationPermission.isDenied || notificationPermission.isPermanentlyDenied) {
+  //     _showNotificationPermissionDialog();
+  //   }
+  //
+  //   if (androidInfo.version.sdkInt >= 33) {
+  //     // ✅ Android 13+ specific permissions for media & camera
+  //     PermissionStatus mediaImagesPermission = await Permission.photos.request();
+  //     PermissionStatus mediaVideosPermission = await Permission.videos.request();
+  //     PermissionStatus cameraPermission = await Permission.camera.request();
+  //
+  //     if (mediaImagesPermission.isDenied || mediaVideosPermission.isDenied || cameraPermission.isDenied) {
+  //       _showPermissionDeniedDialog();
+  //     } else if (mediaImagesPermission.isPermanentlyDenied ||
+  //         mediaVideosPermission.isPermanentlyDenied ||
+  //         cameraPermission.isPermanentlyDenied) {
+  //       openAppSettings();
+  //     }
+  //   } else {
+  //     // ✅ Android 12 and below
+  //     PermissionStatus storagePermission = await Permission.storage.request();
+  //     PermissionStatus cameraPermission = await Permission.camera.request();
+  //
+  //     if (storagePermission.isDenied || cameraPermission.isDenied) {
+  //       _showPermissionDeniedDialog();
+  //     } else if (storagePermission.isPermanentlyDenied || cameraPermission.isPermanentlyDenied) {
+  //       openAppSettings();
+  //     }
+  //   }
+  // }
+  //
+  // void _showNotificationPermissionDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text("Notification Permission Required"),
+  //         content: const Text(
+  //             "This app requires notification permissions to send you updates. Please enable notifications in the app settings."),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text(S.of(context).cancel),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               openAppSettings();
+  //             },
+  //             child: Text(S.of(context).open_settings),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+  //
+  // void _showPermissionDeniedDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text("Permission Denied"),
+  //         content: const Text(
+  //             "To upload photos and videos, please grant permission to access storage, media, and camera."),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: Text(S.of(context).ok),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               openAppSettings();
+  //             },
+  //             child: Text(S.of(context).open_settings),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -271,14 +393,9 @@ class _MyAppState extends State<MyApp> {
             _updateCurrentLocation();
           }
           return MaterialApp(
+            navigatorKey: _notificationServices.navigatorKey,
             navigatorObservers: [observer],
-            theme: ThemeData(
-              fontFamily: 'Mulish',
-              textTheme: const TextTheme(
-                displayLarge: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                bodyLarge: TextStyle(fontSize: 12),
-              ),
-            ),
+            theme: AppTheme.light,
             debugShowCheckedModeBanner: false,
             locale: languageProvider.locale,
             localizationsDelegates: const [
@@ -307,21 +424,25 @@ class _MyAppState extends State<MyApp> {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                         Text(S.of(context).network_error_try_again),
+                        Text(S.of(context).network_error_try_again),
                         ElevatedButton(
                           onPressed: () => setState(() {}),
-                          child:  Text(S.of(context).retry),
+                          child: Text(S.of(context).retry),
                         )
                       ],
                     );
                   }
                   if (snapshot.data == false) {
-                    return Center(child: Image.asset(ImageAssets.noInternet,fit: BoxFit.fitHeight,));
+                    return Center(
+                        child: Image.asset(
+                      ImageAssets.noInternet,
+                      fit: BoxFit.fitHeight,
+                    ));
                   }
                   return widget.isUserLoggedIn
                       ? NewHomePage(
-                      latitude: widget.latitude,
-                      longitude: widget.longitude)
+                          latitude: widget.latitude,
+                          longitude: widget.longitude)
                       : const UserLogin();
                 },
               ),
@@ -375,5 +496,3 @@ class _MyAppState extends State<MyApp> {
     }
   }
 }
-
-

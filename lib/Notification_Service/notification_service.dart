@@ -6,8 +6,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationServices {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  late final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   /// **1. Request Notification Permission**
   Future<void> requestNotificationPermission() async {
@@ -29,24 +30,28 @@ class NotificationServices {
   }
 
   /// **2. Initialize Local Notifications**
-  Future<void> initLocalNotifications(BuildContext context) async {
-    const AndroidInitializationSettings androidInit = AndroidInitializationSettings('@drawable/ic_stat_push_notification');
+  Future<void> initLocalNotifications() async {
+    const AndroidInitializationSettings androidInit =
+        AndroidInitializationSettings('@drawable/ic_stat_push_notification');
     const DarwinInitializationSettings iosInit = DarwinInitializationSettings();
 
-    const InitializationSettings initSettings = InitializationSettings(android: androidInit, iOS: iosInit);
+    const InitializationSettings initSettings =
+        InitializationSettings(android: androidInit, iOS: iosInit);
 
     await _localNotificationsPlugin.initialize(
       initSettings,
       onDidReceiveNotificationResponse: (response) {
-        _handleNotificationClick(context, response.payload);
+        _handleNotificationClick(response.payload);
       },
     );
   }
 
   /// **3. Firebase Initialization**
-  void firebaseInit(BuildContext context) {
+  void firebaseInit() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (kDebugMode) print("Foreground message received: ${message.notification?.title}");
+      if (kDebugMode) {
+        print("Foreground message received: ${message.notification?.title}");
+      }
       _showNotification(message);
     });
 
@@ -76,7 +81,8 @@ class NotificationServices {
       importance: Importance.max,
     );
 
-    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    final AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
       channel.id,
       channel.name,
       channelDescription: "Channel for important notifications",
@@ -90,7 +96,8 @@ class NotificationServices {
       presentSound: true,
     );
 
-    final NotificationDetails details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    final NotificationDetails details =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
 
     await _localNotificationsPlugin.show(
       0,
@@ -102,7 +109,9 @@ class NotificationServices {
   }
 
   /// **5. Handle Notification Clicks**
-  void _handleNotificationClick(BuildContext context, String? redirect) {
+  void _handleNotificationClick(String? redirect) {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
     if (redirect != null && redirect.isNotEmpty) {
       Navigator.pushNamed(context, redirect);
     }

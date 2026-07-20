@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:Lisofy/Localization/languages.dart';
@@ -26,11 +27,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http_parser/http_parser.dart';
+
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
+
 class _UserProfileScreenState extends State<UserProfileScreen> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   late String phone = '';
@@ -46,9 +49,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ratingProvider.fetchUserFeedback(phone);
     });
   }
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController additionalPhoneController = TextEditingController();
+  final TextEditingController additionalPhoneController =
+      TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final String phoneNumber = '+917007221530';
   final TextEditingController _messageController = TextEditingController();
@@ -57,6 +62,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     try {
       /// Sign out from Google
       await _googleSignIn.signOut();
+
       /// Sign out from Firebase Authentication (for phone auth)
       FirebaseAuth auth = FirebaseAuth.instance;
       User? currentUser = auth.currentUser;
@@ -71,7 +77,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       if (!context.mounted) return;
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const UserLogin()),
-            (route) => false,
+        (route) => false,
       );
     } catch (e) {
       if (kDebugMode) {
@@ -88,7 +94,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.blue.shade400,
+          backgroundColor: AppTheme.outline,
           title: Text(
             S.of(context).log_out,
             style: const TextStyle(
@@ -98,12 +104,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ),
           content: Row(
             children: [
-              Image.asset(ImageAssets.appLogo,fit: BoxFit.fill,height: screenHeight*0.06,width: screenWidth*0.2,),
+              Image.asset(
+                ImageAssets.appLogo,
+                fit: BoxFit.fill,
+                height: screenHeight * 0.06,
+                width: screenWidth * 0.2,
+              ),
               const SizedBox(width: 10),
-               Expanded(
+              Expanded(
                 child: Text(
                   S.of(context).logout_confirmation,
-                  style: const TextStyle(fontSize: 16,color: Colors.white),
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ],
@@ -113,7 +124,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child:  Text(
+              child: Text(
                 S.of(context).no,
                 style: const TextStyle(
                   color: Colors.white,
@@ -128,7 +139,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child:  Text(
+              child: Text(
                 S.of(context).yes,
                 style: const TextStyle(
                   color: Colors.white,
@@ -141,6 +152,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -153,13 +165,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             children: [
               Expanded(
                 child: Container(
-                  color: Colors.blue,
+                  color: AppTheme.primary,
                   width: double.infinity,
                   child: Column(
                     children: [
                       Container(
                         alignment: Alignment.topLeft,
-                        color: Colors.blue,
+                        color: AppTheme.primary,
                         height: screenHeight * 0.28,
                         child: const Text(
                           "",
@@ -169,17 +181,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       Expanded(
                         child: Container(
                           margin: EdgeInsets.only(right: screenWidth * 0.005),
-                          decoration:  BoxDecoration(
+                          decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(0),
-                              topRight: Radius.circular(screenWidth*0.15),
+                              topRight: Radius.circular(screenWidth * 0.15),
                             ),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(0),
                             child: SingleChildScrollView(
-                              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                              keyboardDismissBehavior:
+                                  ScrollViewKeyboardDismissBehavior.onDrag,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -191,7 +204,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     height: screenHeight * 0.02,
                                   ),
                                   Container(
-                                      color: Colors.blue,
+                                      color: AppTheme.primary,
                                       width: double.infinity,
                                       height: screenHeight * 0.18,
                                       child: Stack(
@@ -205,7 +218,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                     alignment:
                                                         Alignment.centerLeft,
                                                     child: Text(
-                                                      S.of(context).looking_for_rent_your_properties,
+                                                      S
+                                                          .of(context)
+                                                          .looking_for_rent_your_properties,
                                                       style: const TextStyle(
                                                           color: Colors.white,
                                                           fontSize: 13,
@@ -224,10 +239,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
-                                                          S.of(context).verified_property_and_owner,
+                                                          S
+                                                              .of(context)
+                                                              .verified_property_and_owner,
                                                           style: const TextStyle(
                                                               color:
-                                                              Colors.white,
+                                                                  Colors.white,
                                                               fontSize: 10,
                                                               fontWeight:
                                                                   FontWeight
@@ -266,16 +283,29 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                   Navigator.push(
                                                     context,
                                                     PageRouteBuilder(
-                                                      transitionDuration: const Duration(milliseconds: 500),
-                                                      pageBuilder: (_, __, ___) => const PostYourPropertyScreen(),
-                                                      transitionsBuilder: (_, animation, __, child) {
+                                                      transitionDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  500),
+                                                      pageBuilder: (_, __,
+                                                              ___) =>
+                                                          const PostYourPropertyScreen(),
+                                                      transitionsBuilder: (_,
+                                                          animation,
+                                                          __,
+                                                          child) {
                                                         return SlideTransition(
-                                                          position: Tween<Offset>(
-                                                            begin: const Offset(0, 1),
-                                                            end: const Offset(0, 0),
-                                                          ).animate(CurvedAnimation(
+                                                          position: Tween<
+                                                              Offset>(
+                                                            begin: const Offset(
+                                                                0, 1),
+                                                            end: const Offset(
+                                                                0, 0),
+                                                          ).animate(
+                                                              CurvedAnimation(
                                                             parent: animation,
-                                                            curve: Curves.easeOut,
+                                                            curve:
+                                                                Curves.easeOut,
                                                           )),
                                                           child: child,
                                                         );
@@ -283,28 +313,31 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                     ),
                                                   );
                                                 },
-
                                                 child: Padding(
-                                                  padding: const EdgeInsets.only(
-                                                      left: 15.0, top: 12),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 15.0, top: 12),
                                                   child: Align(
                                                     alignment:
                                                         Alignment.centerLeft,
                                                     child: Container(
-                                                      height: screenHeight*0.03,
+                                                      height:
+                                                          screenHeight * 0.03,
                                                       width: screenWidth * 0.6,
                                                       decoration: BoxDecoration(
                                                         color: Colors.white,
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                7),
+                                                            BorderRadius
+                                                                .circular(7),
                                                       ),
                                                       child: Center(
                                                           child: Text(
-                                                        S.of(context)
+                                                        S
+                                                            .of(context)
                                                             .post_your_property_free,
                                                         style: const TextStyle(
-                                                            color: Colors.blue,
+                                                            color: AppTheme
+                                                                .primary,
                                                             fontWeight:
                                                                 FontWeight.w900,
                                                             fontSize: 8),
@@ -339,31 +372,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     height: screenHeight * 0.02,
                                   ),
                                   Container(
-                                    margin:  EdgeInsets.symmetric(
-                                        horizontal: screenWidth*0.08),
-                                    height: screenHeight*0.035,
+                                    margin: EdgeInsets.symmetric(
+                                        horizontal: screenWidth * 0.08),
+                                    height: screenHeight * 0.035,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
-                                      color: Colors.blue,
+                                      color: AppTheme.primary,
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: Colors.blue),
+                                      border:
+                                          Border.all(color: AppTheme.primary),
                                     ),
                                     child: Row(
                                       children: [
                                         Container(
-                                          height: screenHeight*0.1,
-                                          width: screenWidth*0.1,
+                                          height: screenHeight * 0.1,
+                                          width: screenWidth * 0.1,
                                           decoration: BoxDecoration(
                                               color: Colors.white,
                                               borderRadius:
                                                   BorderRadius.circular(5)),
                                           child: const Icon(
                                             Icons.wifi_calling_3_outlined,
-                                            color: Colors.blue,
+                                            color: AppTheme.primary,
                                           ),
                                         ),
-                                         SizedBox(width: screenWidth*0.1),
+                                        SizedBox(width: screenWidth * 0.1),
                                         InkWell(
                                           child: Text(
                                             S.of(context).call_for_assistance,
@@ -402,7 +436,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -419,7 +453,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                           SizedBox(width: screenHeight * 0.02),
+                                          SizedBox(width: screenHeight * 0.02),
                                           Text(
                                             S.of(context).contracts_documents,
                                             style: const TextStyle(
@@ -450,43 +484,60 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   ),
                                   Consumer<RatingProvider>(
                                     builder: (context, provider, child) {
-                                      bool isKYCComplete = provider.panCardStatus == 1 &&
-                                          provider.aadharCardStatus == 1 &&
-                                          provider.selfiStatus == 1;
+                                      bool isKYCComplete =
+                                          provider.panCardStatus == 1 &&
+                                              provider.aadharCardStatus == 1 &&
+                                              provider.selfiStatus == 1;
 
                                       return GestureDetector(
                                         onTap: isKYCComplete
                                             ? null // Disable tap if KYC is complete
                                             : () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const DocumentUpload()),
-                                          );
-                                        },
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const DocumentUpload()),
+                                                );
+                                              },
                                         child: Container(
-                                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 20),
                                           height: screenHeight * 0.05,
-                                          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 0, horizontal: 0),
                                           decoration: BoxDecoration(
                                             color: Colors.white,
-                                            borderRadius: BorderRadius.circular(6),
-                                            border: Border.all(color: Colors.grey),
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                            border:
+                                                Border.all(color: Colors.grey),
                                           ),
                                           child: Row(
                                             children: [
                                               const Padding(
-                                                padding: EdgeInsets.only(left: 4.0),
+                                                padding:
+                                                    EdgeInsets.only(left: 4.0),
                                                 child: Icon(
                                                   Icons.file_present_outlined,
                                                   color: Colors.grey,
                                                 ),
                                               ),
-                                              SizedBox(width: screenHeight * 0.02),
+                                              SizedBox(
+                                                  width: screenHeight * 0.02),
                                               Text(
-                                                isKYCComplete?S.of(context).already_completed:S.of(context).complete_kyc,
+                                                isKYCComplete
+                                                    ? S
+                                                        .of(context)
+                                                        .already_completed
+                                                    : S
+                                                        .of(context)
+                                                        .complete_kyc,
                                                 style: TextStyle(
                                                   fontSize: 12,
-                                                  color: isKYCComplete?Colors.green:Colors.black,
+                                                  color: isKYCComplete
+                                                      ? Colors.green
+                                                      : Colors.black,
                                                   fontWeight: FontWeight.w300,
                                                 ),
                                               ),
@@ -495,7 +546,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               // Show yellow warning icon if KYC is not complete
                                               if (!isKYCComplete)
                                                 const Padding(
-                                                  padding: EdgeInsets.only(right: 8.0),
+                                                  padding: EdgeInsets.only(
+                                                      right: 8.0),
                                                   child: Icon(
                                                     Icons.warning_amber_rounded,
                                                     size: 18,
@@ -504,18 +556,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                 ),
 
                                               Padding(
-                                                padding: const EdgeInsets.only(right: 8.0),
+                                                padding: const EdgeInsets.only(
+                                                    right: 8.0),
                                                 child: isKYCComplete
                                                     ? const Icon(
-                                                  Icons.check_circle,
-                                                  size: 18,
-                                                  color: Colors.green,
-                                                )
+                                                        Icons.check_circle,
+                                                        size: 18,
+                                                        color: Colors.green,
+                                                      )
                                                     : const Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 15,
-                                                  color: Colors.grey,
-                                                ),
+                                                        Icons.arrow_forward_ios,
+                                                        size: 15,
+                                                        color: Colors.grey,
+                                                      ),
                                               ),
                                             ],
                                           ),
@@ -523,7 +576,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       );
                                     },
                                   ),
-
                                   SizedBox(
                                     height: screenHeight * 0.02,
                                   ),
@@ -532,7 +584,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -549,7 +601,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                           SizedBox(width: screenHeight * 0.02),
+                                          SizedBox(width: screenHeight * 0.02),
                                           Text(
                                             S.of(context).subscriptions,
                                             style: const TextStyle(
@@ -581,7 +633,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   Container(
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 20),
-                                    height: screenHeight*0.05,
+                                    height: screenHeight * 0.05,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
@@ -635,7 +687,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -685,7 +737,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -702,7 +754,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                           SizedBox(width: screenHeight * 0.02),
+                                          SizedBox(width: screenHeight * 0.02),
                                           Text(
                                             S.of(context).connect_with_whatsapp,
                                             style: const TextStyle(
@@ -741,7 +793,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -758,7 +810,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                           SizedBox(width: screenHeight * 0.02),
+                                          SizedBox(width: screenHeight * 0.02),
                                           Text(
                                             S.of(context).notification_setting,
                                             style: const TextStyle(
@@ -811,7 +863,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -828,7 +880,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                           SizedBox(width: screenHeight * 0.02),
+                                          SizedBox(width: screenHeight * 0.02),
                                           Text(
                                             S.of(context).privacy_policy,
                                             style: const TextStyle(
@@ -873,7 +925,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(
                                           horizontal: 20),
-                                      height: screenHeight*0.05,
+                                      height: screenHeight * 0.05,
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
@@ -891,7 +943,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               color: Colors.grey,
                                             ),
                                           ),
-                                           SizedBox(width: screenHeight * 0.02),
+                                          SizedBox(width: screenHeight * 0.02),
                                           Text(
                                             S.of(context).terms_and_conditions,
                                             style: const TextStyle(
@@ -952,13 +1004,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                         BorderRadius.circular(
                                                             12), // Rounded corners
                                                     border: Border.all(
-                                                        color: Colors.blue,
-                                                        width:
-                                                            2),
+                                                        color: AppTheme.primary,
+                                                        width: 2),
                                                     boxShadow: [
                                                       BoxShadow(
                                                         color: Colors.grey
-                                                            .withValues(alpha: 0.6),
+                                                            .withValues(
+                                                                alpha: 0.6),
                                                         spreadRadius: 2,
                                                         blurRadius: 5,
                                                         offset: const Offset(0,
@@ -967,16 +1019,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                     ],
                                                   ),
                                                   padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal:
-                                                          0),
+                                                      .symmetric(horizontal: 0),
                                                   child: DropdownButton<Locale>(
                                                     icon: const Icon(
                                                       Icons.keyboard_arrow_down,
-                                                      color: Colors
-                                                          .blue,
-                                                      size:
-                                                          24,
+                                                      color: AppTheme.primary,
+                                                      size: 24,
                                                     ),
                                                     value:
                                                         languageProvider.locale,
@@ -988,12 +1036,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                                 newLocale);
                                                       }
                                                     },
-                                                    underline:
-                                                        Container(),
-                                                    dropdownColor: Colors
-                                                        .white,
-                                                    isDense:
-                                                        true,
+                                                    underline: Container(),
+                                                    dropdownColor: Colors.white,
+                                                    isDense: true,
                                                     style: const TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 14,
@@ -1011,9 +1056,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                                                 Icons.language,
                                                                 color: Colors
                                                                     .blueAccent,
-                                                                size:
-                                                                    18),
-
+                                                                size: 18),
                                                             Text(
                                                               languageProvider
                                                                   .getLanguageName(
@@ -1041,11 +1084,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                       ),
                                       onTap: () async {
                                         final navigator = Navigator.of(context);
-                                        bool shouldLogout = await _showLogoutConfirmationDialog(navigator.context);
+                                        bool shouldLogout =
+                                            await _showLogoutConfirmationDialog(
+                                                navigator.context);
                                         if (!context.mounted) return;
                                         if (shouldLogout) {
-                                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                                            _logoutAndRedirect(navigator.context);
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                            _logoutAndRedirect(
+                                                navigator.context);
                                           });
                                         }
                                       },
@@ -1120,11 +1167,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                               padding: const EdgeInsets.only(
                                                   left: 22.0),
                                               child: Text(
-                                                S.of(context).we_value_your_feedback,
+                                                S
+                                                    .of(context)
+                                                    .we_value_your_feedback,
                                                 style: const TextStyle(
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600,
-                                                  color: Colors.blueAccent,
+                                                  color: AppTheme.primary,
                                                 ),
                                               ),
                                             ),
@@ -1200,16 +1249,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         fontSize: 16, fontWeight: FontWeight.w800),
                   ),
                   Padding(
-                    padding:  EdgeInsets.only(bottom: screenHeight*0.035),
+                    padding: EdgeInsets.only(bottom: screenHeight * 0.035),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Icon(
                           Icons.wifi_calling_3_outlined,
-                          color: Colors.blue,
+                          color: AppTheme.primary,
                         ),
-                         SizedBox(width: screenHeight*0.005),
+                        SizedBox(width: screenHeight * 0.005),
                         Text(
                           phone.isNotEmpty ? phone : '',
                           style: const TextStyle(
@@ -1220,25 +1269,27 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      _showEditDialog(context,phone);
+                      _showEditDialog(context, phone);
                     },
                     child: Padding(
-                      padding:  EdgeInsets.only(
-                          bottom: screenHeight*0.02, left: screenWidth*0.02, right: screenWidth*0.02),
+                      padding: EdgeInsets.only(
+                          bottom: screenHeight * 0.02,
+                          left: screenWidth * 0.02,
+                          right: screenWidth * 0.02),
                       child: Container(
                         alignment: Alignment.bottomCenter,
                         width: double.infinity,
-                        height: screenHeight*0.04,
+                        height: screenHeight * 0.04,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.blue),
+                          border: Border.all(color: AppTheme.primary),
                         ),
                         child: Center(
                           child: Text(
                             S.of(context).edit_profile,
                             style: const TextStyle(
-                                color: Colors.blue,
+                                color: AppTheme.primary,
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14),
                           ),
@@ -1260,54 +1311,57 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   child: Stack(
                     children: [
                       Container(
-                        width: screenWidth*0.23,
-                        height: screenHeight*0.13,
+                        width: screenWidth * 0.23,
+                        height: screenHeight * 0.13,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.blue,
+                            color: AppTheme.primary,
                             width: 2.0,
                           ),
                         ),
                         child: profileProvider.profileImage != null
                             ? CircleAvatar(
-                          //radius: 45,
-                          backgroundColor: Colors.blue,
-                          backgroundImage: FileImage(profileProvider.profileImage!),
-                        )
+                                //radius: 45,
+                                backgroundColor: AppTheme.primary,
+                                backgroundImage:
+                                    FileImage(profileProvider.profileImage!),
+                              )
                             : CachedNetworkImage(
-                          imageUrl: profileProvider.profileImageUrl ?? "",
-                          imageBuilder: (context, imageProvider) {
-                            return CircleAvatar(
-                              //radius: 45,
-                              backgroundColor: Colors.blue,
-                              backgroundImage: imageProvider,
-                            );
-                          },
-                          placeholder: (context, url) => Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: const CircleAvatar(
-                              //radius: 45,
-                              backgroundColor: Colors.blue,
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => const CircleAvatar(
-                            //radius: 45,
-                            backgroundColor: Colors.blue,
-                            backgroundImage:
-                            AssetImage("assets/images/userround.png"),
-                          ),
-                        ),
+                                imageUrl: profileProvider.profileImageUrl ?? "",
+                                imageBuilder: (context, imageProvider) {
+                                  return CircleAvatar(
+                                    //radius: 45,
+                                    backgroundColor: AppTheme.primary,
+                                    backgroundImage: imageProvider,
+                                  );
+                                },
+                                placeholder: (context, url) =>
+                                    Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: const CircleAvatar(
+                                    //radius: 45,
+                                    backgroundColor: AppTheme.primary,
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const CircleAvatar(
+                                  //radius: 45,
+                                  backgroundColor: AppTheme.primary,
+                                  backgroundImage:
+                                      AssetImage("assets/images/userround.png"),
+                                ),
+                              ),
                       ),
                       Positioned(
-                        bottom: screenHeight*0.008,
-                        right: screenWidth*0.03,
+                        bottom: screenHeight * 0.008,
+                        right: screenWidth * 0.03,
                         child: InkWell(
                           onTap: () => _pickImage(context),
                           child: const CircleAvatar(
                             radius: 8,
-                            backgroundColor: Colors.blue,
+                            backgroundColor: AppTheme.primary,
                             child: Icon(
                               Icons.camera_alt,
                               size: 14,
@@ -1334,39 +1388,47 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-         Text(
-           S.of(context).thanks_for_feedback,
+        Text(
+          S.of(context).thanks_for_feedback,
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
         ),
-         SizedBox(height: screenHeight*0.02),
+        SizedBox(height: screenHeight * 0.02),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               "${"${S.of(context).upload_document}:"} ${ratingProvider.rating}/5",
-              style: const TextStyle(fontSize: 18, color: Colors.black54,fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600),
             ),
-            const Icon(Icons.star,color: Colors.amber,)
+            const Icon(
+              Icons.star,
+              color: Colors.amber,
+            )
           ],
         ),
-        SizedBox(height: screenHeight*0.02),
+        SizedBox(height: screenHeight * 0.02),
         AnimatedScale(
           scale: 1.1,
           duration: const Duration(milliseconds: 300),
           child: ElevatedButton(
             onPressed: () => ratingProvider.enableEditing(),
             style: ElevatedButton.styleFrom(
-              padding:  EdgeInsets.symmetric(horizontal: screenWidth*0.02, vertical: screenHeight*0.005),
+              padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.02,
+                  vertical: screenHeight * 0.005),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               backgroundColor: Colors.orangeAccent,
             ),
-            child:  Text(
+            child: Text(
               S.of(context).edit_feedback,
               style: const TextStyle(
                   fontSize: 12,
@@ -1375,7 +1437,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
           ),
         ),
-        SizedBox(height: screenHeight*0.035),
+        SizedBox(height: screenHeight * 0.035),
       ],
     );
   }
@@ -1384,7 +1446,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-         Text(
+        Text(
           S.of(context).rate_your_experience,
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
@@ -1405,7 +1467,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           ),
         ),
         const SizedBox(height: 20),
-         Text(
+        Text(
           S.of(context).your_comment,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
@@ -1454,7 +1516,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 : ElevatedButton(
                     onPressed: () {
                       FocusManager.instance.primaryFocus?.unfocus();
-                      if (!ratingProvider.isSubmitted&& !ratingProvider.isEditing) {
+                      if (!ratingProvider.isSubmitted &&
+                          !ratingProvider.isEditing) {
                         ratingProvider.submitFeedback(phone);
                       } else {
                         ratingProvider.updateFeedback(phone);
@@ -1466,7 +1529,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      backgroundColor: Colors.blueAccent,
+                      backgroundColor: AppTheme.primary,
                     ),
                     child: Text(
                       ratingProvider.isSubmitted
@@ -1513,9 +1576,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  Future<void> fetchProfileImage(ProfileProvider profileProvider, String phone) async {
+  Future<void> fetchProfileImage(
+      ProfileProvider profileProvider, String phone) async {
     final response = await http.get(
-      Uri.parse('https://xpacesphere.com/api/Register/GetRegistr?mobile=$phone'),
+      Uri.parse(
+          'https://xpacesphere.com/api/Register/GetRegistr?mobile=$phone'),
     );
     if (kDebugMode) {
       print("API Response: ${response.body}");
@@ -1556,7 +1621,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           print("Saved Name: ${pref.getString("name")}");
         }
         if (relativeImageUrl.isNotEmpty) {
-          final String fullImageUrl = 'https://xpacesphere.com$relativeImageUrl';
+          final String fullImageUrl =
+              'https://xpacesphere.com$relativeImageUrl';
           if (kDebugMode) {
             print("Full Image URL: $fullImageUrl");
           }
@@ -1573,14 +1639,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       }
     } else {
       if (kDebugMode) {
-        print('Failed to load profile image with status code: ${response.statusCode}');
+        print(
+            'Failed to load profile image with status code: ${response.statusCode}');
       }
     }
   }
 
-
   Future<void> _pickImage(BuildContext context) async {
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (!context.mounted) return;
@@ -1609,7 +1676,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-
   Future<String?> _uploadImage(File imageFile, String phone) async {
     final uri = Uri.parse('https://xpacesphere.com/api/Register/UPDRegistr');
     final request = http.MultipartRequest('PUT', uri)
@@ -1617,8 +1683,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ..files.add(await http.MultipartFile.fromPath(
         'UserProfile',
         imageFile.path,
-        contentType:
-            MediaType('image', 'jpeg'),
+        contentType: MediaType('image', 'jpeg'),
       ));
 
     try {
@@ -1661,7 +1726,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  void _showEditDialog(BuildContext context,String phone) {
+  void _showEditDialog(BuildContext context, String phone) {
     final screenHeight = MediaQuery.of(context).size.height;
     showDialog(
       context: context,
@@ -1744,7 +1809,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: screenHeight*0.02),
+                        SizedBox(height: screenHeight * 0.02),
                         TextField(
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -1762,15 +1827,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             ),
                           ),
                         ),
-                         SizedBox(height: screenHeight*0.02),
+                        SizedBox(height: screenHeight * 0.02),
                         Align(
                             alignment: Alignment.bottomRight,
-                            child: DeleteAccountButton(phone: phone,)),
+                            child: DeleteAccountButton(
+                              phone: phone,
+                            )),
                       ],
                     ),
                   ),
                 ),
-
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
@@ -1798,7 +1864,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: AppTheme.primary,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8)),
@@ -1829,12 +1895,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<void> _submitFormWithAnimation(
-      BuildContext context,
-      TextEditingController nameController,
-      TextEditingController phoneController,
-      TextEditingController additionalPhoneController,
-      TextEditingController emailController,
-      ) async {
+    BuildContext context,
+    TextEditingController nameController,
+    TextEditingController phoneController,
+    TextEditingController additionalPhoneController,
+    TextEditingController emailController,
+  ) async {
     final navigator = Navigator.of(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
@@ -1842,7 +1908,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         barrierDismissible: false,
         builder: (_) => const Center(
           child: SpinKitCircle(
-            color: Colors.blue,
+            color: AppTheme.primary,
           ),
         ),
       );
@@ -1854,7 +1920,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ..fields['Mobile'] = phoneController.text
       ..fields['OPMobile'] = additionalPhoneController.text
       ..fields[' Mailid'] = emailController.text;
-      bool success = false;
+    bool success = false;
     try {
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
@@ -1903,24 +1969,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       duration: const Duration(milliseconds: 500),
                       child: success
                           ? const Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 80,
-                        key: ValueKey('success'),
-                      )
+                              Icons.check_circle,
+                              color: Colors.green,
+                              size: 80,
+                              key: ValueKey('success'),
+                            )
                           : const Icon(
-                        Icons.error,
-                        color: Colors.red,
-                        size: 80,
-                        key: ValueKey('error'),
-                      ),
+                              Icons.error,
+                              color: Colors.red,
+                              size: 80,
+                              key: ValueKey('error'),
+                            ),
                     ),
                     const SizedBox(height: 20),
                     Text(
                       success
                           ? S.of(context).upload_document
                           : S.of(context).failed_update_profile,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
@@ -1931,7 +1998,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         navigator.pop();
                         navigator.pop();
                       },
-                      child:  Text(S.of(context).ok),
+                      child: Text(S.of(context).ok),
                     ),
                   ],
                 ),
@@ -1942,7 +2009,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       );
     });
   }
-
 
   void _sendWhatsAppMessage() async {
     String message = _messageController.text.trim();
@@ -1971,7 +2037,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         await launchUrl(emailUri);
         if (!context.mounted) return;
         messenger.showSnackBar(
-           const SnackBar(
+          const SnackBar(
             content: Text("Our team will connect with you soon."),
             backgroundColor: Colors.green,
           ),
@@ -2017,7 +2083,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   icon: const Icon(Icons.close, color: Colors.black),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
-                title:  Text(
+                title: Text(
                   S.of(context).upload_document,
                   style: const TextStyle(
                       color: Colors.black,
@@ -2029,194 +2095,206 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               body: Column(
                 children: [
                   const Spacer(),
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       S.of(context).please_upload_document,
-                      style:
-                          const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w500),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 20),
                   Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          final navigator = Navigator.of(context);
-                          FilePickerResult? result = await FilePicker.platform.pickFiles(
-                            type: FileType.custom,
-                            allowedExtensions: ['jpg', 'pdf', 'docx'],
-                          );
-                          if (!context.mounted) return;
-                          if (result != null) {
-                            PlatformFile file = result.files.first;
-                            String? filePath = file.path;
-                            if (filePath != null) {
-                              if (kDebugMode) {
-                                print('Selected file path: $filePath');
-                              }
-                              if (kDebugMode) {
-                                print('Mobile number: $phone');
-                              }
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                showDialog(
-                                  context: navigator.context,
-                                  barrierDismissible: false,
-                                  builder: (_) => const Center(
-                                    child: SpinKitCircle(
-                                      color: Colors.blue,
-                                    ),
+                      child: ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        final navigator = Navigator.of(context);
+                        FilePickerResult? result =
+                            await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['jpg', 'pdf', 'docx'],
+                        );
+                        if (!context.mounted) return;
+                        if (result != null) {
+                          PlatformFile file = result.files.first;
+                          String? filePath = file.path;
+                          if (filePath != null) {
+                            if (kDebugMode) {
+                              print('Selected file path: $filePath');
+                            }
+                            if (kDebugMode) {
+                              print('Mobile number: $phone');
+                            }
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              showDialog(
+                                context: navigator.context,
+                                barrierDismissible: false,
+                                builder: (_) => const Center(
+                                  child: SpinKitCircle(
+                                    color: AppTheme.primary,
                                   ),
-                                );
-                              });
-                              var request = http.MultipartRequest(
-                                'POST',
-                                Uri.parse('https://xpacesphere.com/api/Wherehousedt/UploadDocuments'),
+                                ),
                               );
-                              request.fields['mobile'] = phone;
-                              request.files.add(await http.MultipartFile.fromPath('UserFile', filePath));
-                              if (kDebugMode) {
-                                print('API Endpoint: ${request.url}');
-                              }
-                              if (kDebugMode) {
-                                print('Request Fields: ${request.fields}');
-                              }
-                              if (kDebugMode) {
-                                print('File Upload: $filePath');
-                              }
-                              var response = await request.send();
+                            });
+                            var request = http.MultipartRequest(
+                              'POST',
+                              Uri.parse(
+                                  'https://xpacesphere.com/api/Wherehousedt/UploadDocuments'),
+                            );
+                            request.fields['mobile'] = phone;
+                            request.files.add(await http.MultipartFile.fromPath(
+                                'UserFile', filePath));
+                            if (kDebugMode) {
+                              print('API Endpoint: ${request.url}');
+                            }
+                            if (kDebugMode) {
+                              print('Request Fields: ${request.fields}');
+                            }
+                            if (kDebugMode) {
+                              print('File Upload: $filePath');
+                            }
+                            var response = await request.send();
 
-                              if (!context.mounted) return;
-                              navigator.pop();
-                              if (response.statusCode == 200) {
-                                var responseBody = await response.stream.bytesToString();
-                                if (kDebugMode) {
-                                  print('Response (200): $responseBody');
-                                }
-                                navigator.pop();
-                                Fluttertoast.showToast(
-                                  msg: "Document uploaded successfully!",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                );
-                              } else {
-                                var errorBody = await response.stream.bytesToString();
-                                if (kDebugMode) {
-                                  print('Error Response (${response.statusCode}): $errorBody');
-                                }
-                                Fluttertoast.showToast(
-                                  msg: "Failed to upload document. Please try again.",
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM,
-                                );
-                              }
-                            } else {
+                            if (!context.mounted) return;
+                            navigator.pop();
+                            if (response.statusCode == 200) {
+                              var responseBody =
+                                  await response.stream.bytesToString();
                               if (kDebugMode) {
-                                print('No file path available.');
+                                print('Response (200): $responseBody');
+                              }
+                              navigator.pop();
+                              Fluttertoast.showToast(
+                                msg: "Document uploaded successfully!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                              );
+                            } else {
+                              var errorBody =
+                                  await response.stream.bytesToString();
+                              if (kDebugMode) {
+                                print(
+                                    'Error Response (${response.statusCode}): $errorBody');
                               }
                               Fluttertoast.showToast(
-                                msg: "No file selected.",
+                                msg:
+                                    "Failed to upload document. Please try again.",
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.BOTTOM,
                               );
                             }
                           } else {
                             if (kDebugMode) {
-                              print('File selection canceled.');
+                              print('No file path available.');
                             }
                             Fluttertoast.showToast(
-                              msg: "File selection canceled.",
+                              msg: "No file selected.",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                             );
                           }
-                        } catch (e) {
-                          if (!context.mounted) return;
-                          Navigator.of(context).pop();
+                        } else {
+                          if (kDebugMode) {
+                            print('File selection canceled.');
+                          }
                           Fluttertoast.showToast(
-                            msg: "An error occurred. Please try again.",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.BOTTOM,
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        elevation: 4,
-                        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 30),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: const BorderSide(color: Colors.blue, width: 3),
-                        ),
-                      ),
-                      child:  Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.upload,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                          Text(
-                            S.of(context).upload_document,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ),
-                  const Spacer(),
-                ],
-              ),
-              bottomNavigationBar: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300],
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text(
-                          S.of(context).cancel,
-                          style: const TextStyle(
-                              color: Colors.black, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                        ),
-                        onPressed: () {
-                          Fluttertoast.showToast(
-                            msg: S.of(context).no_document_uploaded,
+                            msg: "File selection canceled.",
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                           );
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(S.of(context).submit,
-                            style: const TextStyle(color: Colors.white)),
+                        }
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop();
+                        Fluttertoast.showToast(
+                          msg: "An error occurred. Please try again.",
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      elevation: 4,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 14, horizontal: 30),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side:
+                            const BorderSide(color: AppTheme.primary, width: 3),
                       ),
                     ),
-                  ],
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.upload,
+                          color: Colors.black,
+                          size: 20,
+                        ),
+                        Text(
+                          S.of(context).upload_document,
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+                  const Spacer(),
+                ],
+              ),
+              bottomNavigationBar: SafeArea(
+                top: false,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[300],
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text(
+                            S.of(context).cancel,
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          onPressed: () {
+                            Fluttertoast.showToast(
+                              msg: S.of(context).no_document_uploaded,
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                            );
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(S.of(context).submit,
+                              style: const TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -2262,8 +2340,6 @@ void _openFacebookProfile() async {
   }
 }
 
-
-
 void _openTwitterProfile() async {
   const String twitterAppUrl = 'twitter://user?screen_name=AnkeshYada78626';
   const String fallbackUrl = 'https://twitter.com/AnkeshYada78626';
@@ -2281,7 +2357,6 @@ void _openTwitterProfile() async {
   }
 }
 
-
 class DeleteAccountButton extends StatelessWidget {
   final dynamic phone;
   const DeleteAccountButton({super.key, this.phone});
@@ -2295,20 +2370,25 @@ class DeleteAccountButton extends StatelessWidget {
           foregroundColor: Colors.white,
           backgroundColor: Colors.red,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(screenWidth*0.3),
+            borderRadius: BorderRadius.circular(screenWidth * 0.3),
           ),
-          padding: EdgeInsets.symmetric(horizontal: screenWidth*0.05),
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
           elevation: 5,
           shadowColor: Colors.black.withValues(alpha: 0.3),
         ),
         onPressed: () {
           _showDeleteConfirmationDialog(context);
         },
-        child:  Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.delete,color: Colors.white,),
-            const SizedBox(width: 5,),
+            const Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+            const SizedBox(
+              width: 5,
+            ),
             Text(
               S.of(context).delete_account,
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
@@ -2327,7 +2407,7 @@ class DeleteAccountButton extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.blue.shade400,
+          backgroundColor: AppTheme.outline,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(screenWidth * 0.07),
           ),
@@ -2345,7 +2425,12 @@ class DeleteAccountButton extends StatelessWidget {
                   //   size: screenWidth * 0.15,
                   //   color: Colors.orangeAccent,
                   // ),
-                  Image.asset(ImageAssets.appLogo,fit: BoxFit.fill,height: screenHeight*0.065,width: screenWidth*0.3,),
+                  Image.asset(
+                    ImageAssets.appLogo,
+                    fit: BoxFit.fill,
+                    height: screenHeight * 0.065,
+                    width: screenWidth * 0.3,
+                  ),
                   SizedBox(height: screenHeight * 0.03),
                   const Text(
                     'Are you sure?',
@@ -2357,8 +2442,8 @@ class DeleteAccountButton extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: screenHeight * 0.01),
-                   Text(
-                     S.of(context).confirm_delete_account,
+                  Text(
+                    S.of(context).confirm_delete_account,
                     style: const TextStyle(fontSize: 16, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -2390,12 +2475,13 @@ class DeleteAccountButton extends StatelessWidget {
                             await _clearData();
                             if (context.mounted) {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (_) => const UserLogin()),
+                                MaterialPageRoute(
+                                    builder: (_) => const UserLogin()),
                               );
                             }
                           } else {
                             if (context.mounted) {
-                             // _showErrorDialog(context);
+                              // _showErrorDialog(context);
                             }
                           }
                         },
@@ -2411,15 +2497,13 @@ class DeleteAccountButton extends StatelessWidget {
     );
   }
 
-
-
-
   Future<int> _deleteAccount(String phoneNumber) async {
     if (kDebugMode) {
       print("Delete account is called ");
     }
     try {
-      final Uri apiUrl = Uri.parse('https://xpacesphere.com/api/Register/RegistrDeletes');
+      final Uri apiUrl =
+          Uri.parse('https://xpacesphere.com/api/Register/RegistrDeletes');
       final Map<String, String> formData = {'Mobile': phoneNumber};
       if (kDebugMode) {
         print("Mobile$formData");
@@ -2440,20 +2524,27 @@ class DeleteAccountButton extends StatelessWidget {
       return 500;
     }
   }
+
   Future<void> _clearData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
-  Widget _buildDialogButton(BuildContext context, {required String label, required Color color, required VoidCallback onPressed}) {
+
+  Widget _buildDialogButton(BuildContext context,
+      {required String label,
+      required Color color,
+      required VoidCallback onPressed}) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: color,
+        foregroundColor: Colors.white,
+        backgroundColor: color,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(screenWidth*0.1),
+          borderRadius: BorderRadius.circular(screenWidth * 0.1),
         ),
-        padding: EdgeInsets.symmetric(vertical: screenHeight*0.01, horizontal: screenWidth*0.07),
+        padding: EdgeInsets.symmetric(
+            vertical: screenHeight * 0.01, horizontal: screenWidth * 0.07),
         elevation: 5,
         shadowColor: Colors.black.withValues(alpha: 0.3),
       ),
@@ -2464,7 +2555,4 @@ class DeleteAccountButton extends StatelessWidget {
       ),
     );
   }
-
-
 }
-

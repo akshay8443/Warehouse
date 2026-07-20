@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Warehouse/User/user_help_page.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:Lisofy/new_home_page.dart';
@@ -6,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class GetUserLocation extends StatefulWidget {
   const GetUserLocation({super.key});
   @override
   State<GetUserLocation> createState() => _GetUserLocationState();
 }
+
 class _GetUserLocationState extends State<GetUserLocation> {
   String _coordinates = '';
   Position? position;
@@ -20,6 +23,7 @@ class _GetUserLocationState extends State<GetUserLocation> {
     super.initState();
     _getCurrentLocation();
   }
+
   Future<void> _getCurrentLocation() async {
     if (!mounted) return;
     setState(() {
@@ -47,7 +51,8 @@ class _GetUserLocationState extends State<GetUserLocation> {
       if (!mounted) return;
       setState(() {
         loading = false;
-        _coordinates = 'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+        _coordinates =
+            'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
       });
 
       final pref = await SharedPreferences.getInstance();
@@ -87,11 +92,11 @@ class _GetUserLocationState extends State<GetUserLocation> {
 
   /// **Loading UI with SpinKit and "Please wait..." text**
   Widget _buildLoadingScreen() {
-    return  Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SpinKitCircle(color: Colors.blue, size: 50),
+          const SpinKitCircle(color: AppTheme.primary, size: 50),
           const SizedBox(height: 10),
           Text(
             S.of(context).please_wait_for_sometime,
@@ -107,13 +112,13 @@ class _GetUserLocationState extends State<GetUserLocation> {
       children: [
         Expanded(
           child: Container(
-            color: Colors.blue,
+            color: AppTheme.primary,
             width: double.infinity,
             child: SafeArea(
               child: Column(
                 children: [
                   Container(
-                    color: Colors.blue,
+                    color: AppTheme.primary,
                     height: screenHeight * 0.18,
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -125,7 +130,7 @@ class _GetUserLocationState extends State<GetUserLocation> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                               Column(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -135,8 +140,8 @@ class _GetUserLocationState extends State<GetUserLocation> {
                                           color: Colors.white,
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500)),
-                                   Text(
-                                     S.of(context).there,
+                                  Text(
+                                    S.of(context).there,
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 14,
@@ -162,7 +167,7 @@ class _GetUserLocationState extends State<GetUserLocation> {
                                   child: const Center(
                                     child: Icon(
                                       Icons.question_mark,
-                                      color: Colors.blue,
+                                      color: AppTheme.primary,
                                       size: 18,
                                     ),
                                   ),
@@ -172,7 +177,7 @@ class _GetUserLocationState extends State<GetUserLocation> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                          const UserHelpPage()));
+                                              const UserHelpPage()));
                                 },
                               ),
                             ],
@@ -180,11 +185,13 @@ class _GetUserLocationState extends State<GetUserLocation> {
                           Container(
                             margin: EdgeInsets.only(
                                 top: screenHeight * 0.07, left: 5),
-                            child:  Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  S.of(context).get_personalized_recommendations,
+                                  S
+                                      .of(context)
+                                      .get_personalized_recommendations,
                                   style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
@@ -209,7 +216,8 @@ class _GetUserLocationState extends State<GetUserLocation> {
                       child: Padding(
                         padding: EdgeInsets.all(screenWidth * 0.04),
                         child: SingleChildScrollView(
-                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
                           child: Column(
                             children: [
                               Padding(
@@ -221,8 +229,7 @@ class _GetUserLocationState extends State<GetUserLocation> {
                                     decoration: InputDecoration(
                                       labelText: 'Search Near Me ',
                                       border: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(18),
+                                        borderRadius: BorderRadius.circular(18),
                                       ),
                                       suffixIcon: InkWell(
                                         child: Container(
@@ -231,8 +238,8 @@ class _GetUserLocationState extends State<GetUserLocation> {
                                               border: Border.all(
                                                   color: Colors.grey),
                                               borderRadius:
-                                              BorderRadius.circular(18),
-                                              color: Colors.lightBlue,
+                                                  BorderRadius.circular(18),
+                                              color: AppTheme.primary,
                                             ),
                                             child: const Icon(
                                               Icons.location_on,
@@ -250,8 +257,7 @@ class _GetUserLocationState extends State<GetUserLocation> {
                                 ),
                               ),
                               SizedBox(height: screenHeight * 0.05),
-                              Image.asset(
-                                  "assets/images/Pinonthemapwaving.png")
+                              Image.asset("assets/images/Pinonthemapwaving.png")
                             ],
                           ),
                         ),

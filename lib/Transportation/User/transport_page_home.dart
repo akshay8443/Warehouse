@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Transportation/User/provider/transport_page_home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,11 +11,11 @@ class TransportPageHome extends StatelessWidget {
   final List<String> items = const ["Unshared", "Shared", "Specialized"];
   final Map<String, String> itemDetails = const {
     "Unshared":
-    "Unshared transport provides exclusive use of a vehicle, ensuring privacy and direct service.",
+        "Unshared transport provides exclusive use of a vehicle, ensuring privacy and direct service.",
     "Shared":
-    "Shared transport allows multiple passengers to split the cost, making it more economical.",
+        "Shared transport allows multiple passengers to split the cost, making it more economical.",
     "Specialized":
-    "Specialized transport is tailored for specific goods or needs, like refrigerated or fragile items."
+        "Specialized transport is tailored for specific goods or needs, like refrigerated or fragile items."
   };
   @override
   Widget build(BuildContext context) {
@@ -46,27 +47,24 @@ class TransportPageHome extends StatelessWidget {
                 ),
                 SizedBox(height: mediaQuery.size.height * 0.05),
                 ...items.map((item) => Column(
-                  children: [
-                    buildContainer(item, provider, mediaQuery),
-                    SizedBox(height: mediaQuery.size.height * 0.02),
-                  ],
-                )),
+                      children: [
+                        buildContainer(item, provider, mediaQuery),
+                        SizedBox(height: mediaQuery.size.height * 0.02),
+                      ],
+                    )),
                 SizedBox(height: mediaQuery.size.height * 0.05),
                 if (provider.selectedContainer != null)
                   Align(
                     alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: mediaQuery.size.height * 0.02),
-                      child: CustomButton(
-                        text: "Book Now",
-                        color: Colors.blue,
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const GoogleMapScreen()));
-                        },
-                      ),
+                    child: CustomButton(
+                      text: "Book Now",
+                      color: AppTheme.primary,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const GoogleMapScreen()));
+                      },
                     ),
                   ),
               ],
@@ -76,7 +74,9 @@ class TransportPageHome extends StatelessWidget {
       ),
     );
   }
-  Widget buildContainer(String title, TransportPageHomeProvider provider, MediaQueryData mediaQuery) {
+
+  Widget buildContainer(String title, TransportPageHomeProvider provider,
+      MediaQueryData mediaQuery) {
     bool isSelected = provider.selectedContainer == title;
     bool isExpanded = provider.expandedContainer == title;
     double paddingHorizontal = mediaQuery.size.width * 0.05;
@@ -87,16 +87,25 @@ class TransportPageHome extends StatelessWidget {
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(
-                horizontal: paddingHorizontal, vertical: mediaQuery.size.height * 0.005),
+                horizontal: paddingHorizontal,
+                vertical: mediaQuery.size.height * 0.005),
             decoration: BoxDecoration(
-              color: isExpanded ? Colors.grey.shade300 : (isSelected ? Colors.blue : Colors.white),
+              color: isExpanded
+                  ? Colors.grey.shade300
+                  : (isSelected ? AppTheme.primary : Colors.white),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(mediaQuery.size.width * 0.02),
                 topRight: Radius.circular(mediaQuery.size.width * 0.02),
-                bottomLeft: isExpanded ? Radius.zero : Radius.circular(mediaQuery.size.width * 0.02),
-                bottomRight: isExpanded ? Radius.zero : Radius.circular(mediaQuery.size.width * 0.02),
+                bottomLeft: isExpanded
+                    ? Radius.zero
+                    : Radius.circular(mediaQuery.size.width * 0.02),
+                bottomRight: isExpanded
+                    ? Radius.zero
+                    : Radius.circular(mediaQuery.size.width * 0.02),
               ),
-              border: Border.all(color: isExpanded ? Colors.grey.shade300 : Colors.grey, width: 2),
+              border: Border.all(
+                  color: isExpanded ? Colors.grey.shade300 : Colors.grey,
+                  width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -116,18 +125,20 @@ class TransportPageHome extends StatelessWidget {
                     color: isExpanded && isSelected
                         ? Colors.black
                         : isSelected
-                        ? Colors.white
-                        : Colors.black,
+                            ? Colors.white
+                            : Colors.black,
                   ),
                 ),
                 IconButton(
                   icon: Icon(
-                    isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                    isExpanded
+                        ? Icons.keyboard_arrow_down
+                        : Icons.keyboard_arrow_up,
                     color: isExpanded && isSelected
                         ? Colors.black
                         : isSelected
-                        ? Colors.white
-                        : Colors.black,
+                            ? Colors.white
+                            : Colors.black,
                     size: 24,
                   ),
                   onPressed: () => provider.toggleExpand(title),
@@ -140,7 +151,9 @@ class TransportPageHome extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           width: double.infinity,
           constraints: isExpanded
-              ? BoxConstraints(minHeight: mediaQuery.size.height * 0.1, maxHeight: mediaQuery.size.height * 0.2)
+              ? BoxConstraints(
+                  minHeight: mediaQuery.size.height * 0.1,
+                  maxHeight: mediaQuery.size.height * 0.2)
               : const BoxConstraints(maxHeight: 0),
           padding: EdgeInsets.symmetric(
             horizontal: mediaQuery.size.width * 0.05,
@@ -158,10 +171,10 @@ class TransportPageHome extends StatelessWidget {
             opacity: isExpanded ? 1.0 : 0.0,
             child: isExpanded
                 ? Text(
-              itemDetails[title] ?? "No details available.",
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Colors.black),
-            )
+                    itemDetails[title] ?? "No details available.",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                  )
                 : null,
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:Lisofy/Warehouse/Partner/Provider/auth_provider.dart';
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ class OTPScreen extends StatefulWidget {
   @override
   State<OTPScreen> createState() => _OTPScreenState();
 }
+
 class _OTPScreenState extends State<OTPScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
@@ -20,7 +22,7 @@ class _OTPScreenState extends State<OTPScreen> {
       body: Stack(
         children: [
           Container(
-            color: Colors.blue,
+            color: AppTheme.primary,
             width: double.infinity,
             height: double.infinity,
             child: SafeArea(
@@ -28,7 +30,7 @@ class _OTPScreenState extends State<OTPScreen> {
                 children: [
                   // Blue top section
                   Container(
-                    color: Colors.blue,
+                    color: AppTheme.primary,
                     height: screenHeight * 0.285,
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -40,7 +42,8 @@ class _OTPScreenState extends State<OTPScreen> {
                           Align(
                             alignment: Alignment.topLeft,
                             child: IconButton(
-                              icon: const Icon(Icons.arrow_back_ios_sharp, color: Colors.white),
+                              icon: const Icon(Icons.arrow_back_ios_sharp,
+                                  color: Colors.white),
                               onPressed: () {
                                 Navigator.pop(context);
                               },
@@ -88,7 +91,8 @@ class _OTPScreenState extends State<OTPScreen> {
                               Form(
                                 key: _formKey,
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
                                     Container(
                                       padding: EdgeInsets.symmetric(
@@ -96,26 +100,30 @@ class _OTPScreenState extends State<OTPScreen> {
                                         vertical: screenHeight * 0.015,
                                       ),
                                       child: TextField(
-                                        controller: TextEditingController(text: '(+91) India'),
+                                        controller: TextEditingController(
+                                            text: '(+91) India'),
                                         readOnly: true,
                                         decoration: const InputDecoration(
                                           border: InputBorder.none,
                                           enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.blue),
+                                            borderSide: BorderSide(
+                                                color: AppTheme.primary),
                                           ),
                                           focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.blue),
+                                            borderSide: BorderSide(
+                                                color: AppTheme.primary),
                                           ),
                                         ),
                                         style: TextStyle(
-                                          color: Colors.blue,
+                                          color: AppTheme.primary,
                                           fontWeight: FontWeight.bold,
                                           fontSize: screenWidth * 0.04,
                                         ), // Color of the text
                                       ),
                                     ),
                                     Container(
-                                      margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: screenWidth * 0.05),
                                       child: TextFormField(
                                         controller: _phoneController,
                                         keyboardType: TextInputType.phone,
@@ -123,15 +131,19 @@ class _OTPScreenState extends State<OTPScreen> {
                                         decoration: InputDecoration(
                                           hintText: 'Enter your mobile number',
                                           hintStyle: TextStyle(
-                                            color: Colors.blue,
+                                            color: AppTheme.primary,
                                             fontSize: screenWidth * 0.03,
                                           ),
                                           border: InputBorder.none,
-                                          enabledBorder: const UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.blue),
+                                          enabledBorder:
+                                              const UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: AppTheme.primary),
                                           ),
-                                          focusedBorder: const UnderlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.blue),
+                                          focusedBorder:
+                                              const UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: AppTheme.primary),
                                           ),
                                           counterText: "",
                                           errorText: authProvider.errorMessage,
@@ -143,7 +155,8 @@ class _OTPScreenState extends State<OTPScreen> {
                                           if (value.length != 10) {
                                             return 'Mobile number must be 10 digits';
                                           }
-                                          if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                                          if (!RegExp(r'^[0-9]+$')
+                                              .hasMatch(value)) {
                                             return 'Please enter only digits';
                                           }
                                           return null;
@@ -157,30 +170,35 @@ class _OTPScreenState extends State<OTPScreen> {
                                           height: screenHeight * 0.06,
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              if (_formKey.currentState!.validate()) {
-                                                String phoneNumber = '+91${_phoneController.text}';
-                                                authProvider.verifyPhoneNumber(phoneNumber, context);
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                String phoneNumber =
+                                                    '+91${_phoneController.text}';
+                                                authProvider.verifyPhoneNumber(
+                                                    phoneNumber, context);
                                               }
                                             },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.blue,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8.0),
-                                                ),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: AppTheme.primary,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
                                               ),
-                                            child:   authProvider.isLoading
-                                                ? const SpinKitCircle(
-                                              color: Colors.white,
-                                              size: 50.0,
-                                            )
-                                            :  const Text('Get OTP',
-                                              style: TextStyle(color: Colors.white),
                                             ),
+                                            child: authProvider.isLoading
+                                                ? const SpinKitCircle(
+                                                    color: Colors.white,
+                                                    size: 50.0,
+                                                  )
+                                                : const Text(
+                                                    'Get OTP',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
                                           ),
                                         );
                                       },
-                                    )
-                                    ,
+                                    ),
                                   ],
                                 ),
                               ),

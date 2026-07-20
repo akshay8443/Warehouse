@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/custom_loader.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/custom_progress_indicator.dart';
 import 'package:Lisofy/Transportation/common/provider/loader_notifier.dart';
@@ -40,7 +41,7 @@ class _AllBookingsState extends State<AllBookings> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CustomProgressIndicator(
-                  color: Colors.blue,
+                  color: AppTheme.primary,
                   size: 50,
                   text: "Please wait...",
                 ),
@@ -55,7 +56,7 @@ class _AllBookingsState extends State<AllBookings> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    height: screenHeight*0.25,
+                    height: screenHeight * 0.25,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey, width: 1.5),
                       borderRadius: BorderRadius.circular(3),
@@ -72,11 +73,23 @@ class _AllBookingsState extends State<AllBookings> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(left: 8.0),
-                                  child: Text("Goods Type",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700,fontSize: 15),),
+                                  child: Text(
+                                    "Goods Type",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15),
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(right: 8.0),
-                                  child: Text("16000/-",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700,fontSize: 15),),
+                                  child: Text(
+                                    "16000/-",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15),
+                                  ),
                                 ),
                               ],
                             ),
@@ -100,14 +113,17 @@ class _AllBookingsState extends State<AllBookings> {
                                 // Main Row
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     // Solar Image
                                     Container(
-                                      margin: const EdgeInsets.only(left: 5, top: 3),
+                                      margin: const EdgeInsets.only(
+                                          left: 5, top: 3),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5),
-                                        border: Border.all(color: Colors.grey, width: 2),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 2),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(15.0),
@@ -121,18 +137,20 @@ class _AllBookingsState extends State<AllBookings> {
 
                                     // CustomIndicator
                                     Padding(
-                                      padding:  EdgeInsets.only(left: screenWidth*0.02,right: screenWidth*0.03),
+                                      padding: EdgeInsets.only(
+                                          left: screenWidth * 0.02,
+                                          right: screenWidth * 0.03),
                                       child: const CustomIndicator(
                                         boxColors: [Colors.green, Colors.red],
-                                      )
-                                      ,
+                                      ),
                                     ),
 
                                     // Addresses
                                     Expanded(
                                       flex: 2,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             truncateText(
@@ -167,7 +185,8 @@ class _AllBookingsState extends State<AllBookings> {
 
                                     // Completed status
                                     Padding(
-                                      padding:  EdgeInsets.only(right: screenWidth*0.02),
+                                      padding: EdgeInsets.only(
+                                          right: screenWidth * 0.02),
                                       child: const Text(
                                         "COMPLETED",
                                         style: TextStyle(
@@ -190,43 +209,88 @@ class _AllBookingsState extends State<AllBookings> {
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 1.5),
                             decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(5)
-                            ),
+                                color: AppTheme.primary,
+                                borderRadius: BorderRadius.circular(5)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children:  [
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                              children: [
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                                 const Expanded(
-                                    flex:1,
+                                    flex: 1,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.local_shipping_rounded,color: Colors.white,),
-                                        Text("Vehicle Type",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 12),),
+                                        Icon(
+                                          Icons.local_shipping_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "Vehicle Type",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     )),
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                                 const Expanded(
-                                    flex:1,
+                                    flex: 1,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.speed_outlined,color: Colors.white,),
-                                        Text("Distance",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 12),),
+                                        Icon(
+                                          Icons.speed_outlined,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "Distance",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     )),
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                                 const Expanded(
-                                    flex:1,
+                                    flex: 1,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.date_range_sharp,color: Colors.white,),
-                                        Text("Date",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 12),),
+                                        Icon(
+                                          Icons.date_range_sharp,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "Date",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     )),
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                               ],
                             ),
                           ),
@@ -234,7 +298,6 @@ class _AllBookingsState extends State<AllBookings> {
                       ],
                     ),
                   );
-
                 },
               );
             }
@@ -243,7 +306,7 @@ class _AllBookingsState extends State<AllBookings> {
         if (loader.isLoading)
           const Center(
             child: CustomProgressIndicator(
-              color: Colors.blue,
+              color: AppTheme.primary,
               size: 50.0,
               text: 'Loading...',
             ),
@@ -251,6 +314,7 @@ class _AllBookingsState extends State<AllBookings> {
       ],
     );
   }
+
   String truncateText(String text, int maxWords) {
     final words = text.split(' ');
     if (words.length > maxWords) {
@@ -259,6 +323,4 @@ class _AllBookingsState extends State<AllBookings> {
     const maxChars = 100;
     return text.length > maxChars ? '${text.substring(0, maxChars)}...' : text;
   }
-
-
 }

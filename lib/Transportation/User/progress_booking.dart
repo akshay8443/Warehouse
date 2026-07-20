@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/custom_loader.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/custom_progress_indicator.dart';
 import 'package:Lisofy/Transportation/common/provider/loader_notifier.dart';
@@ -40,7 +41,7 @@ class _ProgressBookingsState extends State<ProgressBookings> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CustomProgressIndicator(
-                  color: Colors.blue,
+                  color: AppTheme.primary,
                   size: 50,
                   text: "Please wait...",
                 ),
@@ -55,7 +56,7 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   return Container(
-                    height: screenHeight*0.45,
+                    height: screenHeight * 0.45,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey, width: 1.5),
                       borderRadius: BorderRadius.circular(3),
@@ -72,11 +73,23 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(left: 8.0),
-                                  child: Text("Goods Type",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700,fontSize: 15),),
+                                  child: Text(
+                                    "Goods Type",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15),
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(right: 8.0),
-                                  child: Text("16000/-",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700,fontSize: 15),),
+                                  child: Text(
+                                    "16000/-",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15),
+                                  ),
                                 ),
                               ],
                             ),
@@ -92,13 +105,16 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                               children: [
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
-                                      margin: const EdgeInsets.only(left: 5, top: 3),
+                                      margin: const EdgeInsets.only(
+                                          left: 5, top: 3),
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5),
-                                        border: Border.all(color: Colors.grey, width: 2),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 2),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(15.0),
@@ -112,19 +128,26 @@ class _ProgressBookingsState extends State<ProgressBookings> {
 
                                     // CustomIndicator
                                     Padding(
-                                      padding:  EdgeInsets.only(left: screenWidth*0.02,right: screenWidth*0.03),
+                                      padding: EdgeInsets.only(
+                                          left: screenWidth * 0.02,
+                                          right: screenWidth * 0.03),
                                       child: const CustomIndicator(
-                                        boxColors: [Colors.green, Colors.grey, Colors.red],
-                                      )
-                                      ,
+                                        boxColors: [
+                                          Colors.green,
+                                          Colors.grey,
+                                          Colors.red
+                                        ],
+                                      ),
                                     ),
 
                                     // Addresses
                                     Expanded(
                                       flex: 2,
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             truncateText(
@@ -152,7 +175,9 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          SizedBox(height: screenHeight*0.03,),
+                                          SizedBox(
+                                            height: screenHeight * 0.03,
+                                          ),
                                           Text(
                                             truncateText(
                                               "Prayer",
@@ -179,7 +204,9 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          SizedBox(height: screenHeight*0.02,), 
+                                          SizedBox(
+                                            height: screenHeight * 0.02,
+                                          ),
                                           Text(
                                             truncateText(
                                               "Kerala",
@@ -212,7 +239,7 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                                               15,
                                             ),
                                             style: const TextStyle(
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               fontSize: 10,
                                               fontWeight: FontWeight.w300,
                                             ),
@@ -235,43 +262,88 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 1.5),
                             decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(5)
-                            ),
+                                color: AppTheme.primary,
+                                borderRadius: BorderRadius.circular(5)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children:  [
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                              children: [
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                                 const Expanded(
-                                    flex:1,
+                                    flex: 1,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.local_shipping_rounded,color: Colors.white,),
-                                        Text("Vehicle Type",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 12),),
+                                        Icon(
+                                          Icons.local_shipping_rounded,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "Vehicle Type",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     )),
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                                 const Expanded(
-                                    flex:1,
+                                    flex: 1,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.speed_outlined,color: Colors.white,),
-                                        Text("Distance",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 12),),
+                                        Icon(
+                                          Icons.speed_outlined,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "Distance",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     )),
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                                 const Expanded(
-                                    flex:1,
+                                    flex: 1,
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        Icon(Icons.date_range_sharp,color: Colors.white,),
-                                        Text("Date",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 12),),
+                                        Icon(
+                                          Icons.date_range_sharp,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          "Date",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12),
+                                        ),
                                       ],
                                     )),
-                                Container(height: double.infinity,color: Colors.white,width: 1.5,),
+                                Container(
+                                  height: double.infinity,
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
                               ],
                             ),
                           ),
@@ -285,11 +357,23 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                               children: [
                                 Padding(
                                   padding: EdgeInsets.only(left: 8.0),
-                                  child: Text("Advance Payment- 000-",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700,fontSize: 15),),
+                                  child: Text(
+                                    "Advance Payment- 000-",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15),
+                                  ),
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(right: 8.0),
-                                  child: Text("Balance Payment 16000/-",style: TextStyle(color: Colors.black,fontWeight: FontWeight.w700,fontSize: 15),),
+                                  child: Text(
+                                    "Balance Payment 16000/-",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15),
+                                  ),
                                 ),
                               ],
                             ),
@@ -304,22 +388,45 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                               children: [
                                 Row(
                                   children: [
-                                    IconButton(onPressed: (){}, icon: const ImageIcon(AssetImage(ImageAssets.whatsapp,),color: Colors.lightGreen,)),
+                                    IconButton(
+                                        onPressed: () {},
+                                        icon: const ImageIcon(
+                                          AssetImage(
+                                            ImageAssets.whatsapp,
+                                          ),
+                                          color: Colors.lightGreen,
+                                        )),
                                     const Padding(
                                       padding: EdgeInsets.only(right: 8.0),
-                                      child: Text("Whatsapp",style: TextStyle(color: Colors.green,fontWeight: FontWeight.w400,fontSize: 15),),
+                                      child: Text(
+                                        "Whatsapp",
+                                        style: TextStyle(
+                                            color: Colors.green,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15),
+                                      ),
                                     ),
                                   ],
                                 ),
-                               const Row(
-                                 children: [
-                                   Icon(Icons.wifi_calling_3_sharp,color: Colors.blue,),
-                                   Padding(
-                                     padding: EdgeInsets.only(right: 8.0,left: 8),
-                                     child: Text("Call Now",style: TextStyle(color: Colors.blue,fontWeight: FontWeight.w400,fontSize: 15),),
-                                   ),
-                                 ],
-                               )
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.wifi_calling_3_sharp,
+                                      color: AppTheme.primary,
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(right: 8.0, left: 8),
+                                      child: Text(
+                                        "Call Now",
+                                        style: TextStyle(
+                                            color: AppTheme.primary,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15),
+                                      ),
+                                    ),
+                                  ],
+                                )
                               ],
                             ),
                           ),
@@ -327,7 +434,6 @@ class _ProgressBookingsState extends State<ProgressBookings> {
                       ],
                     ),
                   );
-
                 },
               );
             }
@@ -336,7 +442,7 @@ class _ProgressBookingsState extends State<ProgressBookings> {
         if (loader.isLoading)
           const Center(
             child: CustomProgressIndicator(
-              color: Colors.blue,
+              color: AppTheme.primary,
               size: 50.0,
               text: 'Loading...',
             ),
@@ -344,6 +450,7 @@ class _ProgressBookingsState extends State<ProgressBookings> {
       ],
     );
   }
+
   String truncateText(String text, int maxWords) {
     final words = text.split(' ');
     if (words.length > maxWords) {
@@ -352,6 +459,4 @@ class _ProgressBookingsState extends State<ProgressBookings> {
     const maxChars = 100;
     return text.length > maxChars ? '${text.substring(0, maxChars)}...' : text;
   }
-
-
 }

@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class DownArrowPainter extends CustomPainter {
@@ -35,7 +36,7 @@ class DownArrow extends StatelessWidget {
     super.key,
     this.width = 50,
     this.height = 100,
-    this.color = Colors.blue,
+    this.color = AppTheme.primary,
   });
 
   @override
@@ -46,5 +47,3 @@ class DownArrow extends StatelessWidget {
     );
   }
 }
-
-

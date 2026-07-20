@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Warehouse/Partner/Provider/location_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,11 +6,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+
 class LocationSelectionScreen extends StatefulWidget {
   const LocationSelectionScreen({super.key});
   @override
   LocationSelectionScreenState createState() => LocationSelectionScreenState();
 }
+
 class LocationSelectionScreenState extends State<LocationSelectionScreen> {
   GoogleMapController? mapController;
   LatLng? currentLocation;
@@ -21,7 +24,8 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
   }
 
   Future<void> _getCurrentLocation() async {
-    final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    final locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
     Position position = await _determinePosition();
     setState(() {
       currentLocation = LatLng(position.latitude, position.longitude);
@@ -34,13 +38,14 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
     );
   }
 
-
   Future<void> _getAddressFromLatLng(LatLng position) async {
     try {
-      List<Placemark> placeMarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placeMarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
       if (placeMarks.isNotEmpty) {
         Placemark place = placeMarks[0];
-        String address = '${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
+        String address =
+            '${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
         setState(() {
           addressController.text = address;
         });
@@ -78,7 +83,8 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
 
   void _selectAddress() async {
     String address = addressController.text;
-    final locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    final locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
     List<Location> locations = await locationFromAddress(address);
     if (locations.isNotEmpty) {
       setState(() {
@@ -91,7 +97,8 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
 
   void _returnLocation() {
     if (currentLocation != null) {
-      LocationData locationData = LocationData(currentLocation!, addressController.text);
+      LocationData locationData =
+          LocationData(currentLocation!, addressController.text);
       Navigator.pop(context, locationData);
     }
   }
@@ -104,7 +111,10 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
         title: const Text('Select Location'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.check,color: Colors.blue,),
+            icon: const Icon(
+              Icons.check,
+              color: AppTheme.primary,
+            ),
             onPressed: _returnLocation,
           ),
         ],
@@ -128,7 +138,11 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
                     zoom: 14,
                   ),
                   markers: currentLocation != null
-                      ? {Marker(markerId: const MarkerId('currentLocation'), position: currentLocation!)}
+                      ? {
+                          Marker(
+                              markerId: const MarkerId('currentLocation'),
+                              position: currentLocation!)
+                        }
                       : {},
                   onTap: (position) {
                     setState(() {
@@ -146,19 +160,18 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on, color: Colors.blue),
+                      const Icon(Icons.location_on, color: AppTheme.primary),
                       const SizedBox(width: 8),
                       Expanded(
                         child: TextField(
                           controller: addressController,
                           decoration: const InputDecoration(
-                            labelText: 'Enter Address',
-                            border: InputBorder.none,
-                            hintText: 'Type your address here',
-                            hintStyle: TextStyle(fontSize: 12)
-                          ),
+                              labelText: 'Enter Address',
+                              border: InputBorder.none,
+                              hintText: 'Type your address here',
+                              hintStyle: TextStyle(fontSize: 12)),
                           style: const TextStyle(
-                            color: Colors.blue, // Text color
+                            color: AppTheme.primary, // Text color
                             fontSize: 10, // Font size
                             fontWeight: FontWeight.w700,
                           ),
@@ -173,10 +186,13 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
             ElevatedButton(
               onPressed: _selectAddress,
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.blue, shape: RoundedRectangleBorder(
+                foregroundColor: Colors.white,
+                backgroundColor: AppTheme.primary,
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 24.0), // Text color
+                padding: const EdgeInsets.symmetric(
+                    vertical: 6.0, horizontal: 24.0), // Text color
                 elevation: 5,
               ),
               child: const Text(
@@ -187,7 +203,6 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
                 ),
               ),
             ),
-
           ],
         ),
       ),
@@ -200,6 +215,7 @@ class LocationData {
   final String address;
   LocationData(this.latLng, this.address);
 }
+
 class ElevatedCard extends StatelessWidget {
   final Widget child;
 

@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:io';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
 class MediaPickerPage extends StatefulWidget {
   final bool isImagePicker;
   final List<XFile> initialMedia;
@@ -17,6 +19,7 @@ class MediaPickerPage extends StatefulWidget {
   @override
   MediaPickerPageState createState() => MediaPickerPageState();
 }
+
 class MediaPickerPageState extends State<MediaPickerPage> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> _mediaFiles = [];
@@ -32,7 +35,8 @@ class MediaPickerPageState extends State<MediaPickerPage> {
     if (widget.isImagePicker) {
       pickedFiles = await _picker.pickMultiImage();
     } else {
-      final XFile? videoFile = await _picker.pickVideo(source: ImageSource.gallery);
+      final XFile? videoFile =
+          await _picker.pickVideo(source: ImageSource.gallery);
       if (videoFile != null) {
         pickedFiles = [videoFile];
       }
@@ -90,10 +94,13 @@ class MediaPickerPageState extends State<MediaPickerPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.isImagePicker ? S.of(context).pick_images : S.of(context).pick_videos,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          widget.isImagePicker
+              ? S.of(context).pick_images
+              : S.of(context).pick_videos,
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.primary,
         centerTitle: true,
         elevation: 4,
         shadowColor: Colors.black45,
@@ -131,16 +138,19 @@ class MediaPickerPageState extends State<MediaPickerPage> {
                         child: widget.isImagePicker
                             ? _loadImage(index)
                             : FutureBuilder<Widget>(
-                          future: _generateVideoThumbnail(_mediaFiles[index]),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
-                              return snapshot.data!;
-                            } else {
-                              return const Center(
-                                  child: SpinKitCircle(color: Colors.blue));
-                            }
-                          },
-                        ),
+                                future:
+                                    _generateVideoThumbnail(_mediaFiles[index]),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    return snapshot.data!;
+                                  } else {
+                                    return const Center(
+                                        child: SpinKitCircle(
+                                            color: AppTheme.primary));
+                                  }
+                                },
+                              ),
                       ),
                       Positioned(
                         top: 6,
@@ -160,7 +170,8 @@ class MediaPickerPageState extends State<MediaPickerPage> {
                               ],
                             ),
                             padding: const EdgeInsets.all(5),
-                            child: const Icon(Icons.close, size: 18, color: Colors.white),
+                            child: const Icon(Icons.close,
+                                size: 18, color: Colors.white),
                           ),
                         ),
                       ),
@@ -175,10 +186,12 @@ class MediaPickerPageState extends State<MediaPickerPage> {
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: ElevatedButton.icon(
                     onPressed: _pickMedia,
-                    icon: const Icon(Icons.add_a_photo_rounded, color: Colors.white),
+                    icon: const Icon(Icons.add_a_photo_rounded,
+                        color: Colors.white),
                     label: Text(
                       'Pick ${widget.isImagePicker ? 'Images' : 'Videos'}',
                       style: const TextStyle(color: Colors.white, fontSize: 16),
@@ -186,7 +199,8 @@ class MediaPickerPageState extends State<MediaPickerPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       elevation: 4,
                     ),
                   ),
@@ -194,7 +208,8 @@ class MediaPickerPageState extends State<MediaPickerPage> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context, _mediaFiles);
@@ -202,10 +217,11 @@ class MediaPickerPageState extends State<MediaPickerPage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.greenAccent.shade700,
                       padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       elevation: 4,
                     ),
-                    child:  Text(
+                    child: Text(
                       S.of(context).select_media,
                       style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
@@ -224,10 +240,18 @@ class MediaPickerPageState extends State<MediaPickerPage> {
       context: context,
       builder: (BuildContext context) {
         return CupertinoActionSheet(
-          title:  Text(S.of(context).select_image_types, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          message:  Text(S.of(context).choose_image_type),
+          title: Text(S.of(context).select_image_types,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          message: Text(S.of(context).choose_image_type),
           actions: [
-            for (String type in ['Interior', 'Outer', 'Side', 'Parking', 'Other'])
+            for (String type in [
+              'Interior',
+              'Outer',
+              'Side',
+              'Parking',
+              'Other'
+            ])
               CupertinoActionSheetAction(
                 child: Text(type, style: const TextStyle(fontSize: 16)),
                 onPressed: () {
@@ -237,7 +261,8 @@ class MediaPickerPageState extends State<MediaPickerPage> {
           ],
           cancelButton: CupertinoActionSheetAction(
             isDestructiveAction: true,
-            child:  Text(S.of(context).cancel, style: const TextStyle(fontSize: 16)),
+            child: Text(S.of(context).cancel,
+                style: const TextStyle(fontSize: 16)),
             onPressed: () {
               Navigator.pop(context, null);
             },

@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:convert';
 import 'package:Lisofy/Warehouse/Partner/home_screen.dart';
 import 'package:Lisofy/Warehouse/Partner/models/warehouses_model.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
+
 class UpdateWarehouseDimensions extends StatefulWidget {
   final String electricity;
   final String tenants;
@@ -22,9 +24,10 @@ class UpdateWarehouseDimensions extends StatefulWidget {
   final String dockLevelers;
   final String cluDocument;
   final String fireComplaint;
-  final int id ;
+  final int id;
   final Warehouse warehouse;
-  const UpdateWarehouseDimensions({super.key,
+  const UpdateWarehouseDimensions({
+    super.key,
     required this.electricity,
     required this.tenants,
     required this.toilets,
@@ -43,7 +46,8 @@ class UpdateWarehouseDimensions extends StatefulWidget {
   });
 
   @override
-  State<UpdateWarehouseDimensions> createState() => _UpdateWarehouseDimensionsState();
+  State<UpdateWarehouseDimensions> createState() =>
+      _UpdateWarehouseDimensionsState();
 }
 
 class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
@@ -57,45 +61,44 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
   String? _selectedFurnishingType;
   String flexingModel = '';
   final List<String> _flooringType = ['Epoxy', 'VDF', 'Concrete'];
-  final List<String> _furnishingType = ['Full Furnished', 'Semi Furnished', 'Unfurnished','Others'];
+  final List<String> _furnishingType = [
+    'Full Furnished',
+    'Semi Furnished',
+    'Unfurnished',
+    'Others'
+  ];
 
   @override
   void initState() {
     super.initState();
-    _length.text=widget.warehouse.length;
-    _width.text=widget.warehouse.width;
-    _sideHeight.text=widget.warehouse.sideHeight;
-    _centreHeight.text=widget.warehouse.centerHeight;
-    _noOfDocks.text=widget.warehouse.numberOfDocks;
-    _dockHeight.text=widget.warehouse.docksOfHeight;
-    _selectedFlooringType=widget.warehouse.flooringType;
-    _selectedFurnishingType=widget.warehouse.furnishingType;
+    _length.text = widget.warehouse.length;
+    _width.text = widget.warehouse.width;
+    _sideHeight.text = widget.warehouse.sideHeight;
+    _centreHeight.text = widget.warehouse.centerHeight;
+    _noOfDocks.text = widget.warehouse.numberOfDocks;
+    _dockHeight.text = widget.warehouse.docksOfHeight;
+    _selectedFlooringType = widget.warehouse.flooringType;
+    _selectedFurnishingType = widget.warehouse.furnishingType;
   }
 
   void _showCupertinoSheet(List<String> options, Function(String) onSelected) {
     int selectedIndex = 0;
     showModalBottomSheet(
       context: context,
-      shape:  const RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
       builder: (BuildContext context) {
-        final screenHeight = MediaQuery
-            .of(context)
-            .size
-            .height;
-        final screenWidth = MediaQuery
-            .of(context)
-            .size
-            .width;
+        final screenHeight = MediaQuery.of(context).size.height;
+        final screenWidth = MediaQuery.of(context).size.width;
         return Container(
-          height: screenHeight*0.4,
-          padding:  EdgeInsets.all(screenHeight*0.05),
+          height: screenHeight * 0.4,
+          padding: EdgeInsets.all(screenHeight * 0.05),
           child: Column(
             children: [
               Expanded(
                 child: CupertinoPicker(
-                  itemExtent: screenWidth*0.17,
+                  itemExtent: screenWidth * 0.17,
                   onSelectedItemChanged: (index) {
                     FocusScope.of(context).unfocus();
                     selectedIndex = index;
@@ -108,14 +111,16 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+                    child: const Text('Cancel',
+                        style: TextStyle(color: Colors.red)),
                   ),
                   TextButton(
                     onPressed: () {
                       onSelected(options[selectedIndex]);
                       Navigator.pop(context);
                     },
-                    child: const Text('Done', style: TextStyle(color: Colors.blue)),
+                    child: const Text('Done',
+                        style: TextStyle(color: AppTheme.primary)),
                   ),
                 ],
               )
@@ -128,7 +133,7 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
 
   void _submitForm() async {
     if ([_noOfDocks, _dockHeight, _sideHeight, _centreHeight, _width, _length]
-        .any((controller) => controller.text.isEmpty) ||
+            .any((controller) => controller.text.isEmpty) ||
         _selectedFlooringType == null ||
         _selectedFurnishingType == null) {
       return;
@@ -166,7 +171,7 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(
-        child: SpinKitCircle(color: Colors.blue),
+        child: SpinKitCircle(color: AppTheme.primary),
       ),
     );
   }
@@ -220,12 +225,14 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
       _navigateToHomeScreen();
     });
   }
+
   void _navigateToHomeScreen() {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const HomeScreen()),
-          (route) => false,
+      (route) => false,
     );
   }
+
   Map<String, dynamic> _prepareBodyData() {
     return {
       "Electricity": widget.electricity,
@@ -238,12 +245,17 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
       "NumberOfFans": int.tryParse(widget.fans.toString()) ?? 0,
       "NumberOfLights": int.tryParse(widget.lights.toString()) ?? 0,
       "FireComplaints": widget.fireComplaint.toLowerCase() == "yes",
-      "NumberOfDocks": _noOfDocks.text.trim().isNotEmpty ? _noOfDocks.text.trim() : "0",
+      "NumberOfDocks":
+          _noOfDocks.text.trim().isNotEmpty ? _noOfDocks.text.trim() : "0",
       "Length": _length.text.trim().isNotEmpty ? _length.text.trim() : "0",
       "Width": _width.text.trim().isNotEmpty ? _width.text.trim() : "0",
-      "SideHeight": _sideHeight.text.trim().isNotEmpty ? _sideHeight.text.trim() : "0",
-      "CenterHeight": _centreHeight.text.trim().isNotEmpty ? _centreHeight.text.trim() : "0",
-      "DocksOfHeight": _dockHeight.text.trim().isNotEmpty ? _dockHeight.text.trim() : "0",
+      "SideHeight":
+          _sideHeight.text.trim().isNotEmpty ? _sideHeight.text.trim() : "0",
+      "CenterHeight": _centreHeight.text.trim().isNotEmpty
+          ? _centreHeight.text.trim()
+          : "0",
+      "DocksOfHeight":
+          _dockHeight.text.trim().isNotEmpty ? _dockHeight.text.trim() : "0",
       "FlexiModel": flexingModel.toLowerCase() == "yes",
       "CluDocument": widget.cluDocument.toLowerCase() == "yes",
       "FlooringType": _selectedFlooringType ?? "Unknown",
@@ -265,19 +277,13 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Column(
         children: [
           Container(
-            color: Colors.blue,
+            color: AppTheme.primary,
             height: screenHeight * 0.18,
             padding: EdgeInsets.only(
                 left: screenWidth * 0.07, top: screenHeight * 0.08),
@@ -286,20 +292,23 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
               children: [
                 Row(
                   children: [
-                    InkWell(child: const Icon(
-                        Icons.arrow_back_ios_new_outlined, color: Colors.white),
+                    InkWell(
+                      child: const Icon(Icons.arrow_back_ios_new_outlined,
+                          color: Colors.white),
                       onTap: () => Navigator.pop(context),
                     ),
                     SizedBox(width: screenWidth * 0.01),
-                     Text(S.of(context).edit_warehouse_details,
-                        style: const TextStyle(color: Colors.white, fontSize: 14)),
+                    Text(S.of(context).edit_warehouse_details,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 14)),
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.03),
-                 Text("${S.of(context).update_warehouse_amenities} 4/4", style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14)),
+                Text("${S.of(context).update_warehouse_amenities} 4/4",
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14)),
               ],
             ),
           ),
@@ -308,10 +317,12 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
               decoration: const BoxDecoration(
                 color: Colors.white,
               ),
-              padding: EdgeInsets.symmetric(vertical: screenHeight * 0.005,
+              padding: EdgeInsets.symmetric(
+                  vertical: screenHeight * 0.005,
                   horizontal: screenWidth * 0.045),
               child: SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -319,126 +330,156 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
                       children: [
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _length,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).inner_length,
-                              labelStyle: const TextStyle(color: Colors.blue,fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.w600),
                               hintText: "ex2",
-                              hintStyle: const TextStyle(color: Colors.grey,fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(width: screenWidth*0.025),
+                        SizedBox(width: screenWidth * 0.025),
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _width,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).inner_width,
-                              labelStyle: const TextStyle(color: Colors.blue,fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.w600),
                               hintText: "ex2",
-                              hintStyle: const TextStyle(color: Colors.grey,fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: screenHeight*0.04),
+                    SizedBox(height: screenHeight * 0.04),
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _sideHeight,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).side_height,
-                              labelStyle: const TextStyle(color: Colors.blue,fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.w600),
                               hintText: "ex2",
-                              hintStyle: const TextStyle(color: Colors.grey,fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(width: screenWidth*0.025),
+                        SizedBox(width: screenWidth * 0.025),
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _centreHeight,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).centre_height,
-                              labelStyle: const TextStyle(color: Colors.blue,fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.w600),
                               hintText: "ex2",
-                              hintStyle: const TextStyle(color: Colors.grey,fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: screenHeight*0.04),
+                    SizedBox(height: screenHeight * 0.04),
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             controller: _noOfDocks,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).num_of_docks,
-                              labelStyle: const TextStyle(color: Colors.blue,fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.w600),
                               hintText: "ex2",
-                              hintStyle: const TextStyle(color: Colors.grey,fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                             keyboardType: TextInputType.number,
                           ),
                         ),
-                        SizedBox(width: screenWidth*0.025),
+                        SizedBox(width: screenWidth * 0.025),
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             controller: _dockHeight,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).docks_height,
-                              labelStyle: const TextStyle(color: Colors.blue,fontWeight: FontWeight.w600),
+                              labelStyle: const TextStyle(
+                                  color: AppTheme.primary,
+                                  fontWeight: FontWeight.w600),
                               hintText: "ex2",
-                              hintStyle: const TextStyle(color: Colors.grey,fontWeight: FontWeight.w400),
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                                borderSide: BorderSide(
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                             keyboardType: TextInputType.number,
@@ -446,44 +487,65 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
                         ),
                       ],
                     ),
-                    SizedBox(height: screenHeight*0.02),
+                    SizedBox(height: screenHeight * 0.02),
                     ListTile(
-                      tileColor: Colors.blue[50],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(screenWidth*0.1)),
-                      title:  Text(S.of(context).flooring_type,style: const TextStyle(color: Colors.black),),
-                      subtitle: Text(_selectedFlooringType ?? 'None', style: const TextStyle(decoration: TextDecoration.none,color: Colors.blue)),
-                      trailing: const Icon(Icons.keyboard_arrow_down, color: Colors.blue),
+                      tileColor: AppTheme.primarySoft,
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.1)),
+                      title: Text(
+                        S.of(context).flooring_type,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      subtitle: Text(_selectedFlooringType ?? 'None',
+                          style: const TextStyle(
+                              decoration: TextDecoration.none,
+                              color: AppTheme.primary)),
+                      trailing: const Icon(Icons.keyboard_arrow_down,
+                          color: AppTheme.primary),
                       onTap: () => _showCupertinoSheet(
                         _flooringType,
-                            (value) => setState(() => _selectedFlooringType = value),
+                        (value) =>
+                            setState(() => _selectedFlooringType = value),
                       ),
                     ),
-                    SizedBox(height: screenHeight*0.02),
+                    SizedBox(height: screenHeight * 0.02),
                     ListTile(
-                      tileColor: Colors.blue[50],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(screenWidth*0.1)),
-                      title:  Text(S.of(context).furnishing_type),
-                      subtitle: Text(_selectedFurnishingType ?? 'None', style: const TextStyle(decoration: TextDecoration.none,color: Colors.blue,)),
-                      trailing: const Icon(Icons.keyboard_arrow_down, color: Colors.blue),
+                      tileColor: AppTheme.primarySoft,
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.1)),
+                      title: Text(S.of(context).furnishing_type),
+                      subtitle: Text(_selectedFurnishingType ?? 'None',
+                          style: const TextStyle(
+                            decoration: TextDecoration.none,
+                            color: AppTheme.primary,
+                          )),
+                      trailing: const Icon(Icons.keyboard_arrow_down,
+                          color: AppTheme.primary),
                       onTap: () => _showCupertinoSheet(
                         _furnishingType,
-                            (value) => setState(() => _selectedFurnishingType = value),
+                        (value) =>
+                            setState(() => _selectedFurnishingType = value),
                       ),
                     ),
-                    SizedBox(height: screenHeight*0.04),
+                    SizedBox(height: screenHeight * 0.04),
                     Align(
                       alignment: Alignment.center,
                       child: ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 8,
                           shadowColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(screenWidth*0.06),
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.06),
                           ),
-                          padding:  EdgeInsets.symmetric(horizontal: screenWidth*0.15, vertical: screenHeight*0.01),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.15,
+                              vertical: screenHeight * 0.01),
                         ),
                         child: const Text(
                           'Submit',
@@ -503,11 +565,14 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
       ),
     );
   }
-  Widget buildToggleButtons(String title, String selectedValue, Function(String) onSelected) {
+
+  Widget buildToggleButtons(
+      String title, String selectedValue, Function(String) onSelected) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
-      padding:  EdgeInsets.symmetric(vertical: screenHeight*0.015, horizontal: screenWidth*0.037),
+      padding: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.015, horizontal: screenWidth * 0.037),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -515,11 +580,11 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
             title,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: screenHeight*0.01),
+          SizedBox(height: screenHeight * 0.01),
           Row(
             children: [
               buildToggleButton('Yes', selectedValue, onSelected),
-              SizedBox(width: screenWidth*0.03),
+              SizedBox(width: screenWidth * 0.03),
               buildToggleButton('No', selectedValue, onSelected),
             ],
           ),
@@ -527,18 +592,20 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
       ),
     );
   }
-  Widget buildToggleButton(String label, String selectedValue, Function(String) onSelected) {
+
+  Widget buildToggleButton(
+      String label, String selectedValue, Function(String) onSelected) {
     bool isActive = label == selectedValue;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: () => onSelected(label),
       child: Container(
-        width: screenWidth*0.1,
-        height: screenHeight*0.03,
+        width: screenWidth * 0.1,
+        height: screenHeight * 0.03,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isActive ? Colors.blue : Colors.grey,
+          color: isActive ? AppTheme.primary : Colors.grey,
           borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
@@ -552,7 +619,6 @@ class _UpdateWarehouseDimensionsState extends State<UpdateWarehouseDimensions> {
     );
   }
 }
-
 
 class AnimatedDialog extends StatelessWidget {
   final String message;

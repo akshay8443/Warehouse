@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:convert';
 import 'package:Lisofy/Transportation/common/custom_app_bar/custom_loader.dart';
 import 'package:Lisofy/Transportation/common/custom_app_bar/cutom_app_bar.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-
 
 const String googleApiKey = "AIzaSyDxbkZhKCXDGPdtOWxTPxFBg_tjAd3jsTk";
 
@@ -22,14 +22,21 @@ class LocationScreenState extends State<LocationScreen> {
   bool _showConfirmButton = false;
 
   Future<List<Map<String, dynamic>>> fetchPlaceSuggestions(String input) async {
-    const String baseUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-    final requestUrl = "$baseUrl?input=$input&key=$googleApiKey&components=country:in";
+    const String baseUrl =
+        "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    final requestUrl =
+        "$baseUrl?input=$input&key=$googleApiKey&components=country:in";
     try {
       final response = await http.get(Uri.parse(requestUrl));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         List predictions = data['predictions'] ?? [];
-        return predictions.map((place) => {"description": place['description'], "place_id": place['place_id']}).toList();
+        return predictions
+            .map((place) => {
+                  "description": place['description'],
+                  "place_id": place['place_id']
+                })
+            .toList();
       }
     } catch (e) {
       debugPrint("Error: $e");
@@ -62,8 +69,10 @@ class LocationScreenState extends State<LocationScreen> {
         accuracy: LocationAccuracy.high,
         distanceFilter: 50,
       );
-      Position position = await Geolocator.getCurrentPosition(locationSettings: locationSettings);
-      String address = await _getAddressFromLatLng(position.latitude, position.longitude);
+      Position position = await Geolocator.getCurrentPosition(
+          locationSettings: locationSettings);
+      String address =
+          await _getAddressFromLatLng(position.latitude, position.longitude);
       setState(() {
         _addressController.text = address;
         _showConfirmButton = true;
@@ -105,7 +114,7 @@ class LocationScreenState extends State<LocationScreen> {
         body: Stack(
           children: [
             Padding(
-              padding:  EdgeInsets.all(screenWidth*0.025),
+              padding: EdgeInsets.all(screenWidth * 0.025),
               child: Column(
                 children: [
                   TextField(
@@ -123,18 +132,19 @@ class LocationScreenState extends State<LocationScreen> {
                     },
                     decoration: InputDecoration(
                       hintText: "Search for a location",
-                      prefixIcon: const Icon(Icons.search, color: Colors.blue),
+                      prefixIcon:
+                          const Icon(Icons.search, color: AppTheme.primary),
                       suffixIcon: _addressController.text.isNotEmpty
                           ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.red),
-                        onPressed: () {
-                          setState(() {
-                            _addressController.clear();
-                            _placeSuggestions = [];
-                            _showConfirmButton = false;
-                          });
-                        },
-                      )
+                              icon: const Icon(Icons.clear, color: Colors.red),
+                              onPressed: () {
+                                setState(() {
+                                  _addressController.clear();
+                                  _placeSuggestions = [];
+                                  _showConfirmButton = false;
+                                });
+                              },
+                            )
                           : null,
                       filled: true,
                       fillColor: Colors.white,
@@ -148,40 +158,50 @@ class LocationScreenState extends State<LocationScreen> {
                         itemBuilder: (context, index) {
                           final suggestion = _placeSuggestions[index];
                           return ListTile(
-                            leading: const Icon(Icons.location_on, color: Colors.blue),
+                            leading: const Icon(Icons.location_on,
+                                color: AppTheme.primary),
                             title: Text(suggestion["description"]),
-                            onTap: () => _onPlaceSelected(suggestion["place_id"], suggestion["description"]),
+                            onTap: () => _onPlaceSelected(
+                                suggestion["place_id"],
+                                suggestion["description"]),
                           );
                         },
                       ),
                     ),
                   TextButton.icon(
                     onPressed: loader.isLoading ? null : _getCurrentLocation,
-                    icon: const Icon(Icons.my_location, color: Colors.blue),
-                    label: const Text("Use Current Location", style: TextStyle(color: Colors.blue)),
+                    icon:
+                        const Icon(Icons.my_location, color: AppTheme.primary),
+                    label: const Text("Use Current Location",
+                        style: TextStyle(color: AppTheme.primary)),
                   ),
                 ],
               ),
             ),
             if (loader.isLoading)
-               CustomProgressIndicator(
-                color: Colors.blue,
-                size: screenHeight*0.065,
+              CustomProgressIndicator(
+                color: AppTheme.primary,
+                size: screenHeight * 0.065,
                 text: "Loading...",
               ),
             AnimatedPositioned(
               duration: const Duration(milliseconds: 400),
-              bottom: _showConfirmButton ? screenWidth*0.1 : -screenWidth*0.3,
-              left: screenWidth*0.1,
-              right: screenWidth*0.1,
+              bottom:
+                  _showConfirmButton ? screenWidth * 0.1 : -screenWidth * 0.3,
+              left: screenWidth * 0.1,
+              right: screenWidth * 0.1,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 400),
                 opacity: _showConfirmButton ? 1 : 0,
                 child: ElevatedButton.icon(
                   onPressed: _confirmAddress,
                   icon: const Icon(Icons.check, color: Colors.white),
-                  label: const Text("Confirm Address", style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green, padding:  EdgeInsets.symmetric(vertical: screenHeight*0.02)),
+                  label: const Text("Confirm Address",
+                      style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding:
+                          EdgeInsets.symmetric(vertical: screenHeight * 0.02)),
                 ),
               ),
             ),

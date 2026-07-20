@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Warehouse/User/userlogin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({super.key});
   @override
@@ -27,8 +29,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
       await prefs.setBool('isLoggedIn', false);
       if (!context.mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) =>  const UserLogin()),
-            (route) => false,
+        MaterialPageRoute(builder: (context) => const UserLogin()),
+        (route) => false,
       );
     } catch (e) {
       if (kDebugMode) {
@@ -36,6 +38,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       }
     }
   }
+
   Future<bool> _showLogoutConfirmationDialog(BuildContext context) async {
     return await showDialog(
       context: context,
@@ -94,17 +97,19 @@ class _MyProfilePageState extends State<MyProfilePage> {
       },
     );
   }
-  String name="";
-  String phone="";
+
+  String name = "";
+  String phone = "";
   @override
   void initState() {
     super.initState();
     getShareData();
   }
+
   getShareData() async {
-    SharedPreferences pref=await SharedPreferences.getInstance();
-    name=pref.getString("name")!;
-    phone=pref.getString("phone")!;
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    name = pref.getString("name")!;
+    phone = pref.getString("phone")!;
     setState(() {
       name = name;
       phone = phone;
@@ -128,19 +133,18 @@ class _MyProfilePageState extends State<MyProfilePage> {
             children: [
               Expanded(
                 child: Container(
-                  color: Colors.blue,
+                  color: AppTheme.primary,
                   width: double.infinity,
                   child: Column(
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(top: 40,left: 15),
+                        padding: const EdgeInsets.only(top: 40, left: 15),
                         alignment: Alignment.topLeft,
-                        color: Colors.blue,
+                        color: AppTheme.primary,
                         height: screenHeight * 0.28,
                         child: const Text(
                           "My Profile",
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 14),
+                          style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
                       Expanded(
@@ -156,21 +160,27 @@ class _MyProfilePageState extends State<MyProfilePage> {
                           child: Padding(
                             padding: EdgeInsets.all(screenWidth * 0.06),
                             child: SingleChildScrollView(
-                              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                              keyboardDismissBehavior:
+                                  ScrollViewKeyboardDismissBehavior.onDrag,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(height: screenHeight*0.14,),
+                                  SizedBox(
+                                    height: screenHeight * 0.14,
+                                  ),
                                   InkWell(
                                     child: Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: 13),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 13),
                                       height: 35,
-                                      padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 0, horizontal: 0),
                                       decoration: BoxDecoration(
-                                        color: Colors.blue,
+                                        color: AppTheme.primary,
                                         borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: Colors.blue),
+                                        border:
+                                            Border.all(color: AppTheme.primary),
                                       ),
                                       child: Row(
                                         children: [
@@ -178,10 +188,13 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                             height: 34,
                                             width: 34,
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(5)
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(5)),
+                                            child: const Icon(
+                                              Icons.wifi_calling_3_outlined,
+                                              color: AppTheme.primary,
                                             ),
-                                            child: const Icon(Icons.wifi_calling_3_outlined,color: Colors.blue,),
                                           ),
                                           const SizedBox(width: 15),
                                           const Text(
@@ -195,8 +208,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                         ],
                                       ),
                                     ),
-                                    onTap: () async{
-                                      final call = Uri.parse('tel:+91 7007221530');
+                                    onTap: () async {
+                                      final call =
+                                          Uri.parse('tel:+91 7007221530');
                                       if (await canLaunchUrl(call)) {
                                         launchUrl(call);
                                       } else {
@@ -205,13 +219,20 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                     },
                                   ),
                                   const Padding(
-                                    padding: EdgeInsets.only(left: 13.0,top: 10),
-                                    child: Text("Account",style: TextStyle(fontWeight: FontWeight.w600),),
+                                    padding:
+                                        EdgeInsets.only(left: 13.0, top: 10),
+                                    child: Text(
+                                      "Account",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -221,7 +242,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
-                                          child: Icon(Icons.file_present_outlined,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.file_present_outlined,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -237,17 +261,25 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: screenHeight*0.02,),
+                                  SizedBox(
+                                    height: screenHeight * 0.02,
+                                  ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -257,7 +289,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 8.0),
-                                          child: Icon(Icons.diamond_outlined,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.diamond_outlined,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -273,17 +308,25 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: screenHeight*0.02,),
+                                  SizedBox(
+                                    height: screenHeight * 0.02,
+                                  ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -293,7 +336,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 8.0),
-                                          child: Icon(Icons.share,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.share,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -309,20 +355,31 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
                                   const Padding(
-                                    padding: EdgeInsets.only(left: 13.0,top: 10,bottom: 10),
-                                    child: Text("General",style: TextStyle(fontWeight: FontWeight.w600),),
+                                    padding: EdgeInsets.only(
+                                        left: 13.0, top: 10, bottom: 10),
+                                    child: Text(
+                                      "General",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -332,7 +389,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
-                                          child: Icon(Icons.support_agent,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.support_agent,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -348,17 +408,25 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: screenHeight*0.02,),
+                                  SizedBox(
+                                    height: screenHeight * 0.02,
+                                  ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -368,7 +436,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
-                                          child: Icon(Icons.punch_clock_outlined,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.punch_clock_outlined,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -384,17 +455,25 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: screenHeight*0.02,),
+                                  SizedBox(
+                                    height: screenHeight * 0.02,
+                                  ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -404,7 +483,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
-                                          child: Icon(Icons.edit_notifications_sharp,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.edit_notifications_sharp,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -420,21 +502,34 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
                                   const Padding(
-                                    padding: EdgeInsets.only(left: 13.0,top: 10,bottom: 10),
-                                    child: Text("General",style: TextStyle(fontWeight: FontWeight.w600),),
+                                    padding: EdgeInsets.only(
+                                        left: 13.0, top: 10, bottom: 10),
+                                    child: Text(
+                                      "General",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
                                   ),
-                                  SizedBox(height: screenHeight*0.01,),
+                                  SizedBox(
+                                    height: screenHeight * 0.01,
+                                  ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -444,7 +539,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
-                                          child: Icon(Icons.policy_outlined,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.policy_outlined,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -460,17 +558,25 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: screenHeight*0.01,),
+                                  SizedBox(
+                                    height: screenHeight * 0.01,
+                                  ),
                                   Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 13),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 13),
                                     height: 35,
-                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 0, horizontal: 0),
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(6),
@@ -480,7 +586,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.only(left: 4.0),
-                                          child: Icon(Icons.collections_bookmark_outlined,color: Colors.grey,),
+                                          child: Icon(
+                                            Icons.collections_bookmark_outlined,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                         SizedBox(width: 15),
                                         Text(
@@ -496,68 +605,99 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                           padding: EdgeInsets.only(right: 8.0),
                                           child: Align(
                                             alignment: Alignment.centerRight,
-                                            child:  Icon(Icons.arrow_forward_ios,size: 14,color: Colors.grey,),
+                                            child: Icon(
+                                              Icons.arrow_forward_ios,
+                                              size: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
                                         )
                                       ],
                                     ),
                                   ),
-                                  SizedBox(height: screenHeight*0.03,),
-                                Center(
-                                  child: InkWell(
-                                    child: const Padding(
-                                      padding: EdgeInsets.only(left: 13.0, top: 10, bottom: 10),
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.logout_rounded, color: Colors.red),
-                                          SizedBox(width: 10),
-                                          Text(
-                                            "Log out",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.red,
+                                  SizedBox(
+                                    height: screenHeight * 0.03,
+                                  ),
+                                  Center(
+                                    child: InkWell(
+                                      child: const Padding(
+                                        padding: EdgeInsets.only(
+                                            left: 13.0, top: 10, bottom: 10),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.logout_rounded,
+                                                color: Colors.red),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              "Log out",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.red,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
+                                      onTap: () async {
+                                        if (!context.mounted) return;
+                                        bool shouldLogout =
+                                            await _showLogoutConfirmationDialog(
+                                                context);
+                                        if (!context.mounted) return;
+                                        if (shouldLogout) {
+                                          await _logoutAndRedirect(context);
+                                        }
+                                      },
                                     ),
-                                    onTap: () async {
-                                      if (!context.mounted) return;
-                                      bool shouldLogout = await _showLogoutConfirmationDialog(context);
-                                      if (!context.mounted) return;
-                                      if (shouldLogout) {
-                                        await _logoutAndRedirect(context);
-                                      }
-                                    },
                                   ),
-                                ),
-                                Padding(
-                                      padding: const EdgeInsets.only(left: 13.0,top: 0,bottom: 0),
-                                      child:Row(
-                                        children: [
-                                          Container(
-                                            height: 24,
-                                            width: 24,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(5),
-                                              border: Border.all(color: Colors.black)
-                                            ),
-                                            child: const Center(child: Icon(Icons.add)),
-                                          ),
-                                          const SizedBox(width: 15,),
-                                          const Text("Follow us on : ",style: TextStyle(fontWeight: FontWeight.w500),),
-                                          const SizedBox(width: 15,),
-                                          InkWell(onTap: _openFacebookProfile,child: Image.asset("assets/images/Facebook.png"),
-                                          ),
-                                          const SizedBox(width: 15,),
-                                          InkWell(onTap: _openInstagramProfile,child: Image.asset("assets/images/Instagram.png"),
-                                          ),
-                                          const SizedBox(width: 15,),
-                                          InkWell(onTap: _openTwitterProfile,child: Image.asset("assets/images/TwitterX.png"),
-                                          )
-                                        ]
-                                      )
-                                  ),
+                                  Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 13.0, top: 0, bottom: 0),
+                                      child: Row(children: [
+                                        Container(
+                                          height: 24,
+                                          width: 24,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              border: Border.all(
+                                                  color: Colors.black)),
+                                          child: const Center(
+                                              child: Icon(Icons.add)),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        const Text(
+                                          "Follow us on : ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        InkWell(
+                                          onTap: _openFacebookProfile,
+                                          child: Image.asset(
+                                              "assets/images/Facebook.png"),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        InkWell(
+                                          onTap: _openInstagramProfile,
+                                          child: Image.asset(
+                                              "assets/images/Instagram.png"),
+                                        ),
+                                        const SizedBox(
+                                          width: 15,
+                                        ),
+                                        InkWell(
+                                          onTap: _openTwitterProfile,
+                                          child: Image.asset(
+                                              "assets/images/TwitterX.png"),
+                                        )
+                                      ])),
                                 ],
                               ),
                             ),
@@ -571,113 +711,136 @@ class _MyProfilePageState extends State<MyProfilePage> {
             ],
           ),
           Positioned(
-            top: screenHeight * 0.15,
-            left: screenWidth / 2 - 125,
-            child: Container(
-              height: 190,
-              width: 250,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.grey.shade600,
-                      spreadRadius: 1,
-                      blurRadius: 15
-                  )
-                ],
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white)
-              ),
-              child: Column(
-                children: [
-                  const Spacer(),
-                  Text(
-                    name.length > 10 ? '${name.substring(0, 10)}...' : name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                   Padding(
-                    padding: const EdgeInsets.only(bottom: 25),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.wifi_calling_3_outlined,color: Colors.blue,),
-                        const SizedBox(width: 15,),
-                        Text(
-                          phone.length > 13 ? '${phone.substring(0, 13)}...' : phone,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15,left: 13,right: 13),
-                    child: Container(
-                      alignment: Alignment.bottomCenter,
-                      width: double.infinity,
-                      height: 30,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Colors.blue)
+              top: screenHeight * 0.15,
+              left: screenWidth / 2 - 125,
+              child: Container(
+                height: 190,
+                width: 250,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.shade600,
+                          spreadRadius: 1,
+                          blurRadius: 15)
+                    ],
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white)),
+                child: Column(
+                  children: [
+                    const Spacer(),
+                    Text(
+                      name.length > 10 ? '${name.substring(0, 10)}...' : name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
                       ),
-                      child: const Center(child: Text("Edit Profile",style: TextStyle(color: Colors.blue,fontWeight: FontWeight.w400,fontSize: 14),)),
                     ),
-                  )
-                ],
-              ),
-            )
-          ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 25),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.wifi_calling_3_outlined,
+                            color: AppTheme.primary,
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          Text(
+                            phone.length > 13
+                                ? '${phone.substring(0, 13)}...'
+                                : phone,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 15, left: 13, right: 13),
+                      child: Container(
+                        alignment: Alignment.bottomCenter,
+                        width: double.infinity,
+                        height: 30,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: AppTheme.primary)),
+                        child: const Center(
+                            child: Text(
+                          "Edit Profile",
+                          style: TextStyle(
+                              color: AppTheme.primary,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14),
+                        )),
+                      ),
+                    )
+                  ],
+                ),
+              )),
           Positioned(
               top: screenHeight * 0.08,
               left: screenWidth / 2 - 45,
-              child: Image.asset("assets/images/userround.png")
-          ),
+              child: Image.asset("assets/images/userround.png")),
         ],
       ),
     );
   }
+
   void _openInstagramProfile() async {
     const String instagramUrl = 'instagram://user?username=a_tinyhunter';
     const String fallbackUrl = 'https://www.instagram.com/a_tinyhunter/';
     try {
-      bool launched = await launchUrl(Uri.parse(instagramUrl), mode: LaunchMode.externalApplication);
+      bool launched = await launchUrl(Uri.parse(instagramUrl),
+          mode: LaunchMode.externalApplication);
       if (!launched) {
-        await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+        await launchUrl(Uri.parse(fallbackUrl),
+            mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+      await launchUrl(Uri.parse(fallbackUrl),
+          mode: LaunchMode.externalApplication);
     }
   }
+
   void _openFacebookProfile() async {
     const String facebookAppUrl = 'fb://profile/100009158840334';
-    const String fallbackUrl = 'https://www.facebook.com/profile.php?id=100009158840334';
+    const String fallbackUrl =
+        'https://www.facebook.com/profile.php?id=100009158840334';
 
     try {
-      bool launched = await launchUrl(Uri.parse(facebookAppUrl), mode: LaunchMode.externalApplication);
+      bool launched = await launchUrl(Uri.parse(facebookAppUrl),
+          mode: LaunchMode.externalApplication);
       if (!launched) {
-        await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+        await launchUrl(Uri.parse(fallbackUrl),
+            mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+      await launchUrl(Uri.parse(fallbackUrl),
+          mode: LaunchMode.externalApplication);
     }
   }
+
   void _openTwitterProfile() async {
     const String twitterAppUrl = 'twitter://user?screen_name=AnkeshYada78626';
     const String fallbackUrl = 'https://twitter.com/AnkeshYada78626';
     try {
-      bool launched = await launchUrl(Uri.parse(twitterAppUrl), mode: LaunchMode.externalApplication);
+      bool launched = await launchUrl(Uri.parse(twitterAppUrl),
+          mode: LaunchMode.externalApplication);
       if (!launched) {
-        await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+        await launchUrl(Uri.parse(fallbackUrl),
+            mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+      await launchUrl(Uri.parse(fallbackUrl),
+          mode: LaunchMode.externalApplication);
     }
   }
 }

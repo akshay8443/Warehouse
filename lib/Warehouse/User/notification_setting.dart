@@ -1,13 +1,16 @@
+import 'package:Lisofy/resources/app_theme.dart';
 
 import 'package:Lisofy/Warehouse/User/UserProvider/notification_setting.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 class NotificationSetting extends StatefulWidget {
   const NotificationSetting({super.key});
   @override
   State<NotificationSetting> createState() => _NotificationSettingState();
 }
+
 class _NotificationSettingState extends State<NotificationSetting> {
   String? phone;
   String? email;
@@ -17,6 +20,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
     Provider.of<NotificationSettingsProvider>(context, listen: false)
         .loadPreferences();
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -27,13 +31,13 @@ class _NotificationSettingState extends State<NotificationSetting> {
         children: [
           Expanded(
             child: Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: double.infinity,
               child: SafeArea(
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       height: screenHeight * 0.18,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -55,7 +59,7 @@ class _NotificationSettingState extends State<NotificationSetting> {
                                   },
                                 ),
                                 const SizedBox(width: 20),
-                                 Text(
+                                Text(
                                   S.of(context).notification_setting,
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -91,21 +95,24 @@ class _NotificationSettingState extends State<NotificationSetting> {
                                       context: context,
                                       title: 'Phone Notifications',
                                       value: provider.phoneNotifications,
-                                      onChanged: provider.togglePhoneNotifications,
+                                      onChanged:
+                                          provider.togglePhoneNotifications,
                                     ),
                                     _buildNotificationOption(
                                       subheading: provider.email ?? 'Not added',
                                       context: context,
                                       title: 'Email Notifications',
                                       value: provider.emailNotifications,
-                                      onChanged: provider.toggleEmailNotifications,
+                                      onChanged:
+                                          provider.toggleEmailNotifications,
                                     ),
                                     _buildNotificationOption(
                                       subheading: provider.phone ?? 'Not added',
                                       context: context,
                                       title: 'Push Notifications',
                                       value: provider.pushNotifications,
-                                      onChanged: provider.togglePushNotifications,
+                                      onChanged:
+                                          provider.togglePushNotifications,
                                     ),
                                   ],
                                 )
@@ -157,10 +164,13 @@ Widget _buildNotificationOption({
               style: TextStyle(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w600,
-                color: value ? Colors.blue : Colors.blue.shade300,
+                color: value ? AppTheme.primary : AppTheme.outline,
               ),
             ),
-            Text(subheading,style: const TextStyle(color: Colors.black26,fontSize: 12),)
+            Text(
+              subheading,
+              style: const TextStyle(color: Colors.black26, fontSize: 12),
+            )
           ],
         ),
         Switch(
@@ -174,30 +184,3 @@ Widget _buildNotificationOption({
     ),
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

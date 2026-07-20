@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class AuthUserProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -13,7 +14,6 @@ class AuthUserProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isResending = false;
   String? _errorMessage;
-
   bool get isLoading => _isLoading;
   bool get isResending => _isResending;
   String? get errorMessage => _errorMessage;
@@ -42,14 +42,16 @@ class AuthUserProvider extends ChangeNotifier {
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
@@ -61,7 +63,7 @@ class AuthUserProvider extends ChangeNotifier {
         if (context.mounted) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const GetUserLocation()),
-                (route) => false,
+            (route) => false,
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -81,28 +83,63 @@ class AuthUserProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> verifyPhoneNumber(String phoneNumber, BuildContext context) async {
+  Future<void> verifyPhoneNumber(
+      String phoneNumber, BuildContext context) async {
+    setErrorMessage(null);
     setLoading(true);
+
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
+        timeout: const Duration(seconds: 60),
+
+        // ✅ Auto Verification (only on some devices)
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential);
-          setLoading(false);
+          try {
+            final userCredential = await _auth.signInWithCredential(credential);
+            final idToken = await userCredential.user?.getIdToken();
+
+            if (idToken != null) {
+              await saveToPrefs("firebaseToken", idToken);
+              await saveToPrefs("phone", phoneNumber);
+            }
+
+            if (kDebugMode) {
+              print(" Firebase Token (auto verification): $idToken");
+            }
+
+            setLoading(false);
+            // Navigate to home or call your login API here
+          } catch (e) {
+            if (kDebugMode) {
+              print("Auto-verification error: $e");
+            }
+            setLoading(false);
+          }
         },
+
+        // ❌ Failed to verify
         verificationFailed: (FirebaseAuthException e) {
           if (kDebugMode) {
-            print("Error occurred here${e.message}");
+            print("❌ Firebase verification failed: ${e.code} - ${e.message}");
           }
-          setErrorMessage("Some error occurred here,Check network connection once..");
-          //setErrorMessage("${e.message}");
+          setErrorMessage(_phoneAuthErrorMessage(e));
           setLoading(false);
         },
-        codeSent: (String verificationId, int? resendToken) {
+
+        // 📩 Code sent (OTP)
+        codeSent: (String verificationId, int? resendToken) async {
+          setLoading(false);
+
           String newPhone = phoneNumber;
           if (newPhone.startsWith("+91")) {
             newPhone = newPhone.replaceFirst("+91", "");
-          }setLoading(false);
+          }
+
+          await saveToPrefs("phoneNumber", phoneNumber);
+          await saveToPrefs("phone", phoneNumber);
+
+          if (!context.mounted) return;
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -113,18 +150,52 @@ class AuthUserProvider extends ChangeNotifier {
             ),
           );
         },
+
+        // 🔁 Auto-retrieval timeout
         codeAutoRetrievalTimeout: (String verificationId) {
           setLoading(false);
+          if (kDebugMode) {
+            print("⌛️ Code auto retrieval timed out");
+          }
         },
-        timeout: const Duration(seconds: 60),
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       setErrorMessage('Failed to verify phone number. Please try again.');
       setLoading(false);
+      if (kDebugMode) {
+        print("🚫 Error in verifyPhoneNumber: $e");
+        print(stackTrace);
+      }
     }
   }
 
-///for Measurements class show more details
+  String _phoneAuthErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-phone-number':
+        return 'Please enter a valid mobile number.';
+      case 'too-many-requests':
+        return 'Too many OTP requests. Please try again later.';
+      case 'network-request-failed':
+        return 'Network error. Please check your internet connection and try again.';
+      case 'app-not-authorized':
+        return 'This app is not authorized for Firebase OTP. Please check Firebase SHA/package setup.';
+      case 'captcha-check-failed':
+      case 'missing-client-identifier':
+        return 'Firebase app verification failed. Please try again or check Firebase setup.';
+      case 'quota-exceeded':
+        return 'OTP quota exceeded. Please try again later.';
+      default:
+        return e.message ?? 'Failed to send OTP. Please try again.';
+    }
+  }
+
+// Helper function to store string in SharedPreferences
+  Future<void> saveToPrefs(String key, String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
+
+  ///for Measurements class show more details
   bool get showAll => _showAll;
 
   void toggleShowAll() {
@@ -132,4 +203,3 @@ class AuthUserProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-

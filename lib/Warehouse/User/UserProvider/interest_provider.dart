@@ -1,15 +1,19 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:convert';
 import 'package:Lisofy/Warehouse/User/user_shortlisted_intrested.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 class CartProvider with ChangeNotifier {
   final String baseUrl = "https://xpacesphere.com/api/Wherehousedt";
   final Map<int, bool> _shortlistedWarehouses = {};
-  bool isShortlisted(int warehouseId) => _shortlistedWarehouses[warehouseId] ?? false;
+  bool isShortlisted(int warehouseId) =>
+      _shortlistedWarehouses[warehouseId] ?? false;
   Future<void> fetchShortlistStatus(int warehouseId, String phoneNumber) async {
     try {
-      final url = "$baseUrl/GetSortlist_warehouse?_mobile=$phoneNumber&Id=$warehouseId";
+      final url =
+          "$baseUrl/GetSortlist_warehouse?_mobile=$phoneNumber&Id=$warehouseId";
       if (kDebugMode) {
         print("Iddd$warehouseId");
       }
@@ -23,7 +27,9 @@ class CartProvider with ChangeNotifier {
         if (kDebugMode) {
           print("Response Data: $data");
         }
-        if (data['status'] == 200 && data['data'] is List && data['data'].isNotEmpty) {
+        if (data['status'] == 200 &&
+            data['data'] is List &&
+            data['data'].isNotEmpty) {
           final type = data['data'][0]['type'];
           if (type == "Shortlisted") {
             _shortlistedWarehouses[warehouseId] = true;
@@ -50,7 +56,8 @@ class CartProvider with ChangeNotifier {
     final isCurrentlyShortlisted = _shortlistedWarehouses[warehouseId] ?? false;
     try {
       if (kDebugMode) {
-        print("Toggling warehouse: $warehouseId, Phone: $phoneNumber, Undo: $isUndo");
+        print(
+            "Toggling warehouse: $warehouseId, Phone: $phoneNumber, Undo: $isUndo");
       }
       if (!isUndo) {
         final url = "$baseUrl/Sortlist_warehouse";
@@ -69,14 +76,16 @@ class CartProvider with ChangeNotifier {
         if (kDebugMode) {
           print("Headers: $headers");
         }
-        final response = await http.post(Uri.parse(url), body: body, headers: headers);
+        final response =
+            await http.post(Uri.parse(url), body: body, headers: headers);
         if (kDebugMode) {
           print("Response Status Code: ${response.statusCode}");
         }
         if (kDebugMode) {
           print("Response Body: ${response.body}");
         }
-        if (response.statusCode != 200 || json.decode(response.body)['status'] != 200) {
+        if (response.statusCode != 200 ||
+            json.decode(response.body)['status'] != 200) {
           if (kDebugMode) {
             print("Response code for shortlist: ${response.body}");
           }
@@ -96,7 +105,10 @@ class CartProvider with ChangeNotifier {
           message: "Added to shortlist",
           actionLabel: "View",
           action: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const UserShortListedInterested()));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const UserShortListedInterested()));
           },
         );
       } else if (isCurrentlyShortlisted && !isUndo) {
@@ -120,13 +132,12 @@ class CartProvider with ChangeNotifier {
     }
   }
 
-
   void showCustomSnackBar(
-      BuildContext context, {
-        required String message,
-        String? actionLabel,
-        VoidCallback? action,
-      }) {
+    BuildContext context, {
+    required String message,
+    String? actionLabel,
+    VoidCallback? action,
+  }) {
     final snackBar = SnackBar(
       content: Text(
         message,
@@ -138,15 +149,15 @@ class CartProvider with ChangeNotifier {
       ),
       action: actionLabel != null && action != null
           ? SnackBarAction(
-        label: actionLabel,
-        onPressed: action,
-        textColor: actionLabel.toLowerCase() == "view"
-            ? Colors.greenAccent
-            : Colors.red,
-      )
+              label: actionLabel,
+              onPressed: action,
+              textColor: actionLabel.toLowerCase() == "view"
+                  ? Colors.greenAccent
+                  : Colors.red,
+            )
           : null,
       behavior: SnackBarBehavior.floating,
-      backgroundColor: Colors.blue.withValues(alpha: 0.8),
+      backgroundColor: AppTheme.primary.withValues(alpha: 0.8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -155,8 +166,4 @@ class CartProvider with ChangeNotifier {
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
-
-
-
-
 }

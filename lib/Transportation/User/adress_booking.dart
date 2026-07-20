@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,11 +64,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     }
   }
 
-  Future<double?> getDistanceAddress(String pickupAddress, String dropAddress) async {
+  Future<double?> getDistanceAddress(
+      String pickupAddress, String dropAddress) async {
     const apiKey = 'AIzaSyDxbkZhKCXDGPdtOWxTPxFBg_tjAd3jsTk';
     final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$pickupAddress&destinations=$dropAddress&key=$apiKey'
-    );
+        'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=$pickupAddress&destinations=$dropAddress&key=$apiKey');
 
     final response = await http.get(url);
 
@@ -80,17 +81,20 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       if (data['status'] == 'REQUEST_DENIED') {
         debugPrint('API Error: ${data['error_message']}');
         Fluttertoast.showToast(
-          msg: "Request denied: ${data['error_message'] ?? 'Invalid API key or setup'}",
+          msg:
+              "Request denied: ${data['error_message'] ?? 'Invalid API key or setup'}",
           backgroundColor: Colors.red,
         );
         return null;
       }
 
       if (data['rows'].isNotEmpty && data['rows'][0]['elements'].isNotEmpty) {
-        final distance = data['rows'][0]['elements'][0]['distance']['value'] / 1000;
+        final distance =
+            data['rows'][0]['elements'][0]['distance']['value'] / 1000;
         return distance;
       } else {
-        Fluttertoast.showToast(msg: "No data in response!", backgroundColor: Colors.red);
+        Fluttertoast.showToast(
+            msg: "No data in response!", backgroundColor: Colors.red);
       }
     } else {
       Fluttertoast.showToast(
@@ -101,9 +105,6 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     return null;
   }
 
-
-
-
   void _checkAndProceed() async {
     final loaderNotifier = context.read<LoaderNotifier>();
     if (_pickupAddress != null &&
@@ -111,7 +112,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
         _pickupAddress != _dropAddress) {
       loaderNotifier.showLoader();
       try {
-        final distance = await getDistanceAddress(_pickupAddress!, _dropAddress!);
+        final distance =
+            await getDistanceAddress(_pickupAddress!, _dropAddress!);
         if (kDebugMode) {
           print("Distance$distance");
         }
@@ -195,7 +197,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                         padding: EdgeInsets.only(top: screenHeight * 0.01),
                         child: Text(
                           _errorMessage!,
-                          style: const TextStyle(color: Colors.red, fontSize: 14),
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 14),
                         ),
                       ),
                   ],
@@ -210,8 +213,9 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                   right: screenWidth * 0.06,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+                      backgroundColor: AppTheme.primary,
+                      padding:
+                          EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.03),
                       ),
@@ -219,7 +223,10 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                     onPressed: _checkAndProceed,
                     child: const Text(
                       "CHECK FARE",
-                      style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),
@@ -227,9 +234,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
                 builder: (context, loaderNotifier, _) {
                   return loaderNotifier.isLoading
                       ? Container(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    child: const Center(child: CircularProgressIndicator(color: Colors.blue)),
-                  )
+                          color: Colors.black.withValues(alpha: 0.3),
+                          child: const Center(
+                              child: CircularProgressIndicator(
+                                  color: AppTheme.primary)),
+                        )
                       : const SizedBox();
                 },
               ),
@@ -252,7 +261,8 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding:  EdgeInsets.symmetric(horizontal: screenWidth*0.02,vertical: screenHeight*0.02),
+        padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0.02, vertical: screenHeight * 0.02),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
@@ -279,8 +289,4 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
       ),
     );
   }
-
-
-
-
 }

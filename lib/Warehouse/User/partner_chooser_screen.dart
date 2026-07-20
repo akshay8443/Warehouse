@@ -1,13 +1,16 @@
+import 'package:Lisofy/resources/app_theme.dart';
 
 import 'package:Lisofy/Warehouse/Partner/home_screen.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
 import 'package:flutter/material.dart';
+
 class PartnerChooserScreen extends StatefulWidget {
   const PartnerChooserScreen({super.key});
   @override
   State<PartnerChooserScreen> createState() => _PartnerChooserScreenState();
 }
+
 class _PartnerChooserScreenState extends State<PartnerChooserScreen> {
   @override
   Widget build(BuildContext context) {
@@ -18,13 +21,13 @@ class _PartnerChooserScreenState extends State<PartnerChooserScreen> {
         children: [
           Expanded(
             child: Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: double.infinity,
               child: SafeArea(
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       height: screenHeight * 0.13,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -93,6 +96,7 @@ class CustomTextFieldShape extends StatefulWidget {
   @override
   State<CustomTextFieldShape> createState() => _CustomTextFieldShapeState();
 }
+
 class _CustomTextFieldShapeState extends State<CustomTextFieldShape> {
   int? selectedOption;
   void selectOption(int index) {
@@ -108,6 +112,7 @@ class _CustomTextFieldShapeState extends State<CustomTextFieldShape> {
       _showComingSoonDialog(context);
     }
   }
+
   void _showComingSoonDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -147,6 +152,7 @@ class _CustomTextFieldShapeState extends State<CustomTextFieldShape> {
       ),
     );
   }
+
   Widget buildSelectableContainer(
       int index, String label, String imageAsset, String image) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -249,7 +255,7 @@ class ComingSoonDialog extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(0),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: AppTheme.primary,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(

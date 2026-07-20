@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Warehouse/Partner/help_page.dart';
 import 'package:Lisofy/Warehouse/Partner/notification_screen.dart';
 import 'package:Lisofy/Warehouse/Partner/Provider/warehouse_provider.dart';
@@ -21,12 +22,14 @@ import 'package:share_plus/share_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+
 class HomeScreen extends StatefulWidget {
   final String name;
   const HomeScreen({super.key, this.name = 'Guest'});
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
 class _HomeScreenState extends State<HomeScreen> {
   late Future<WarehouseResponse> futureWarehouseResponse;
   final TextEditingController _searchController = TextEditingController();
@@ -37,15 +40,18 @@ class _HomeScreenState extends State<HomeScreen> {
   final String appInfoText = 'Download WarehouseX app for amazing offers!';
   bool light = true;
   int _selectedIndex = 0;
-  late double latitude=0;
-  late double longitude=0;
+  late double latitude = 0;
+  late double longitude = 0;
   final PageController _pageController = PageController();
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    _pageController.jumpToPage(index);
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(index);
+    }
   }
+
   String? qrData;
   Future<void> getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -74,7 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
       if (match != null && match.groupCount == 2) {
         double latitude = double.parse(match.group(1)!.trim());
         double longitude = double.parse(match.group(2)!.trim());
-        List<Placemark> placeMarks = await placemarkFromCoordinates(latitude, longitude);
+        List<Placemark> placeMarks =
+            await placemarkFromCoordinates(latitude, longitude);
         if (placeMarks.isNotEmpty) {
           Placemark place = placeMarks[0];
           return '${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
@@ -85,6 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return 'Error: $e';
     }
   }
+
   String _limitDigits(int count) {
     if (count >= 1000) {
       return '999+';
@@ -93,12 +101,59 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Future<WarehouseResponse> fetchWarehouseData() async {
+  //   if (kDebugMode) {
+  //     print("fetch data executed");
+  //   }
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String phone = prefs.getString("phone")!;
+  //   if (phone.startsWith("+91")) {
+  //     phone = phone.replaceFirst("+91", "");
+  //   }
+  //
+  //   if (kDebugMode) {
+  //     print("Phone>>$phone");
+  //   }
+  //
+  //   if (phone.isEmpty) {
+  //     throw Exception('Phone number is not stored in SharedPreferences');
+  //   }
+  //
+  //   try {
+  //     final response = await http.get(
+  //       Uri.parse(
+  //           'http://15.206.189.22:8080/api/v2/datawarehouses?mobile=$phone'),
+  //     );
+  //     if (kDebugMode) {
+  //       print("Api response code${response.statusCode}");
+  //     }
+  //     if (kDebugMode) {
+  //       print("Api response body${response.body}");
+  //     }
+  //
+  //     if (response.statusCode == 200) {
+  //       return WarehouseResponse.fromJson(json.decode(response.body));
+  //     } else {
+  //       throw Exception(
+  //           'Failed to load warehouse data: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Failed to fetch warehouse data: $e');
+  //   }
+  // }
+
   Future<WarehouseResponse> fetchWarehouseData() async {
     if (kDebugMode) {
       print("fetch data executed");
     }
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String phone = prefs.getString("phone")!;
+    String? phone = prefs.getString("phone");
+
+    if (phone == null || phone.isEmpty) {
+      throw Exception('Phone number is not stored in SharedPreferences');
+    }
+
     if (phone.startsWith("+91")) {
       phone = phone.replaceFirst("+91", "");
     }
@@ -107,20 +162,15 @@ class _HomeScreenState extends State<HomeScreen> {
       print("Phone>>$phone");
     }
 
-    if (phone.isEmpty) {
-      throw Exception('Phone number is not stored in SharedPreferences');
-    }
-
     try {
       final response = await http.get(
         Uri.parse(
-            'http://xpacesphere.com/api/Wherehousedt/Wherehousedata?mobile=$phone'),
+            'http://3.110.172.156:8083/api/v2/datawarehouses?mobile=$phone'),
       );
+
       if (kDebugMode) {
-        print("Api response code${response.statusCode}");
-      }
-      if (kDebugMode) {
-        print("Api response body${response.body}");
+        print("Api response code ${response.statusCode}");
+        print("Api response body ${response.body}");
       }
 
       if (response.statusCode == 200) {
@@ -136,10 +186,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
+    _pageController.dispose();
     _searchController.dispose();
+    super.dispose();
   }
+
   Future<void> _shareAppInfo() async {
     try {
       final ByteData logoData =
@@ -206,68 +257,75 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Container(
-            color: Colors.blue,
-            height: 35,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: IconButton(
-                    icon: const Icon(Icons.home_filled),
-                    color:
-                        _selectedIndex == 0 ? Colors.white : Colors.grey[300],
-                    onPressed: () => _onItemTapped(0),
-                  ),
-                ),
-                Expanded(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned(
-                        bottom: 15,
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: _selectedIndex == 1
-                                ? Colors.blue
-                                : const Color(0xffD9D9D9),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 1,
-                            ),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.notifications,
-                              color: _selectedIndex == 1
-                                  ? Colors.white
-                                  : Colors.blue,
-                              size: 24,
-                            ),
-                            onPressed: () => _onItemTapped(1),
-                          ),
-                        ),
+            color: AppTheme.primary,
+            child: SafeArea(
+              top: false,
+              child: SizedBox(
+                height: 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: IconButton(
+                        icon: const Icon(Icons.home_filled),
+                        color: _selectedIndex == 0
+                            ? Colors.white
+                            : Colors.grey[300],
+                        onPressed: () => _onItemTapped(0),
                       ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: IconButton(
-                    icon: ImageIcon(
-                      _selectedIndex == 2
-                          ? const AssetImage(
-                              "assets/images/MaleUsercolored.png")
-                          : const AssetImage('assets/images/MaleUser.png'),
-                      color:
-                          _selectedIndex == 2 ? Colors.white : Colors.grey[300],
                     ),
-                    onPressed: () => _onItemTapped(2),
-                  ),
+                    Expanded(
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          Positioned(
+                            bottom: 4,
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: _selectedIndex == 1
+                                    ? AppTheme.primary
+                                    : const Color(0xffD9D9D9),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1,
+                                ),
+                              ),
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.notifications,
+                                  color: _selectedIndex == 1
+                                      ? Colors.white
+                                      : AppTheme.primary,
+                                  size: 24,
+                                ),
+                                onPressed: () => _onItemTapped(1),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: IconButton(
+                        icon: ImageIcon(
+                          _selectedIndex == 2
+                              ? const AssetImage(
+                                  "assets/images/MaleUsercolored.png")
+                              : const AssetImage('assets/images/MaleUser.png'),
+                          color: _selectedIndex == 2
+                              ? Colors.white
+                              : Colors.grey[300],
+                        ),
+                        onPressed: () => _onItemTapped(2),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -278,13 +336,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHomePage(double screenWidth, double screenHeight) {
     final warehouseProvider = Provider.of<WarehouseProvider>(context);
     return Container(
-      color: Colors.blue,
+      color: AppTheme.primary,
       width: double.infinity,
       child: SafeArea(
         child: Column(
           children: [
             Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               height: screenHeight * 0.18,
               child: Padding(
                 padding: EdgeInsets.only(
@@ -317,10 +375,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Text(
                                 (userName.isNotEmpty)
                                     ? (userName.length > 7
-                                    ? '${userName.substring(0, 7)}...'
-                                    : userName)
-                                    : 'Guest'
-                                ,
+                                        ? '${userName.substring(0, 7)}...'
+                                        : userName)
+                                    : 'Guest',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -367,7 +424,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Colors.grey, width: 1.0),
                                   ),
                                   suffixIcon: const Icon(Icons.search,
-                                      color: Colors.blue, size: 18),
+                                      color: AppTheme.primary, size: 18),
                                 ),
                               ),
                             ),
@@ -390,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: const Center(
                               child: Icon(
                                 Icons.question_mark,
-                                color: Colors.blue,
+                                color: AppTheme.primary,
                                 size: 18,
                               ),
                             ),
@@ -421,8 +478,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Container(
                                 padding: EdgeInsets.zero,
-                                height: screenHeight*0.042,
-                                width: screenWidth*0.18,
+                                height: screenHeight * 0.042,
+                                width: screenWidth * 0.18,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5),
                                   color: Colors.white,
@@ -438,24 +495,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                       style: const TextStyle(
                                           fontSize: 6,
                                           fontWeight: FontWeight.normal,
-                                          color: Colors.blue),
+                                          color: AppTheme.primary),
                                     ),
                                     onPressed: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                              const AddWareHouse()));
+                                                  const AddWareHouse()));
                                     },
                                   ),
                                 ),
                               ),
-                              SizedBox(width: screenWidth*0.01),
+                              SizedBox(width: screenWidth * 0.01),
                               Container(
-                                height: screenHeight*0.037,
-                                width: screenWidth*0.08,
+                                height: screenHeight * 0.037,
+                                width: screenWidth * 0.08,
                                 decoration: BoxDecoration(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   border: Border.all(
                                     color: Colors.grey,
                                     width: 1.0,
@@ -480,30 +537,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(width: screenWidth*0.02),
-                               InkWell(
-                                 onTap: (){
-                                   Navigator.push(
-                                       context,
-                                       MaterialPageRoute(
-                                           builder: (context) => NewHomePage(
-                                             longitude: longitude,
-                                             latitude: latitude,
-                                           )));
-                                 },
-                                   child: const Column(
-                                     children: [
-                                       ImageIcon(
-                                         AssetImage(
-                                             ImageAssets.back
-                                         ),
-                                         color: Colors.white,
-                                       ),
-                                       Text("Back",style: TextStyle(color: Colors.white,fontSize: 10,fontWeight: FontWeight.w100),)
-                                     ],
-                                   )
-                               ),
-                               SizedBox(width: screenWidth*0.04),
+                              SizedBox(width: screenWidth * 0.02),
+                              InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => NewHomePage(
+                                                  longitude: longitude,
+                                                  latitude: latitude,
+                                                )));
+                                  },
+                                  child: const Column(
+                                    children: [
+                                      ImageIcon(
+                                        AssetImage(ImageAssets.back),
+                                        color: Colors.white,
+                                      ),
+                                      Text(
+                                        "Back",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w100),
+                                      )
+                                    ],
+                                  )),
+                              SizedBox(width: screenWidth * 0.04),
                             ],
                           )
                         ],
@@ -525,7 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: RefreshIndicator(
                   onRefresh: fetchWarehouseData,
-                  color: Colors.blue,
+                  color: AppTheme.primary,
                   backgroundColor: Colors.white,
                   child: FutureBuilder<WarehouseResponse>(
                     future: futureWarehouseResponse,
@@ -533,7 +593,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
                             child: SpinKitCircle(
-                          color: Colors.blue,
+                          color: AppTheme.primary,
                           size: 50.0,
                         ));
                       } else if (snapshot.hasError) {
@@ -573,15 +633,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     setState(() {});
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                                    backgroundColor: AppTheme.primary,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12, horizontal: 20),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                   child: const Text(
                                     'Retry',
-                                    style: TextStyle(fontSize: 16, color: Colors.white),
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
                                   ),
                                 ),
                               ],
@@ -589,21 +651,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         );
                       } else if (snapshot.hasData) {
-                        final warehouseList =
-                            snapshot.data!.data;
+                        final warehouseList = snapshot.data!.data;
                         return warehouseList.isEmpty
                             ? Padding(
                                 padding: EdgeInsets.all(screenWidth * 0.04),
                                 child: SingleChildScrollView(
-                                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                                  keyboardDismissBehavior:
+                                      ScrollViewKeyboardDismissBehavior.onDrag,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Center(
                                           child: Image.asset(
                                               "assets/images/house.png",
-                                              height: screenHeight*0.2,
-                                              width: screenWidth*0.5)),
+                                              height: screenHeight * 0.2,
+                                              width: screenWidth * 0.5)),
                                       Center(
                                         child: Text(
                                           S.of(context).start_adding_warehouse,
@@ -612,7 +675,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontSize: 14),
                                         ),
                                       ),
-                                       SizedBox(height: screenHeight*0.02),
+                                      SizedBox(height: screenHeight * 0.02),
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Center(
@@ -634,9 +697,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                               vertical: 10, horizontal: 20),
                                           child: DottedBorder(
                                             child: Container(
-                                              color: Colors.blue,
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 20, vertical: 8),
+                                              color: AppTheme.primary,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 8),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
@@ -671,7 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Center(
                                           child: Image.asset(
                                               "assets/images/man.png")),
-                                       SizedBox(height: screenHeight*0.013),
+                                      SizedBox(height: screenHeight * 0.013),
                                       Center(
                                         child: Text(
                                           S.of(context).we_are_happy_to_help,
@@ -680,14 +745,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontSize: 14),
                                         ),
                                       ),
-                                      SizedBox(height: screenHeight*0.013),
+                                      SizedBox(height: screenHeight * 0.013),
                                       Center(
                                         child: Text(
                                           "${S.of(context).need_assistance} >>",
                                           style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
-                                              color: Colors.blue),
+                                              color: AppTheme.primary),
                                         ),
                                       ),
                                     ],
@@ -700,7 +765,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   final warehouse = warehouseList[index];
                                   if (kDebugMode) {
                                     print(
-                                      "availability${warehouse.isAvailableForRent}");
+                                        "availability${warehouse.isAvailableForRent}");
                                   }
                                   return GestureDetector(
                                     onTap: () {
@@ -731,7 +796,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Row(
                                                       children: [
                                                         Text(
@@ -744,7 +810,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   : warehouse
                                                                       .wHouseName)
                                                               : 'N/A',
-                                                          style: const TextStyle(
+                                                          style:
+                                                              const TextStyle(
                                                             fontSize: 16,
                                                             fontWeight:
                                                                 FontWeight.w700,
@@ -767,8 +834,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           onTap: () {
                                                             String data =
                                                                 'Warehouse Name: ${warehouse.wHouseName}\nLocation: ${warehouse.wHouseAddress}\nContact: ${warehouse.mobile}';
-                                                            _showQrDialog(
-                                                                data);
+                                                            _showQrDialog(data);
                                                           },
                                                         ),
                                                         const SizedBox(
@@ -779,7 +845,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -791,7 +858,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         Text(
                                                           warehouseProvider
                                                                           .warehouseStatus[
-                                                                      warehouse.id
+                                                                      warehouse
+                                                                          .id
                                                                           .toString()] ??
                                                                   warehouse
                                                                       .isAvailable
@@ -807,33 +875,47 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             .toString()] ??
                                                                     warehouse
                                                                         .isAvailable
-                                                                ? Colors
-                                                                    .red
-                                                                : Colors
-                                                                    .green,
+                                                                ? Colors.red
+                                                                : Colors.green,
                                                             fontSize: 10,
                                                           ),
                                                         ),
                                                         const Spacer(),
                                                         FutureBuilder<String>(
-                                                          future: _getAddressFromLatLng(warehouse.wHouseAddress),
-                                                          builder: (context, snapshot) {
+                                                          future: _getAddressFromLatLng(
+                                                              warehouse
+                                                                  .wHouseAddress),
+                                                          builder: (context,
+                                                              snapshot) {
                                                             return SizedBox(
-                                                              width: MediaQuery.of(context).size.width * 0.5,
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.5,
                                                               child: Text(
-                                                                snapshot.connectionState == ConnectionState.waiting
+                                                                snapshot.connectionState ==
+                                                                        ConnectionState
+                                                                            .waiting
                                                                     ? "Getting address..."
-                                                                    : snapshot.hasError
-                                                                    ? "Error fetching address"
-                                                                    : snapshot.hasData
-                                                                    ? "| ${snapshot.data}"
-                                                                    : "No address available",
-                                                                style: const TextStyle(
-                                                                  fontWeight: FontWeight.w500,
-                                                                  color: Colors.grey,
+                                                                    : snapshot
+                                                                            .hasError
+                                                                        ? "Error fetching address"
+                                                                        : snapshot.hasData
+                                                                            ? "| ${snapshot.data}"
+                                                                            : "No address available",
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: Colors
+                                                                      .grey,
                                                                   fontSize: 10,
                                                                 ),
-                                                                overflow: TextOverflow.ellipsis,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                                 maxLines: 1,
                                                               ),
                                                             );
@@ -847,7 +929,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        const EdgeInsets.all(8.0),
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -857,34 +940,46 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             width: screenWidth *
                                                                 0.05),
                                                         Text(
-                                                          warehouse.warehouseCarpetArea.toString().length > 6
+                                                          warehouse.warehouseCarpetArea
+                                                                      .toString()
+                                                                      .length >
+                                                                  6
                                                               ? '${warehouse.warehouseCarpetArea.toString().substring(0, 6)}... sq.ft'
                                                               : '${warehouse.warehouseCarpetArea} sq.ft',
-                                                          style: const TextStyle(
-                                                            fontWeight: FontWeight.w500,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w500,
                                                             color: Colors.black,
                                                             fontSize: 15,
                                                           ),
                                                         ),
                                                         const Spacer(),
                                                         Text(
-                                                          warehouse.wHouseRentPerSQFT.toString().length > 6
+                                                          warehouse.wHouseRentPerSQFT
+                                                                      .toString()
+                                                                      .length >
+                                                                  6
                                                               ? '₹ ${warehouse.wHouseRentPerSQFT.toString().substring(0, 6)}...'
                                                               : '₹ ${warehouse.wHouseRentPerSQFT}',
-                                                          style: const TextStyle(
-                                                            fontWeight: FontWeight.w500,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w500,
                                                             color: Colors.black,
                                                             fontSize: 15,
                                                           ),
                                                         ),
                                                         SizedBox(
-                                                            width:
-                                                                screenWidth * 0.1)
+                                                            width: screenWidth *
+                                                                0.1)
                                                       ],
                                                     ),
                                                   ),
-                                                   Padding(
-                                                    padding: const EdgeInsets.all(8.0),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -892,22 +987,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       children: [
                                                         Text(
                                                           "${S.of(context).carpet_area} Sq. ft.",
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.w500,
-                                                              color: Colors.grey,
-                                                              fontSize: 10),
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontSize: 10),
                                                         ),
                                                         const SizedBox(
                                                           width: 10,
                                                         ),
                                                         Text(
                                                           "  | ${S.of(context).rent_per_sqft} ",
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight.w500,
-                                                              color: Colors.grey,
-                                                              fontSize: 10),
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontSize: 10),
                                                         ),
                                                         const SizedBox(
                                                           width: 5,
@@ -916,8 +1017,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.all(
-                                                        10.0),
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -951,7 +1053,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
                                                           ),
                                                         ),
-                                                        const SizedBox(width: 5),
+                                                        const SizedBox(
+                                                            width: 5),
                                                         Flexible(
                                                           flex: 3,
                                                           child: Container(
@@ -980,7 +1083,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
                                                           ),
                                                         ),
-                                                        const SizedBox(width: 5),
+                                                        const SizedBox(
+                                                            width: 5),
                                                         Flexible(
                                                           flex: 4,
                                                           child: Container(
@@ -1017,13 +1121,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         MainAxisAlignment
                                                             .spaceAround,
                                                     crossAxisAlignment:
-                                                        CrossAxisAlignment.center,
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: [
-                                                       Text(
-                                                          S.of(context).is_warehouse_available),
+                                                      Text(S
+                                                          .of(context)
+                                                          .is_warehouse_available),
                                                       Row(
                                                         children: [
-                                                           Text(
+                                                          Text(
                                                             S.of(context).no,
                                                             style: const TextStyle(
                                                                 color:
@@ -1041,10 +1147,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 Colors.green,
                                                             focusColor:
                                                                 Colors.white,
-                                                            activeColor: Colors
-                                                                .white,
-                                                            inactiveThumbColor: Colors
-                                                                .grey,
+                                                            activeColor:
+                                                                Colors.white,
+                                                            inactiveThumbColor:
+                                                                Colors.grey,
                                                             value: warehouseProvider
                                                                         .warehouseStatus[
                                                                     warehouse.id
@@ -1055,12 +1161,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 (bool value) {
                                                               warehouseProvider
                                                                   .initializeStatus(
-                                                                      warehouse.id
+                                                                      warehouse
+                                                                          .id
                                                                           .toString(),
                                                                       value);
                                                               warehouseProvider
                                                                   .updateWarehouseStatus(
-                                                                      warehouse.id
+                                                                      warehouse
+                                                                          .id
                                                                           .toString(),
                                                                       value)
                                                                   .catchError(
@@ -1071,9 +1179,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                             .id
                                                                             .toString(),
                                                                         !value);
-                                                                if (!context.mounted) return;
-                                                                ScaffoldMessenger
-                                                                        .of(context)
+                                                                if (!context
+                                                                    .mounted)
+                                                                  return;
+                                                                ScaffoldMessenger.of(
+                                                                        context)
                                                                     .showSnackBar(
                                                                   const SnackBar(
                                                                       content: Text(
@@ -1082,7 +1192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               });
                                                             },
                                                           ),
-                                                           Text(
+                                                          Text(
                                                             S.of(context).yes,
                                                             style: const TextStyle(
                                                                 fontSize: 11,

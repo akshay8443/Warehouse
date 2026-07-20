@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:convert';
 import 'package:Lisofy/Warehouse/Partner/home_screen.dart';
 import 'package:Lisofy/generated/l10n.dart';
@@ -7,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class WarehouseService extends StatefulWidget {
   final String electricity;
   final String tenants;
@@ -94,7 +97,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child:  Text(S.of(context).cancel,
+                    child: Text(S.of(context).cancel,
                         style: const TextStyle(color: Colors.red)),
                   ),
                   TextButton(
@@ -102,8 +105,8 @@ class _WarehouseServiceState extends State<WarehouseService> {
                       onSelected(options[selectedIndex]);
                       Navigator.pop(context);
                     },
-                    child:  Text(S.of(context).done,
-                        style: const TextStyle(color: Colors.blue)),
+                    child: Text(S.of(context).done,
+                        style: const TextStyle(color: AppTheme.primary)),
                   ),
                 ],
               )
@@ -115,6 +118,14 @@ class _WarehouseServiceState extends State<WarehouseService> {
   }
 
   void _submitForm() async {
+    // NEW CODE
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int? warehouseId = prefs.getInt("warehouseId");
+
+    if (warehouseId == null) {
+      print("❌ Warehouse ID not found");
+      return;
+    }
     if ([_noOfDocks, _dockHeight, _sideHeight, _centreHeight, _width, _length]
             .any((controller) => controller.text.isEmpty) ||
         _selectedFlooringType == null ||
@@ -129,7 +140,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
       }
       final response = await http.post(
         Uri.parse(
-            'https://xpacesphere.com/api/Amenitiesdt/InsAmenities_Details'),
+            'http://3.110.172.156:8083/api/v3/amenities/warehouse/$warehouseId'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(bodyData),
       );
@@ -139,7 +150,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
       if (!mounted) return;
       Navigator.of(context).pop();
 
-      if (response.statusCode == 200) {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
         _showSuccessPopup();
       }
     } catch (error) {
@@ -155,11 +166,13 @@ class _WarehouseServiceState extends State<WarehouseService> {
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(
-        child: SpinKitCircle(color: Colors.blue, size: 50.0),
+        child: SpinKitCircle(color: AppTheme.primary, size: 50.0),
       ),
     );
   }
+
   void _showSuccessPopup() {
+    print("Success popup called");
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -205,6 +218,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
 
     Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
+      print('Closing popup and navigating to HomeScreen');
       Navigator.of(context).pop();
       _navigateToHomeScreen();
     });
@@ -219,28 +233,28 @@ class _WarehouseServiceState extends State<WarehouseService> {
 
   Map<String, dynamic> _prepareBodyData() {
     return {
-      "Electricity": widget.electricity,
-      "Power_backup": widget.powerBackup.toLowerCase() == "yes",
-      "Office_space": widget.provideOffice.toLowerCase() == "yes",
-      "Dock_levelers": widget.dockLevelers.toLowerCase() == "yes",
-      "NumberOfToilets": widget.toilets,
-      "Truck_ParkingSlot": int.tryParse(widget.parkingSlots) ?? 0,
-      "Bike_ParkingSlot": int.tryParse(widget.bikeSlots) ?? 0,
-      "NumberOfFans": widget.fans,
-      "NumberOfLights": widget.lights,
-      "FireComplaints": widget.fireComplaint.toLowerCase() == "yes",
-      "NumberOfDocks": _noOfDocks.text.trim(),
-      "Length": _length.text.trim(),
-      "Width": _width.text.trim(),
-      "SideHeight": _sideHeight.text.trim(),
-      "CenterHeight": _centreHeight.text.trim(),
-      "DocksOfHeight": _dockHeight.text.trim(),
-      //"FlexiModel": flexingModel.toLowerCase() == "yes",
-      "CluDocument": widget.cluDocument.toLowerCase() == "yes",
-      "FlooringType": _selectedFlooringType,
-      "FurnishingType": _selectedFurnishingType,
-      "WhouseId": widget.id,
-      "mobile": widget.id,
+      "electricity": widget.electricity,
+      "p_backup": widget.powerBackup.toLowerCase() == "yes",
+      "office_space": widget.provideOffice.toLowerCase() == "yes",
+      "dock_levelers": widget.dockLevelers.toLowerCase() == "yes",
+      //"no_of_toilets": int.tryParse(widget.toilets) ?? 0,
+      "no_of_toilets": widget.toilets,
+      "truck_parking_slots": int.tryParse(widget.parkingSlots) ?? 0,
+      "bike_parking_slots": int.tryParse(widget.bikeSlots) ?? 0,
+      //"no_of_fan": int.tryParse(widget.fans) ?? 0,
+      "no_of_fan": widget.fans,
+      //"no_of_light": int.tryParse(widget.lights) ?? 0,
+      "no_of_light": widget.lights,
+      "fire_noc": widget.fireComplaint.toLowerCase() == "yes",
+      "no_of_docks": int.tryParse(_noOfDocks.text.trim()) ?? 0,
+      "length": double.tryParse(_length.text.trim()) ?? 0.0,
+      "width": double.tryParse(_width.text.trim()) ?? 0.0,
+      "side_height": double.tryParse(_sideHeight.text.trim()) ?? 0.0,
+      "center_height": double.tryParse(_centreHeight.text.trim()) ?? 0.0,
+      "height_of_dock": double.tryParse(_dockHeight.text.trim()) ?? 0.0,
+      // "flexi_model": widget.flexingModel?.toLowerCase() == "yes",
+      "flooring_type": _selectedFlooringType,
+      "furnicing_type": _selectedFurnishingType
     };
   }
 
@@ -263,7 +277,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
       body: Column(
         children: [
           Container(
-            color: Colors.blue,
+            color: AppTheme.primary,
             height: screenHeight * 0.18,
             width: double.infinity,
             padding: EdgeInsets.only(
@@ -272,7 +286,8 @@ class _WarehouseServiceState extends State<WarehouseService> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SingleChildScrollView(
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
@@ -282,13 +297,14 @@ class _WarehouseServiceState extends State<WarehouseService> {
                         onTap: () => Navigator.pop(context),
                       ),
                       SizedBox(width: screenWidth * 0.01),
-                       Text(S.of(context).add_warehouse_details,
-                          style: const TextStyle(color: Colors.white, fontSize: 12)),
+                      Text(S.of(context).add_warehouse_details,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12)),
                     ],
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.03),
-                 Text("${S.of(context).warehouse_dimensions} 4/4",
+                Text("${S.of(context).warehouse_dimensions} 4/4",
                     style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -312,25 +328,24 @@ class _WarehouseServiceState extends State<WarehouseService> {
                       children: [
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _length,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).inner_length,
                               labelStyle: const TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w600),
                               hintText: "ex2",
                               hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.blue,
-                                    width: 2.0),
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
@@ -338,25 +353,24 @@ class _WarehouseServiceState extends State<WarehouseService> {
                         SizedBox(width: screenWidth * 0.025),
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _width,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).inner_width,
                               labelStyle: const TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w600),
                               hintText: "ex2",
                               hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.blue,
-                                    width: 2.0),
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
@@ -368,25 +382,24 @@ class _WarehouseServiceState extends State<WarehouseService> {
                       children: [
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _sideHeight,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).side_height,
                               labelStyle: const TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w600),
                               hintText: "ex2",
                               hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.blue,
-                                    width: 2.0),
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
@@ -394,25 +407,24 @@ class _WarehouseServiceState extends State<WarehouseService> {
                         SizedBox(width: screenWidth * 0.025),
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             keyboardType: TextInputType.number,
                             controller: _centreHeight,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).centre_height,
                               labelStyle: const TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w600),
                               hintText: "ex2",
                               hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.blue,
-                                    width: 2.0),
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                           ),
@@ -424,24 +436,23 @@ class _WarehouseServiceState extends State<WarehouseService> {
                       children: [
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             controller: _noOfDocks,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).num_of_docks,
                               labelStyle: const TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w600),
                               hintText: "ex2",
                               hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.blue,
-                                    width: 2.0),
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                             keyboardType: TextInputType.number,
@@ -450,24 +461,23 @@ class _WarehouseServiceState extends State<WarehouseService> {
                         SizedBox(width: screenWidth * 0.025),
                         Expanded(
                           child: TextField(
-                            style: const TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: AppTheme.primary),
                             controller: _dockHeight,
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               labelText: S.of(context).docks_height,
                               labelStyle: const TextStyle(
-                                  color: Colors.blue,
+                                  color: AppTheme.primary,
                                   fontWeight: FontWeight.w600),
                               hintText: "ex2",
                               hintStyle: const TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w400),
                               enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue),
+                                borderSide: BorderSide(color: AppTheme.primary),
                               ),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: Colors.blue,
-                                    width: 2.0),
+                                    color: AppTheme.primary, width: 2.0),
                               ),
                             ),
                             keyboardType: TextInputType.number,
@@ -477,20 +487,20 @@ class _WarehouseServiceState extends State<WarehouseService> {
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     ListTile(
-                      tileColor: Colors.blue[50],
+                      tileColor: AppTheme.primarySoft,
                       shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(screenWidth * 0.1)),
-                      title:  Text(
+                      title: Text(
                         S.of(context).flooring_type,
                         style: const TextStyle(color: Colors.black),
                       ),
                       subtitle: Text(_selectedFlooringType ?? 'None',
                           style: const TextStyle(
                               decoration: TextDecoration.none,
-                              color: Colors.blue)),
+                              color: AppTheme.primary)),
                       trailing: const Icon(Icons.keyboard_arrow_down,
-                          color: Colors.blue),
+                          color: AppTheme.primary),
                       onTap: () => _showCupertinoSheet(
                         _flooringType,
                         (value) =>
@@ -499,18 +509,18 @@ class _WarehouseServiceState extends State<WarehouseService> {
                     ),
                     SizedBox(height: screenHeight * 0.02),
                     ListTile(
-                      tileColor: Colors.blue[50],
+                      tileColor: AppTheme.primarySoft,
                       shape: RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.circular(screenWidth * 0.1)),
-                      title:  Text(S.of(context).furnishing_type),
+                      title: Text(S.of(context).furnishing_type),
                       subtitle: Text(_selectedFurnishingType ?? 'None',
                           style: const TextStyle(
                             decoration: TextDecoration.none,
-                            color: Colors.blue,
+                            color: AppTheme.primary,
                           )),
                       trailing: const Icon(Icons.keyboard_arrow_down,
-                          color: Colors.blue),
+                          color: AppTheme.primary),
                       onTap: () => _showCupertinoSheet(
                         _furnishingType,
                         (value) =>
@@ -528,7 +538,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
                       child: ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: AppTheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 8, // Add elevation
                           shadowColor: Colors.black,
@@ -540,7 +550,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
                               horizontal: screenWidth * 0.15,
                               vertical: screenHeight * 0.01),
                         ),
-                        child:  Text(
+                        child: Text(
                           S.of(context).submit,
                           style: const TextStyle(
                             fontSize: 18,
@@ -598,7 +608,7 @@ class _WarehouseServiceState extends State<WarehouseService> {
         height: screenHeight * 0.03,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isActive ? Colors.blue : Colors.grey,
+          color: isActive ? AppTheme.primary : Colors.grey,
           borderRadius: BorderRadius.circular(5),
         ),
         child: Text(
@@ -612,4 +622,3 @@ class _WarehouseServiceState extends State<WarehouseService> {
     );
   }
 }
-

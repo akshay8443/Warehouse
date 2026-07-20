@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:Lisofy/Warehouse/User/user_home_page.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
@@ -8,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 class ExpressInterestDateTime extends StatefulWidget {
   final dynamic name;
   final dynamic email;
@@ -16,7 +18,7 @@ class ExpressInterestDateTime extends StatefulWidget {
   final dynamic designation;
   final dynamic dateOfPossession;
   final dynamic msg;
-  final  dynamic id;
+  final dynamic id;
   const ExpressInterestDateTime(
       {super.key,
       required this.id,
@@ -70,7 +72,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
         if (kDebugMode) {
           print('Response: ${response.body}');
         }
-        if(mounted){
+        if (mounted) {
           showCongratulationsDialog(context);
         }
       } else {
@@ -96,13 +98,14 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
         barrierDismissible: false,
         builder: (BuildContext dialogContext) {
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             elevation: 10,
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Colors.blueAccent, Colors.purpleAccent],
+                  colors: [AppTheme.primary, Colors.purpleAccent],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -113,7 +116,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 children: [
                   Image.asset(ImageAssets.intrest),
                   const SizedBox(height: 10),
-                   Text(
+                  Text(
                     S.of(context).congratulations,
                     style: const TextStyle(
                       fontSize: 20,
@@ -122,7 +125,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                   Text(
+                  Text(
                     S.of(context).warehouse_added_success,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16, color: Colors.white70),
@@ -140,20 +143,23 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                               longitude: longitude ?? 0.0,
                             ),
                           ),
-                              (Route<dynamic> route) => false,
+                          (Route<dynamic> route) => false,
                         );
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      foregroundColor: AppTheme.primary,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       elevation: 5,
                     ),
-                    child:  Text(
+                    child: Text(
                       S.of(context).continue_browsing,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -174,7 +180,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 longitude: longitude ?? 0.0,
               ),
             ),
-                (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
           );
         }
       });
@@ -197,12 +203,12 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    height: screenHeight*0.3,
-                    width: screenWidth*06,
+                    height: screenHeight * 0.3,
+                    width: screenWidth * 06,
                     decoration: BoxDecoration(
-                      borderRadius:  BorderRadius.only(
-                          topLeft: Radius.circular(screenWidth*0.08),
-                          topRight: Radius.circular(screenWidth*0.08)),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(screenWidth * 0.08),
+                          topRight: Radius.circular(screenWidth * 0.08)),
                       border: Border.all(color: Colors.grey),
                     ),
                     child: CupertinoDatePicker(
@@ -214,19 +220,21 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                       backgroundColor: Colors.transparent,
                     ),
                   ),
-                  Container(width: screenWidth*06, height: 3, color: Colors.grey),
                   Container(
-                    width: screenWidth*06,
+                      width: screenWidth * 06, height: 3, color: Colors.grey),
+                  Container(
+                    width: screenWidth * 06,
                     decoration: BoxDecoration(
                         color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(screenWidth*0.08)),
+                        borderRadius:
+                            BorderRadius.circular(screenWidth * 0.08)),
                     child: TextButton(
                       onPressed: () {
                         Navigator.pop(context, tempPickedDate);
                       },
-                      child:  Text(
+                      child: Text(
                         S.of(context).ok,
-                        style: const TextStyle(color: Colors.blue),
+                        style: const TextStyle(color: AppTheme.primary),
                       ),
                     ),
                   ),
@@ -237,10 +245,10 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  width: screenWidth*06,
+                  width: screenWidth * 06,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(screenWidth*0.05),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.05),
                     boxShadow: const [
                       BoxShadow(
                         color: Colors.black26,
@@ -255,7 +263,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                       Navigator.pop(context);
                     },
                     child: Text(S.of(context).cancel,
-                        style: const TextStyle(color: Colors.blue)),
+                        style: const TextStyle(color: AppTheme.primary)),
                   ),
                 ),
               ),
@@ -294,12 +302,12 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    height: screenHeight*0.21,
-                    width: screenWidth*06,
+                    height: screenHeight * 0.21,
+                    width: screenWidth * 06,
                     decoration: BoxDecoration(
-                      borderRadius:  BorderRadius.only(
-                          topLeft: Radius.circular(screenWidth*0.08),
-                          topRight: Radius.circular(screenWidth*0.08)),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(screenWidth * 0.08),
+                          topRight: Radius.circular(screenWidth * 0.08)),
                       border: Border.all(color: Colors.grey),
                     ),
                     child: Row(
@@ -333,10 +341,11 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                     ),
                   ),
                   // Divider
-                  Container(width: screenWidth*06, height: 3, color: Colors.grey),
+                  Container(
+                      width: screenWidth * 06, height: 3, color: Colors.grey),
                   // OK button
                   SizedBox(
-                    width: screenWidth*06,
+                    width: screenWidth * 06,
                     child: TextButton(
                       onPressed: () {
                         int hour =
@@ -350,9 +359,9 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                         );
                         Navigator.pop(context, tempPickedTime);
                       },
-                      child:  Text(
+                      child: Text(
                         S.of(context).ok,
-                        style: const TextStyle(color: Colors.blue),
+                        style: const TextStyle(color: AppTheme.primary),
                       ),
                     ),
                   ),
@@ -363,7 +372,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  width: screenWidth*06,
+                  width: screenWidth * 06,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(15),
@@ -381,7 +390,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                       Navigator.pop(context);
                     },
                     child: Text(S.of(context).cancel,
-                        style: const TextStyle(color: Colors.blue)),
+                        style: const TextStyle(color: AppTheme.primary)),
                   ),
                 ),
               ),
@@ -411,8 +420,8 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
         children: [
           const Icon(Icons.arrow_drop_up, size: 30, color: Colors.grey),
           SizedBox(
-            width: screenWidth*0.2,
-            height: screenHeight*0.12,
+            width: screenWidth * 0.2,
+            height: screenHeight * 0.12,
             child: CupertinoPicker(
               scrollController:
                   FixedExtentScrollController(initialItem: selectedValue - min),
@@ -452,8 +461,8 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
         children: [
           const Icon(Icons.arrow_drop_up, size: 30, color: Colors.grey),
           SizedBox(
-            width: screenWidth*0.2,
-            height: screenHeight*0.12,
+            width: screenWidth * 0.2,
+            height: screenHeight * 0.12,
             child: CupertinoPicker(
               scrollController: FixedExtentScrollController(
                   initialItem: selectedAmPm == 'AM' ? 0 : 1),
@@ -468,7 +477,7 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                 Center(
                   child: Text(
                     'AM',
-                    style: TextStyle(fontSize: 22, color: Colors.blue),
+                    style: TextStyle(fontSize: 22, color: AppTheme.primary),
                   ),
                 ),
                 Center(
@@ -485,10 +494,12 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
       ),
     );
   }
+
   @override
   void initState() {
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -498,13 +509,13 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
         children: [
           Expanded(
             child: Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: double.infinity,
               child: SafeArea(
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       height: screenHeight * 0.13,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -543,11 +554,11 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.only(right: screenWidth * 0.005),
-                        decoration:  BoxDecoration(
+                        decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(0),
-                            topRight: Radius.circular(screenWidth*0.12),
+                            topRight: Radius.circular(screenWidth * 0.12),
                           ),
                         ),
                         child: Padding(
@@ -560,10 +571,11 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                                 width: screenWidth * 0.95,
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade300,
-                                    borderRadius: BorderRadius.circular( screenWidth * 0.07)),
+                                    borderRadius: BorderRadius.circular(
+                                        screenWidth * 0.07)),
                                 child: Column(
                                   children: [
-                                     Align(
+                                    Align(
                                         alignment: Alignment.centerLeft,
                                         child: Padding(
                                           padding: const EdgeInsets.only(
@@ -607,7 +619,8 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                                           focusedBorder:
                                               const OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                color: Colors.blue, width: 2.0),
+                                                color: AppTheme.primary,
+                                                width: 2.0),
                                           ),
                                         ),
                                       ),
@@ -623,10 +636,11 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                                 width: screenWidth * 0.95,
                                 decoration: BoxDecoration(
                                     color: Colors.grey.shade300,
-                                    borderRadius: BorderRadius.circular(screenWidth * 0.07)),
+                                    borderRadius: BorderRadius.circular(
+                                        screenWidth * 0.07)),
                                 child: Column(
                                   children: [
-                                     Align(
+                                    Align(
                                         alignment: Alignment.centerLeft,
                                         child: Padding(
                                           padding: const EdgeInsets.only(
@@ -666,7 +680,8 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                                           focusedBorder:
                                               const OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                color: Colors.blue, width: 2.0),
+                                                color: AppTheme.primary,
+                                                width: 2.0),
                                           ),
                                         ),
                                       ),
@@ -684,21 +699,24 @@ class _ExpressInterestDateTimeState extends State<ExpressInterestDateTime> {
                                 decoration: BoxDecoration(
                                   border:
                                       Border.all(color: Colors.grey, width: 2),
-                                  borderRadius: BorderRadius.circular(screenWidth * 0.07),
+                                  borderRadius:
+                                      BorderRadius.circular(screenWidth * 0.07),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(screenWidth * 0.07),
+                                  borderRadius:
+                                      BorderRadius.circular(screenWidth * 0.07),
                                   child: ElevatedButton(
                                     onPressed: () {
                                       postWarehouseData();
                                     },
                                     style: ElevatedButton.styleFrom(
                                       foregroundColor: Colors.white,
-                                      backgroundColor: Colors.blue,
+                                      backgroundColor: AppTheme.primary,
                                       minimumSize: Size(
                                           double.infinity, screenHeight * 0.06),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(screenWidth * 0.07),
+                                        borderRadius: BorderRadius.circular(
+                                            screenWidth * 0.07),
                                       ),
                                     ),
                                     child: Text(S.of(context).submit),

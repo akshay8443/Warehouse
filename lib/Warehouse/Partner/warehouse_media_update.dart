@@ -1,8 +1,10 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'dart:io';
 import 'package:Lisofy/Warehouse/Partner/home_screen.dart';
 import 'package:Lisofy/Warehouse/Partner/amenities_update.dart';
 import 'package:Lisofy/Warehouse/Partner/models/warehouses_model.dart';
 import 'package:Lisofy/generated/l10n.dart';
+import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -10,12 +12,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
 class WarehouseMediaUpdate extends StatefulWidget {
   final Warehouse warehouse;
   const WarehouseMediaUpdate({required this.warehouse, super.key});
   @override
   State<WarehouseMediaUpdate> createState() => _WarehouseMediaUpdateState();
 }
+
 class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
   int totalMedia = 0;
   int _photoCount = 0;
@@ -33,14 +37,19 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
     String filePath = widget.warehouse.filePath;
     processMediaFilePath(filePath);
   }
+
   void processMediaFilePath(String filePath) {
     List<String> filePaths = filePath.split(',');
     List<String> photos = [];
     List<String> videos = [];
     for (var path in filePaths) {
-      if (path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png')) {
+      if (path.endsWith('.jpg') ||
+          path.endsWith('.jpeg') ||
+          path.endsWith('.png')) {
         photos.add(path);
-      } else if (path.endsWith('.mp4') || path.endsWith('.avi') || path.endsWith('.mov')) {
+      } else if (path.endsWith('.mp4') ||
+          path.endsWith('.avi') ||
+          path.endsWith('.mov')) {
         videos.add(path);
       }
     }
@@ -77,6 +86,7 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
       }
     }
   }
+
   Future<void> _pickVideo() async {
     if (_videoCount >= 10) return;
 
@@ -142,7 +152,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => AmenitiesUpdate(warehouse: widget.warehouse),
+              builder: (context) =>
+                  AmenitiesUpdate(warehouse: widget.warehouse),
             ),
           );
         }
@@ -185,11 +196,11 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => AmenitiesUpdate(warehouse: widget.warehouse),
+              builder: (context) =>
+                  AmenitiesUpdate(warehouse: widget.warehouse),
             ),
           );
         }
-
 
         _clearAllFields();
       } else {
@@ -199,7 +210,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
 
         final responseBody = await response.stream.bytesToString();
         if (kDebugMode) {
-          print("Failed to upload files: ${response.statusCode}, $responseBody");
+          print(
+              "Failed to upload files: ${response.statusCode}, $responseBody");
         }
       }
     } catch (e) {
@@ -215,8 +227,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
     }
   }
 
-
-  Future<Uint8List?> _generateThumbnail(String videoPath, bool isLocalFile) async {
+  Future<Uint8List?> _generateThumbnail(
+      String videoPath, bool isLocalFile) async {
     if (isLocalFile) {
       return await VideoThumbnail.thumbnailData(
         video: videoPath,
@@ -234,7 +246,6 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
     }
   }
 
-
   Widget _buildVideoThumbnail(String videoPath, bool isLocalFile) {
     return FutureBuilder<Uint8List?>(
       future: _generateThumbnail(videoPath, isLocalFile),
@@ -245,7 +256,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
               borderRadius: BorderRadius.circular(8.0),
               color: Colors.black26,
             ),
-            child: const Icon(Icons.play_circle_filled, color: Colors.white, size: 50),
+            child: const Icon(Icons.play_circle_filled,
+                color: Colors.white, size: 50),
           );
         } else if (snapshot.hasData) {
           return Stack(
@@ -255,7 +267,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.memory(snapshot.data!, fit: BoxFit.cover),
               ),
-              const Icon(Icons.play_circle_filled, color: Colors.white, size: 50),
+              const Icon(Icons.play_circle_filled,
+                  color: Colors.white, size: 50),
             ],
           );
         } else {
@@ -267,7 +280,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                   borderRadius: BorderRadius.circular(8.0),
                   color: Colors.black26,
                 ),
-                child: const Icon(Icons.play_circle_filled, color: Colors.white, size: 50),
+                child: const Icon(Icons.play_circle_filled,
+                    color: Colors.white, size: 50),
               ),
             ],
           );
@@ -321,31 +335,45 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                               GridView.builder(
                                 shrinkWrap: true,
                                 physics: const ScrollPhysics(),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3,
                                   crossAxisSpacing: 10,
                                   mainAxisSpacing: 10,
                                   childAspectRatio: 1,
                                 ),
-                                itemCount: _uploadedImages.length + _pickedImages.length,
+                                itemCount: _uploadedImages.length +
+                                    _pickedImages.length,
                                 itemBuilder: (context, index) {
                                   if (index < _uploadedImages.length) {
-                                    String imageUrl = "https://xpacesphere.com${_uploadedImages[index]}";
+                                    String imageUrl =
+                                        "http://3.110.172.156:8083${_uploadedImages[index]}";
                                     return Stack(
                                       children: [
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(8.0),
-                                          child: Image.network(imageUrl, fit: BoxFit.cover),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child: Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                Image.asset(
+                                                    ImageAssets.defaultImage,
+                                                    fit: BoxFit.cover),
+                                          ),
                                         ),
                                         Positioned(
                                           top: 5,
                                           right: 5,
                                           child: IconButton(
-                                            icon: const Icon(Icons.cancel, color: Colors.red),
+                                            icon: const Icon(Icons.cancel,
+                                                color: Colors.red),
                                             onPressed: () {
                                               _removeMedia('Photos', index);
                                               Navigator.of(context).pop();
-                                              _showMediaDialog(context, 'Photos');
+                                              _showMediaDialog(
+                                                  context, 'Photos');
                                             },
                                           ),
                                         ),
@@ -355,9 +383,12 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                     return Stack(
                                       children: [
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(8.0),
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
                                           child: Image.file(
-                                            File(_pickedImages[index - _uploadedImages.length].path),
+                                            File(_pickedImages[index -
+                                                    _uploadedImages.length]
+                                                .path),
                                             fit: BoxFit.cover,
                                           ),
                                         ),
@@ -365,11 +396,13 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                           top: 5,
                                           right: 5,
                                           child: IconButton(
-                                            icon: const Icon(Icons.cancel, color: Colors.red),
+                                            icon: const Icon(Icons.cancel,
+                                                color: Colors.red),
                                             onPressed: () {
                                               _removeMedia('Photos', index);
                                               Navigator.of(context).pop();
-                                              _showMediaDialog(context, 'Photos');
+                                              _showMediaDialog(
+                                                  context, 'Photos');
                                             },
                                           ),
                                         ),
@@ -383,22 +416,25 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                 onPressed: () {
                                   _pickImage(ImageSource.gallery);
                                 },
-                                child:  Text(S.of(context).add_more_photos),
+                                child: Text(S.of(context).add_more_photos),
                               ),
                             ] else if (mediaType == 'Videos') ...[
                               GridView.builder(
                                 shrinkWrap: true,
                                 physics: const ScrollPhysics(),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3,
                                   crossAxisSpacing: 10,
                                   mainAxisSpacing: 10,
                                   childAspectRatio: 1,
                                 ),
-                                itemCount: _uploadedVideos.length + _pickedVideos.length,
+                                itemCount: _uploadedVideos.length +
+                                    _pickedVideos.length,
                                 itemBuilder: (context, index) {
                                   if (index < _uploadedVideos.length) {
-                                    String videoUrl = "https://xpacesphere.com${_uploadedVideos[index]}";
+                                    String videoUrl =
+                                        "https://xpacesphere.com${_uploadedVideos[index]}";
                                     return Stack(
                                       children: [
                                         _buildVideoThumbnail(videoUrl, false),
@@ -406,18 +442,22 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                           top: 5,
                                           right: 5,
                                           child: IconButton(
-                                            icon: const Icon(Icons.cancel, color: Colors.red),
+                                            icon: const Icon(Icons.cancel,
+                                                color: Colors.red),
                                             onPressed: () {
                                               _removeMedia('Videos', index);
                                               Navigator.of(context).pop();
-                                              _showMediaDialog(context, 'Videos');
+                                              _showMediaDialog(
+                                                  context, 'Videos');
                                             },
                                           ),
                                         ),
                                       ],
                                     );
                                   } else {
-                                    String videoPath = _pickedVideos[index - _uploadedVideos.length].path;
+                                    String videoPath = _pickedVideos[
+                                            index - _uploadedVideos.length]
+                                        .path;
                                     return Stack(
                                       children: [
                                         _buildVideoThumbnail(videoPath, true),
@@ -425,11 +465,13 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                           top: 5,
                                           right: 5,
                                           child: IconButton(
-                                            icon: const Icon(Icons.cancel, color: Colors.red),
+                                            icon: const Icon(Icons.cancel,
+                                                color: Colors.red),
                                             onPressed: () {
                                               _removeMedia('Videos', index);
                                               Navigator.of(context).pop();
-                                              _showMediaDialog(context, 'Videos');
+                                              _showMediaDialog(
+                                                  context, 'Videos');
                                             },
                                           ),
                                         ),
@@ -443,7 +485,7 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                 onPressed: () {
                                   _pickVideo();
                                 },
-                                child:  Text(S.of(context).add_more_videos),
+                                child: Text(S.of(context).add_more_videos),
                               ),
                             ]
                           ],
@@ -456,7 +498,7 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child:  Text(S.of(context).done),
+                  child: Text(S.of(context).done),
                 ),
               ],
             );
@@ -465,6 +507,7 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
       },
     );
   }
+
   void _clearAllFields() {
     setState(() {
       totalMedia = 0;
@@ -475,6 +518,7 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
       _pickedVideos.clear();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -484,13 +528,13 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
         children: [
           Expanded(
             child: Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: double.infinity,
               child: SafeArea(
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       height: screenHeight * 0.18,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -511,21 +555,23 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                     Navigator.pop(context);
                                   },
                                 ),
-                                 Text(
+                                Text(
                                   S.of(context).add_warehouse,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 14),
                                 ),
                                 const Spacer(),
                                 const SizedBox(width: 5),
                               ],
                             ),
                             SingleChildScrollView(
-                              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                              scrollDirection:Axis.horizontal,
+                              keyboardDismissBehavior:
+                                  ScrollViewKeyboardDismissBehavior.onDrag,
+                              scrollDirection: Axis.horizontal,
                               child: Container(
                                 margin: EdgeInsets.only(
                                     top: screenHeight * 0.08, left: 20),
-                                child:  Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
@@ -556,7 +602,8 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                         child: Padding(
                           padding: EdgeInsets.all(screenWidth * 0.04),
                           child: SingleChildScrollView(
-                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                            keyboardDismissBehavior:
+                                ScrollViewKeyboardDismissBehavior.onDrag,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -565,44 +612,56 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                   style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.blue),
+                                      color: AppTheme.primary),
                                 ),
                                 const SizedBox(height: 16),
                                 Container(
                                   width: double.infinity,
                                   height: 15,
-                                  margin: const EdgeInsets.symmetric(horizontal: 18),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 18),
                                   child: LinearProgressIndicator(
                                     value: _progress / 100,
                                     backgroundColor: Colors.grey.shade300,
-                                    color: Colors.blue,
+                                    color: AppTheme.primary,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     GestureDetector(
-                                      onTap: () => _pickImage(ImageSource.gallery),
-                                      child: Image.asset("assets/images/addphotos.png"),
+                                      onTap: () =>
+                                          _pickImage(ImageSource.gallery),
+                                      child: Image.asset(
+                                          "assets/images/addphotos.png"),
                                     ),
                                     GestureDetector(
                                       onTap: _pickVideo,
-                                      child: Image.asset("assets/images/addvideo.png"),
+                                      child: Image.asset(
+                                          "assets/images/addvideo.png"),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     GestureDetector(
-                                      onTap: () => _showMediaDialog(context, 'Photos'),
-                                      child: _buildCounter('Photos', _photoCount, S.of(context).upload_media),
+                                      onTap: () =>
+                                          _showMediaDialog(context, 'Photos'),
+                                      child: _buildCounter(
+                                          'Photos',
+                                          _photoCount,
+                                          S.of(context).upload_media),
                                     ),
                                     GestureDetector(
-                                      onTap: () => _showMediaDialog(context, 'Videos'),
-                                      child: _buildCounter('Videos', _videoCount, ""),
+                                      onTap: () =>
+                                          _showMediaDialog(context, 'Videos'),
+                                      child: _buildCounter(
+                                          'Videos', _videoCount, ""),
                                     ),
                                   ],
                                 ),
@@ -610,54 +669,64 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                                 const SizedBox(height: 36),
                                 _isUploading
                                     ? const SpinKitCircle(
-                                  color: Colors.blue,
-                                  size: 50.0,
-                                )
+                                        color: AppTheme.primary,
+                                        size: 50.0,
+                                      )
                                     : InkWell(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.blue,
-                                        borderRadius: BorderRadius.circular(6)),
-                                    height: screenHeight * 0.055,
-                                    width: screenWidth * 0.47,
-                                    margin: EdgeInsets.symmetric(
-                                        horizontal: screenWidth * 0.03),
-                                    child:  Center(
-                                        child: Text(S.of(context).update_and_next,
-                                            style: const TextStyle(
-                                                color: Colors.white))),
-                                  ),
-                                  onTap: () {
-                                    _uploadMedia(context);
-                                  },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: AppTheme.primary,
+                                              borderRadius:
+                                                  BorderRadius.circular(6)),
+                                          height: screenHeight * 0.055,
+                                          width: screenWidth * 0.47,
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: screenWidth * 0.03),
+                                          child: Center(
+                                              child: Text(
+                                                  S.of(context).update_and_next,
+                                                  style: const TextStyle(
+                                                      color: Colors.white))),
+                                        ),
+                                        onTap: () {
+                                          _uploadMedia(context);
+                                        },
+                                      ),
+                                const SizedBox(
+                                  height: 30,
                                 ),
-                                const SizedBox(height: 30,),
                                 InkWell(
                                   child: Container(
                                     decoration: BoxDecoration(
-                                        color: Colors.blue,
+                                        color: AppTheme.primary,
                                         borderRadius: BorderRadius.circular(6)),
                                     height: screenHeight * 0.04,
                                     width: screenWidth * 0.45,
                                     margin: EdgeInsets.symmetric(
                                         horizontal: screenWidth * 0.04),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                         Center(
-                                            child: Text(S.of(context).skip_for_now,
+                                        Center(
+                                            child: Text(
+                                                S.of(context).skip_for_now,
                                                 style: const TextStyle(
                                                     color: Colors.white))),
-                                        const Icon(Icons.skip_next_outlined,color: Colors.white,)
+                                        const Icon(
+                                          Icons.skip_next_outlined,
+                                          color: Colors.white,
+                                        )
                                       ],
                                     ),
                                   ),
                                   onTap: () {
                                     Navigator.pushReplacement(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomeScreen()),
                                     );
-
                                   },
                                 ),
                               ],
@@ -674,7 +743,6 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
         ],
       ),
     );
-
   }
 
   Widget _buildCounter(String label, int count, String name) {
@@ -688,7 +756,7 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
           padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
           decoration: BoxDecoration(
             color: Colors.grey.shade300,
-            border: Border.all(color: Colors.blue),
+            border: Border.all(color: AppTheme.primary),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(6),
               bottomRight: Radius.circular(6),
@@ -701,7 +769,9 @@ class _WarehouseMediaUpdateState extends State<WarehouseMediaUpdate> {
                 Text(
                   '$count',
                   style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
                 ),
                 Text(
                   label,

@@ -5,6 +5,7 @@ import 'package:Lisofy/Warehouse/Partner/Provider/location_provider.dart';
 import 'package:Lisofy/Warehouse/Partner/warehouse_image_screen.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -12,6 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
 class AddWareHouse extends StatefulWidget {
   const AddWareHouse({super.key});
 
@@ -42,6 +44,19 @@ class _AddWareHouseState extends State<AddWareHouse> {
   late final LatLng finalAddress;
   String groundFloor = "";
 
+  //NEW CODE............
+  Future<void> saveWarehouseId(int warehouseId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('warehouseId', warehouseId);
+    debugPrint("Warehouse ID saved: $warehouseId");
+  }
+
+  Future<int?> getWarehouseId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('warehouseId');
+  }
+
+//_++++++++++++++++++++++++++++++++++++++++++++
   final List<String> _constructionTypes = [
     'Shed',
     'Cold Storage',
@@ -151,56 +166,163 @@ class _AddWareHouseState extends State<AddWareHouse> {
     super.dispose();
   }
 
+  // Future<void> _submitForm() async {
+  //   try {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     String phone = prefs.getString("phone")?.replaceFirst("+91", "") ?? "";
+  //     if (kDebugMode) {
+  //       print("ShareDataMobile :$phone");
+  //     }
+  //     if (!_formKey.currentState!.validate()) return;
+  //     setState(() => isLoading = true);
+  //
+  //     final Map<String, dynamic> data = {
+  //       'SecurityDeposit': _securityDepositNumber,
+  //       'whouse_type': _selectedWarehouseType?.trim() ?? "",
+  //       'whouse_Cunstructiontype': _selectedConstructionType?.trim() ?? "",
+  //       'whouse_address': finalAddress.toString(),
+  //       'warehouse_carpetarea':
+  //           double.tryParse(_carpetAreaController.text.trim()) ?? 0.0,
+  //       'TotalArea': _totalArea.text.trim(),
+  //       'whouse_rentPerSQFT': double.tryParse(_rentPerSqFt.text.trim()) ?? 0.0,
+  //       'whouseLockinPeriod': _lockingNumber,
+  //       'whouse_maintenance': _maintenanceCost.text.trim(),
+  //       'whouse_tokenAdvance': _tokenAdvance.text.trim(),
+  //       'whouse_name': _warehouseName.text.trim(),
+  //       'isavilableForRent': _isCheckedBase,
+  //       'NOfFloors': _numberOfFloor,
+  //       'Current_address': fullAddress,
+  //       'CunstructiontAge': _constructionAgeNumber,
+  //       'graundFloor': groundFloor,
+  //       'mobile': phone.toString(),
+  //     };
+  //     if (kDebugMode) {
+  //       print("Warehouse data $data");
+  //     }
+  //
+  //     final response = await http.post(
+  //       Uri.parse('https://xpacesphere.com/api/Wherehousedt/Ins_whousedetails'),
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: jsonEncode(data),
+  //     );
+  //     if (kDebugMode) {
+  //       print("Response   >>${response.body}");
+  //     }
+  //     if (kDebugMode) {
+  //       print("Response   >>${response.statusCode}");
+  //     }
+  //
+  //     final Map<String, dynamic> responseData = jsonDecode(response.body);
+  //     if (!mounted) return;
+  //     if (response.statusCode == 200 && responseData['status'] == 200) {
+  //       Navigator.push(context, MaterialPageRoute(builder: (context)=>const WarehouseImageScreen()));
+  //     } else {
+  //       _showErrorMessage(responseData['message'] ?? 'Failed to upload data.');
+  //     }
+  //   } catch (e) {
+  //     if (kDebugMode) {
+  //       print('Error: $e');
+  //     }
+  //     if (context.mounted) {
+  //       _showErrorMessage('An error occurred. Please try again.');
+  //     }
+  //   } finally {
+  //     if (context.mounted) {
+  //       setState(() => isLoading = false);
+  //     }
+  //   }
+  // }
+
   Future<void> _submitForm() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
       String phone = prefs.getString("phone")?.replaceFirst("+91", "") ?? "";
-      if (kDebugMode) {
-        print("ShareDataMobile :$phone");
+      int? userId = prefs.getInt("userId");
+      debugPrint("User ID: $userId");
+
+      if (userId == null) {
+        _showErrorMessage("User ID not found. Please login again.");
+        return;
       }
+
       if (!_formKey.currentState!.validate()) return;
       setState(() => isLoading = true);
 
       final Map<String, dynamic> data = {
-        'SecurityDeposit': _securityDepositNumber,
-        'whouse_type': _selectedWarehouseType?.trim() ?? "",
-        'whouse_Cunstructiontype': _selectedConstructionType?.trim() ?? "",
-        'whouse_address': finalAddress.toString(),
-        'warehouse_carpetarea':
-            double.tryParse(_carpetAreaController.text.trim()) ?? 0.0,
-        'TotalArea': _totalArea.text.trim(),
-        'whouse_rentPerSQFT': double.tryParse(_rentPerSqFt.text.trim()) ?? 0.0,
-        'whouseLockinPeriod': _lockingNumber,
-        'whouse_maintenance': _maintenanceCost.text.trim(),
-        'whouse_tokenAdvance': _tokenAdvance.text.trim(),
-        'whouse_name': _warehouseName.text.trim(),
-        'isavilableForRent': _isCheckedBase,
-        'NOfFloors': _numberOfFloor,
-        'Current_address': fullAddress,
-        'CunstructiontAge': _constructionAgeNumber,
-        'graundFloor': groundFloor,
-        'mobile': phone.toString(),
+        "whouseAddress": finalAddress.toString(),
+        "whouseType": _selectedWarehouseType?.trim() ?? "",
+        "consType": _selectedConstructionType?.trim() ?? "",
+        "whouseFloor": groundFloor,
+        "whouseCarpetAria": _carpetAreaController.text.trim(), // "1500 sq ft"
+        "isAvaiable": _isCheckedBase ? 1 : 0,
+        "whouseRent": _rentPerSqFt.text.trim(), // "25000"
+        "whouseMaintenance": _maintenanceCost.text.trim(), // "2000"
+        "whouseExpected":
+            _tokenAdvance.text.trim(), // Assuming this is expected rent
+        "whouseToken":
+            _tokenAdvance.text.trim(), // Re-use same or separate if available
+        "whouseLockin": _lockingNumber,
+        "whouseName": _warehouseName.text.trim(),
+        "whouseFilepath":
+            "/files/warehouseA.pdf", // Placeholder, update if file picker is implemented
+        "mobile": phone,
+        "dateTime": DateTime.now().toIso8601String(),
       };
-      if (kDebugMode) {
-        print("Warehouse data $data");
-      }
 
       final response = await http.post(
-        Uri.parse('https://xpacesphere.com/api/Wherehousedt/Ins_whousedetails'),
+        Uri.parse(
+            'http://3.110.172.156:8083/api/v2/datawarehouses/user/$userId'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(data),
       );
-      if (kDebugMode) {
-        print("Response   >>${response.body}");
-      }
-      if (kDebugMode) {
-        print("Response   >>${response.statusCode}");
-      }
+      debugPrint("Status Code: ${response.statusCode}");
+      debugPrint("Response Body: ${response.body}");
 
       final Map<String, dynamic> responseData = jsonDecode(response.body);
+
       if (!mounted) return;
-      if (response.statusCode == 200 && responseData['status'] == 200) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>const WarehouseImageScreen()));
+
+      if (response.statusCode == 201) {
+        //NEW CODE
+
+        // print("📥 Response Body w: ${response.body}");
+        // // ✅ Agar response me 'data' object ke andar 'id' hai
+        // int? warehouseId;
+        // if (responseData.containsKey('data')) {
+        //   warehouseId = responseData['data']['id'];
+        // }
+        // // ✅ Agar directly 'id' mil raha ho
+        // else if (responseData.containsKey('id')) {
+        //   warehouseId = responseData['id'];
+        // }
+        //
+        // if (warehouseId != null) {
+        //   print("✅ Warehouse ID: $warehouseId");
+        //   await prefs.setInt("warehouseId", warehouseId);
+        // } else {
+        //   print("❌ Warehouse ID not found in response");
+        // }
+        // ✅ Warehouse ID save करने का logic
+        int? warehouseId;
+        if (responseData.containsKey('data') && responseData['data'] is Map) {
+          warehouseId = responseData['data']['id'];
+        } else if (responseData.containsKey('id')) {
+          warehouseId = responseData['id'];
+        }
+
+        if (warehouseId != null) {
+          debugPrint("Warehouse ID Saved: $warehouseId");
+          await prefs.setInt("warehouseId", warehouseId);
+        } else {
+          debugPrint("Warehouse ID not found in response.");
+        }
+
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const WarehouseImageScreen()),
+        );
       } else {
         _showErrorMessage(responseData['message'] ?? 'Failed to upload data.');
       }
@@ -217,6 +339,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
       }
     }
   }
+
   void _showErrorMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -235,13 +358,13 @@ class _AddWareHouseState extends State<AddWareHouse> {
         children: [
           Expanded(
             child: Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: double.infinity,
               child: SafeArea(
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       height: screenHeight * 0.18,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -296,7 +419,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                     child: Center(
                                       child: Icon(
                                         Icons.question_mark,
-                                        color: Colors.blue,
+                                        color: AppTheme.primary,
                                         size: screenHeight * 0.025,
                                       ),
                                     ),
@@ -305,7 +428,8 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const HelpPage()));
+                                            builder: (context) =>
+                                                const HelpPage()));
                                   },
                                 ),
                               ],
@@ -333,33 +457,35 @@ class _AddWareHouseState extends State<AddWareHouse> {
                     Expanded(
                       child: Container(
                         margin: EdgeInsets.only(right: screenWidth * 0.005),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(screenWidth * 0.15),
+                            topRight: Radius.circular(24),
                           ),
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(screenWidth * 0.05),
                           child: SingleChildScrollView(
-                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                            keyboardDismissBehavior:
+                                ScrollViewKeyboardDismissBehavior.onDrag,
                             child: Form(
                               key: _formKey,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                   Align(
+                                  Align(
                                     alignment: Alignment.center,
                                     child: Text(
                                       S.of(context).enter_address,
-                                      style: const TextStyle(color: Colors.grey),
+                                      style:
+                                          const TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                   InkWell(
                                     child: Center(
                                       child: Container(
                                         decoration: BoxDecoration(
-                                            color: Colors.lightBlue.shade100,
+                                            color: AppTheme.primarySoft,
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         margin: EdgeInsets.only(
@@ -372,7 +498,8 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Image.asset(
-                                                    ImageAssets.worldWideLocation,
+                                                    ImageAssets
+                                                        .worldWideLocation,
                                                     width: screenWidth * 0.2,
                                                     height:
                                                         screenHeight * 0.04),
@@ -381,7 +508,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                                         screenHeight * 0.02),
                                                 Text(displayText,
                                                     style: const TextStyle(
-                                                        color: Colors.blue,
+                                                        color: AppTheme.primary,
                                                         fontSize: 10,
                                                         fontWeight:
                                                             FontWeight.w700)),
@@ -407,7 +534,10 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         String selectedAddress = result.address;
                                         LocationProvider? locationProvider;
                                         if (context.mounted) {
-                                          locationProvider = Provider.of<LocationProvider>(context, listen: false);
+                                          locationProvider =
+                                              Provider.of<LocationProvider>(
+                                                  context,
+                                                  listen: false);
                                         }
                                         locationProvider?.updateLocation(
                                             selectedAddress, selectedLocation);
@@ -462,15 +592,17 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                       border: InputBorder.none,
                                       enabledBorder: const UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.blue, width: 1.0),
+                                            color: AppTheme.primary,
+                                            width: 1.0),
                                       ),
                                       focusedBorder: const UnderlineInputBorder(
                                         borderSide: BorderSide(
-                                            color: Colors.blue, width: 1.0),
+                                            color: AppTheme.primary,
+                                            width: 1.0),
                                       ),
                                     ),
                                     style: const TextStyle(
-                                        fontSize: 14, color: Colors.blue),
+                                        fontSize: 14, color: AppTheme.primary),
                                     maxLength: _maxLength,
                                     keyboardType: TextInputType.text,
                                   ),
@@ -553,9 +685,9 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(1),
-                                          color: Colors.blue,
-                                          border:
-                                              Border.all(color: Colors.blue),
+                                          color: AppTheme.primary,
+                                          border: Border.all(
+                                              color: AppTheme.primary),
                                         ),
                                         child: Row(
                                           children: [
@@ -577,7 +709,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             ),
                                             Container(
                                               width: screenWidth * 0.0633,
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               alignment: Alignment.center,
                                               child: Text(
                                                 '$_numberOfFloor',
@@ -616,15 +748,23 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             _isCheckedBase = newValue ?? false;
                                           });
                                         },
-                                        checkColor: Colors.blue,
-                                        fillColor: WidgetStateProperty.all(
-                                            Colors.white),
+                                        checkColor: Colors.white,
+                                        fillColor:
+                                            WidgetStateProperty.resolveWith(
+                                                (states) {
+                                          if (states
+                                              .contains(WidgetState.selected)) {
+                                            return AppTheme.primary;
+                                          }
+                                          return Colors.white;
+                                        }),
                                         side: WidgetStateBorderSide.resolveWith(
                                             (states) {
                                           if (states
                                               .contains(WidgetState.selected)) {
                                             return const BorderSide(
-                                                color: Colors.blue, width: 2);
+                                                color: AppTheme.primary,
+                                                width: 2);
                                           }
                                           return const BorderSide(
                                               color: Colors.grey, width: 2);
@@ -664,13 +804,13 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: Colors.blueAccent,
+                                          color: AppTheme.accent,
                                           width: 1.5,
                                         ),
                                       ),
                                     ),
                                     child: DropdownButtonFormField<String>(
-                                      value: _selectedWarehouseType,
+                                      initialValue: _selectedWarehouseType,
                                       hint: const Text(
                                         'Select Warehouse Type',
                                         style: TextStyle(
@@ -686,7 +826,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             type,
                                             style: const TextStyle(
                                               fontSize: 14,
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -709,7 +849,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         children: [
                                           const Icon(
                                             Icons.keyboard_arrow_down_rounded,
-                                            color: Colors.blueAccent,
+                                            color: AppTheme.accent,
                                             size: 24.0,
                                           ),
                                           Positioned(
@@ -717,7 +857,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             child: Container(
                                               decoration: const BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: Colors.blueAccent,
+                                                color: AppTheme.accent,
                                               ),
                                               child: const Icon(
                                                 Icons.arrow_drop_down,
@@ -762,13 +902,13 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                     decoration: const BoxDecoration(
                                       border: Border(
                                         bottom: BorderSide(
-                                          color: Colors.blueAccent,
+                                          color: AppTheme.accent,
                                           width: 1.5,
                                         ),
                                       ),
                                     ),
                                     child: DropdownButtonFormField<String>(
-                                      value: _selectedConstructionType,
+                                      initialValue: _selectedConstructionType,
                                       hint: const Text(
                                         'Select Construction Type',
                                         style: TextStyle(
@@ -785,7 +925,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             type,
                                             style: const TextStyle(
                                               fontSize: 14,
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -809,7 +949,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         children: [
                                           const Icon(
                                             Icons.keyboard_arrow_down_rounded,
-                                            color: Colors.blueAccent,
+                                            color: AppTheme.accent,
                                             size: 24.0,
                                           ),
                                           Positioned(
@@ -819,7 +959,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                               height: 12,
                                               decoration: const BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                color: Colors.blueAccent,
+                                                color: AppTheme.accent,
                                               ),
                                               child: const Icon(
                                                 Icons.arrow_drop_down,
@@ -845,7 +985,9 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        S.of(context).construction_age_in_months,
+                                        S
+                                            .of(context)
+                                            .construction_age_in_months,
                                         style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w700),
@@ -856,9 +998,9 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(1),
-                                          color: Colors.blue,
-                                          border:
-                                              Border.all(color: Colors.blue),
+                                          color: AppTheme.primary,
+                                          border: Border.all(
+                                              color: AppTheme.primary),
                                         ),
                                         child: Row(
                                           children: [
@@ -880,7 +1022,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             ),
                                             Container(
                                               width: screenWidth * 0.0633,
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               alignment: Alignment.center,
                                               child: Text(
                                                 '$_constructionAgeNumber',
@@ -962,9 +1104,9 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(1),
-                                          color: Colors.blue,
-                                          border:
-                                              Border.all(color: Colors.blue),
+                                          color: AppTheme.primary,
+                                          border: Border.all(
+                                              color: AppTheme.primary),
                                         ),
                                         child: Row(
                                           children: [
@@ -986,7 +1128,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             ),
                                             Container(
                                               width: screenWidth * 0.0633,
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               alignment: Alignment.center,
                                               child: Text(
                                                 '$_securityDepositNumber',
@@ -1053,9 +1195,9 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                         decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(1),
-                                          color: Colors.blue,
-                                          border:
-                                              Border.all(color: Colors.blue),
+                                          color: AppTheme.primary,
+                                          border: Border.all(
+                                              color: AppTheme.primary),
                                         ),
                                         child: Row(
                                           children: [
@@ -1077,7 +1219,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                             ),
                                             Container(
                                               width: screenWidth * 0.0633,
-                                              color: Colors.blue,
+                                              color: AppTheme.primary,
                                               alignment: Alignment.center,
                                               child: Text(
                                                 '$_lockingNumber',
@@ -1110,42 +1252,29 @@ class _AddWareHouseState extends State<AddWareHouse> {
                                   SizedBox(
                                     height: screenHeight * 0.05,
                                   ),
-                                  InkWell(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 20, horizontal: 30),
-                                      child: DottedBorder(
-                                        child: Container(
-                                          color: Colors.blue,
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 8),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              isLoading
-                                                  ? const SpinKitCircle(
-                                                      color: Colors.white,
-                                                      size: 50.0,
-                                                    )
-                                                  :  Text(
-                                                     S.of(context).save,
-                                                      style: const TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      onPressed: isLoading ? null : _submitForm,
+                                      child: isLoading
+                                          ? const SizedBox(
+                                              width: 24,
+                                              height: 24,
+                                              child: SpinKitCircle(
+                                                color: Colors.white,
+                                                size: 24,
+                                              ),
+                                            )
+                                          : Text(
+                                              S.of(context).save,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
                                     ),
-                                    onTap: () {
-                                      _submitForm();
-                                    },
                                   ),
                                 ],
                               ),
@@ -1181,7 +1310,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
         width: screenWidth * 0.06,
         height: screenHeight * 0.028,
         decoration: BoxDecoration(
-          color: isChecked ? Colors.blue : Colors.white,
+          color: isChecked ? AppTheme.primary : Colors.white,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color: Colors.grey,
@@ -1218,7 +1347,7 @@ class DottedBorderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue
+      ..color = AppTheme.primary
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -1279,7 +1408,7 @@ class CarpetAreaTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       keyboardType: TextInputType.number,
       controller: controller,
       validator: (value) =>
@@ -1289,10 +1418,10 @@ class CarpetAreaTextFormField extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),
@@ -1313,7 +1442,7 @@ class HeightOfWarehouse extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       keyboardType: TextInputType.number,
       controller: controller,
       validator: (value) =>
@@ -1323,10 +1452,10 @@ class HeightOfWarehouse extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),
@@ -1346,7 +1475,7 @@ class ConstructionAge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       keyboardType: TextInputType.number,
       controller: controller,
       validator: (value) =>
@@ -1356,10 +1485,10 @@ class ConstructionAge extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),
@@ -1384,7 +1513,7 @@ class TotalCarpetArea extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.grey.shade200, borderRadius: BorderRadius.circular(6)),
       child: TextFormField(
-        style: const TextStyle(fontSize: 14, color: Colors.blue),
+        style: const TextStyle(fontSize: 14, color: AppTheme.primary),
         controller: totalCarpetArea,
         keyboardType: TextInputType.number,
         validator: (value) =>
@@ -1414,7 +1543,7 @@ class RentPerSqFt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       controller: controller,
       keyboardType: TextInputType.number,
       validator: (value) =>
@@ -1424,14 +1553,13 @@ class RentPerSqFt extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
-          padding: const EdgeInsets.only(
-              left: 8.0),
+          padding: const EdgeInsets.only(left: 8.0),
           child: const Text(
             '|per month',
             style: TextStyle(color: Colors.grey, fontSize: 13),
@@ -1449,7 +1577,7 @@ class MaintenanceCost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       keyboardType: TextInputType.number,
       controller: controller,
       validator: (value) =>
@@ -1459,10 +1587,10 @@ class MaintenanceCost extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),
@@ -1483,7 +1611,7 @@ class ExpectedSecurityDeposit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       controller: controller,
       keyboardType: TextInputType.number,
       validator: (value) =>
@@ -1493,10 +1621,10 @@ class ExpectedSecurityDeposit extends StatelessWidget {
         hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
       ),
     );
@@ -1510,7 +1638,7 @@ class TokenAdvance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       keyboardType: TextInputType.number,
       controller: controller,
       validator: (value) =>
@@ -1520,10 +1648,10 @@ class TokenAdvance extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),
@@ -1544,7 +1672,7 @@ class ExpectedLockInPeriod extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       keyboardType: TextInputType.number,
       controller: controller,
       validator: (value) =>
@@ -1554,10 +1682,10 @@ class ExpectedLockInPeriod extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),
@@ -1577,7 +1705,7 @@ class CarpetAreaTextFormField8 extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       keyboardType: TextInputType.number,
-      style: const TextStyle(fontSize: 14, color: Colors.blue),
+      style: const TextStyle(fontSize: 14, color: AppTheme.primary),
       validator: (value) =>
           value == null || value.isEmpty ? 'Field is required' : null,
       decoration: InputDecoration(
@@ -1585,10 +1713,10 @@ class CarpetAreaTextFormField8 extends StatelessWidget {
         hintStyle: const TextStyle(color: Colors.grey, fontSize: 12),
         border: InputBorder.none,
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          borderSide: BorderSide(color: AppTheme.primary, width: 1.0),
         ),
         suffix: Container(
           padding: const EdgeInsets.only(left: 8.0),

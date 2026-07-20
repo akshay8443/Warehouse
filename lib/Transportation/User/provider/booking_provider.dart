@@ -9,7 +9,15 @@ class BookingScreenProvider with ChangeNotifier {
 
   void setIndex(int index) {
     _selectedIndex = index;
-    _pageController.jumpToPage(index);
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(index);
+    }
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 }

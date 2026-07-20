@@ -1,143 +1,44 @@
-<manifest xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.xspace.warehouse">
 
-    <uses-feature
-        android:name="android.hardware.telephony"
-        android:required="false" />
-
-    <!-- Camera and Telephony features (optional) -->
-    <uses-feature android:name="android.hardware.camera" android:required="false" tools:targetApi="eclair" />
-    <uses-feature android:name="android.hardware.telephony" android:required="false" tools:targetApi="eclair" />
-
-    <!-- Location permissions -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- Permissions for Android 10 and below -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
-
-    <!-- Permissions for Android 11+ -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
-
-    <!-- Android 13+ Media Access Permissions -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
-    <!-- Other permissions -->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-     <!--Sms auto fil -->
-    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
-
-
-
-
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:usesCleartextTraffic="true"
-        android:allowBackup="false"
-        android:label="Lisofy"
-        android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCfeZLavp4yFzzh9u_nFTPsoSXqhGi52CM" />
-        <!-- Firebase Default Notification Icon -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_stat_push_notification" />
-
-        <!-- Firebase Default Notification Color -->
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/notification_color" />
-
+        android:label="Warehouse"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="false">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
-            <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
 
-            <!-- Google Maps and Places API Key -->
-            <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyDxbkZhKCXDGPdtOWxTPxFBg_tjAd3jsTk" />
-
-            <!-- Google Authentication API Key -->
-            <meta-data
-                android:name="com.google.android.gms.auth.api.API_KEY"
-                android:value="AIzaSyAnotherKeyExampleForAuth" />
-
-
-
-            <!--            &lt;!&ndash; Firebase Messaging Metadata &ndash;&gt;-->
-<!--            <meta-data-->
-<!--                android:name="com.google.firebase.messaging.default_notification_icon"-->
-<!--                android:resource="@mipmap/ic_launcher" />-->
-<!--            <meta-data-->
-<!--                android:name="com.google.firebase.messaging.default_notification_color"-->
-<!--                android:resource="@color/notification_color" />-->
-            <meta-data
-                android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="general_notifications" />
-
-            <meta-data
-                android:name="flutterEmbedding"
-                android:value="2" />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+
+
+        <!-- Flutter splash screen -->
+        <meta-data
+            android:name="io.flutter.embedding.android.SplashScreenDrawable"
+            android:resource="@drawable/launch_background" />
+
+        <meta-data
+            android:name="io.flutter.embedding.android.NormalTheme"
+            android:resource="@style/NormalTheme" />
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
-
-    <queries>
-        <!-- If your app opens https URLs -->
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" />
-        </intent>
-        <!-- If your app sends emails -->
-        <intent>
-            <action android:name="android.intent.action.SEND" />
-            <data android:mimeType="*/*" />
-        </intent>
-        <!-- If your app checks for call support -->
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="tel" />
-        </intent>
-        <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
-        </intent>
-    </queries>
 </manifest>

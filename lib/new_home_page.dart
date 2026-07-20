@@ -1,57 +1,67 @@
 import 'dart:async';
 import 'package:Lisofy/Animation/glitter_border.dart';
+import 'package:Lisofy/Transportation/User/booking_page.dart';
 import 'package:Lisofy/Warehouse/User/customPainter/custom_dailog.dart';
 import 'package:Lisofy/Warehouse/User/partner_chooser_screen.dart';
 import 'package:Lisofy/Warehouse/User/user_home_page.dart';
 import 'package:Lisofy/Warehouse/User/user_profile_screen.dart';
 import 'package:Lisofy/generated/l10n.dart';
 import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
+
 class NewHomePage extends StatefulWidget {
   final dynamic longitude;
   final dynamic latitude;
-  const NewHomePage({super.key,required this.latitude,required this.longitude});
+  const NewHomePage(
+      {super.key, required this.latitude, required this.longitude});
   @override
   State<NewHomePage> createState() => NewHomePageState();
 }
-class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateMixin {
+
+class NewHomePageState extends State<NewHomePage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    _pageController.jumpToPage(index);
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(index);
+    }
   }
+
   int _currentIndex = 0;
   int _transportIndex = 0;
   int _manpowerIndex = 0;
   int _agricultureIndex = 0;
   int sliderControllerIndex = 0;
   final List<String> _warehouseImages = [
-    'https://xpacesphere.com/Content/NewFolder/warehouse_6.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_5.jpg'
-    ];
+    'assets/images/slider1.png',
+    'assets/images/slider2.jpg',
+    'assets/images/slider3.jpg',
+  ];
   final List<String> _transportImages = [
-    'https://xpacesphere.com/Content/NewFolder/warehouse_7.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_8.jpg'
+    'assets/images/transportgif.gif',
+    'assets/images/truck.png',
   ];
   final List<String> _manPowerImages = [
-    'https://xpacesphere.com/Content/NewFolder/warehouse_13.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_14.jpg'
+    'assets/images/manpowergif.gif',
+    'assets/images/manpower.png',
   ];
   final List<String> _advertisingImages = [
-    'https://xpacesphere.com/Content/NewFolder/warehouse_18.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_19.jpg'
+    'assets/images/ads.png',
+    'assets/images/secondAds.png',
   ];
   final List<String> _agriculturalImages = [
-    'https://xpacesphere.com/Content/NewFolder/warehouse_23.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_20.jpg'
+    'assets/images/agriculturalgif.gif',
+    'assets/images/agricultural.png',
   ];
-  // final List<String> _demoImages = [
+  // final List<String> _demoImages = [w
   //  'https://xpacesphere.com/Content/NewFolder/warehouse_23.jpg',
   //   'https://xpacesphere.com/Content/NewFolder/warehouse_20.jpg',
   //   'https://xpacesphere.com/Content/NewFolder/warehouse_18.jpg',
@@ -64,7 +74,7 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
   late PageController _manpowerController;
   late PageController _agricultureController;
   late PageController _advertisingController;
-  late Timer _timer;
+  final List<Timer> _autoSlideTimers = [];
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -89,6 +99,7 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       } else {
         _currentIndex = 0;
       }
+      return _currentIndex;
     }, 3, const Duration(milliseconds: 3000), Curves.easeInOutCubicEmphasized);
     _startAutoSlide(_transportController, () {
       if (_transportIndex < _transportImages.length - 1) {
@@ -96,6 +107,7 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       } else {
         _transportIndex = 0;
       }
+      return _transportIndex;
     }, 4, const Duration(milliseconds: 200), Curves.slowMiddle);
     _startAutoSlide(_manpowerController, () {
       if (_manpowerIndex < _manPowerImages.length - 1) {
@@ -103,6 +115,7 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       } else {
         _manpowerIndex = 0;
       }
+      return _manpowerIndex;
     }, 5, const Duration(milliseconds: 400), Curves.slowMiddle);
 
     _startAutoSlide(_agricultureController, () {
@@ -111,6 +124,7 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       } else {
         _agricultureIndex = 0;
       }
+      return _agricultureIndex;
     }, 4, const Duration(milliseconds: 3000), Curves.easeInOutCubicEmphasized);
 
     _startAutoSlide(_advertisingController, () {
@@ -119,6 +133,7 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       } else {
         sliderControllerIndex = 0;
       }
+      return sliderControllerIndex;
     }, 3, const Duration(milliseconds: 2000), Curves.easeOut);
     _controller = AnimationController(
       vsync: this,
@@ -128,30 +143,34 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
   }
 
   void _startAutoSlide(
-      PageController controller,
-      VoidCallback onNext,
-      int seconds,
-      Duration duration,
-      Curve curve,
-      ) {
-    Timer.periodic(Duration(seconds: seconds), (Timer timer) {
-      if (!controller.hasClients) {
+    PageController controller,
+    int Function() onNext,
+    int seconds,
+    Duration duration,
+    Curve curve,
+  ) {
+    final timer = Timer.periodic(Duration(seconds: seconds), (Timer timer) {
+      if (!mounted || !controller.hasClients) {
         timer.cancel();
         return;
       }
-      onNext();
+      final nextPage = onNext();
       controller.animateToPage(
-        _currentIndex,
+        nextPage,
         duration: duration,
         curve: curve,
       );
     });
+    _autoSlideTimers.add(timer);
   }
 
   @override
   void dispose() {
+    for (final timer in _autoSlideTimers) {
+      timer.cancel();
+    }
     _controller.dispose();
-    _timer.cancel();
+    _pageController.dispose();
     _pageControllerSlider.dispose();
     _transportController.dispose();
     _manpowerController.dispose();
@@ -159,12 +178,13 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
     _advertisingController.dispose();
     super.dispose();
   }
+
   List<String> horizontalSliderImages = [
-    'https://xpacesphere.com/Content/NewFolder/warehouse_10.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_11.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_12.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_16.jpg',
-    'https://xpacesphere.com/Content/NewFolder/warehouse_17.jpg',
+    'assets/images/demoimage1.png',
+    'assets/images/demoimage2.png',
+    'assets/images/demoimage3.png',
+    'assets/images/warehousegif.gif',
+    'assets/images/noWarehouseBanner.png',
   ];
   int horizontalSliderImagesIndex = 0;
   void _shiftImagesLeft() {
@@ -174,6 +194,46 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       });
     }
   }
+
+  Widget _buildPromoImage(String source, BoxFit fit, double screenHeight) {
+    final isNetworkImage =
+        source.startsWith('http://') || source.startsWith('https://');
+
+    if (!isNetworkImage) {
+      return Image.asset(
+        source,
+        fit: fit,
+        width: double.infinity,
+        errorBuilder: (context, error, stackTrace) => Image.asset(
+          ImageAssets.defaultImage,
+          fit: fit,
+          width: double.infinity,
+        ),
+      );
+    }
+
+    return CachedNetworkImage(
+      imageUrl: source,
+      fit: fit,
+      width: double.infinity,
+      placeholder: (context, url) => Shimmer(
+        child: Container(
+          width: double.infinity,
+          height: screenHeight * 0.05,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: BorderRadius.circular(6),
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => Image.asset(
+        ImageAssets.defaultImage,
+        fit: fit,
+        width: double.infinity,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -199,28 +259,39 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                 ),
               ),
               Container(
-                color: Colors.blue,
-                height: screenHeight*0.05,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: IconButton(
-                        icon: const Icon(Icons.home_filled),
-                        color: _selectedIndex == 0 ? Colors.white : Colors.grey[300],
-                        onPressed: () => _onItemTapped(0),
-                      ),
-                    ),
-                    Expanded(
-                      child: IconButton(
-                        icon: ImageIcon(
-                          _selectedIndex==2?const AssetImage("assets/images/Gear2.png"):const AssetImage('assets/images/Gear.png'),
-                          color: _selectedIndex == 2 ? Colors.white : Colors.grey[300],
+                color: AppTheme.primary,
+                child: SafeArea(
+                  top: false,
+                  child: SizedBox(
+                    height: 40,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: IconButton(
+                            icon: const Icon(Icons.home_filled),
+                            color: _selectedIndex == 0
+                                ? Colors.white
+                                : Colors.grey[300],
+                            onPressed: () => _onItemTapped(0),
+                          ),
                         ),
-                        onPressed: () => _onItemTapped(1),
-                      ),
+                        Expanded(
+                          child: IconButton(
+                            icon: ImageIcon(
+                              _selectedIndex == 2
+                                  ? const AssetImage("assets/images/Gear2.png")
+                                  : const AssetImage('assets/images/Gear.png'),
+                              color: _selectedIndex == 2
+                                  ? Colors.white
+                                  : Colors.grey[300],
+                            ),
+                            onPressed: () => _onItemTapped(1),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -230,13 +301,13 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
 
   Widget _buildHomePage(double screenWidth, double screenHeight) {
     return Container(
-      color: Colors.blue,
+      color: AppTheme.primary,
       width: double.infinity,
       child: SafeArea(
         child: Column(
           children: [
             Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               height: screenHeight * 0.1,
               child: Padding(
                 padding: EdgeInsets.only(
@@ -246,11 +317,12 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
-                      padding:  EdgeInsets.all(screenWidth*0.03),
+                      padding: EdgeInsets.all(screenWidth * 0.03),
                       child: Image.asset(ImageAssets.appLogo),
                     ),
                     Padding(
-                      padding:  EdgeInsets.only(right: screenWidth*0.04,top: screenHeight*0.02),
+                      padding: EdgeInsets.only(
+                          right: screenWidth * 0.04, top: screenHeight * 0.02),
                       child: Align(
                         alignment: Alignment.topRight,
                         child: AnimatedBuilder(
@@ -260,34 +332,47 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                               alignment: Alignment.center,
                               children: [
                                 CustomPaint(
-                                  painter: GlitterBorderPainter(_animation.value),
+                                  painter:
+                                      GlitterBorderPainter(_animation.value),
                                   child: SizedBox(
-                                    width: screenWidth*0.32,
-                                    height: screenHeight*0.037,
+                                    width: screenWidth * 0.32,
+                                    height: screenHeight * 0.037,
                                     child: TextButton(
-                                      onPressed: () async{
+                                      onPressed: () async {
                                         ///WarehousePartner
-                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const PartnerChooserScreen()));
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const PartnerChooserScreen()));
                                       },
                                       style: TextButton.styleFrom(
                                         backgroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          side: const BorderSide(color: Colors.grey, width: 1),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          side: const BorderSide(
+                                              color: Colors.grey, width: 1),
                                         ),
                                       ),
                                       child: Animate(
-                                        effects: const [FadeEffect(), ScaleEffect()],
-                                        child: Text(
-                                          S.of(context).became_partner,
-                                          style: const TextStyle(
-                                            fontSize: 9,
-                                            color: Colors.blue,
-                                          ),
-                                        ).animate(delay: 500.ms,
-                                          onPlay: (controller) => controller.repeat(),)
-                                            .tint(color: Colors.purple)
-                                      ),
+                                          effects: const [
+                                            FadeEffect(),
+                                            ScaleEffect()
+                                          ],
+                                          child: Text(
+                                            S.of(context).became_partner,
+                                            style: const TextStyle(
+                                              fontSize: 9,
+                                              color: AppTheme.primary,
+                                            ),
+                                          )
+                                              .animate(
+                                                delay: 500.ms,
+                                                onPlay: (controller) =>
+                                                    controller.repeat(),
+                                              )
+                                              .tint(color: Colors.purple)),
                                     ),
                                   ),
                                 ),
@@ -304,17 +389,17 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
             Expanded(
               child: Container(
                 margin: EdgeInsets.only(right: screenWidth * 0.00),
-                decoration:  BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(0),
-                    topRight: Radius.circular(screenWidth*0.15),
+                    topRight: Radius.circular(screenWidth * 0.15),
                   ),
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(screenWidth * 0.04),
                   child: SingleChildScrollView(
-                    child:Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -323,20 +408,27 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                           children: [
                             Flexible(
                               child: Padding(
-                                padding:  EdgeInsets.all(screenWidth*0.03),
+                                padding: EdgeInsets.all(screenWidth * 0.03),
                                 child: InkWell(
-                                  onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>UserHomePage(longitude:widget.longitude,latitude:widget.latitude)));
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => UserHomePage(
+                                                longitude: widget.longitude,
+                                                latitude: widget.latitude)));
                                   },
                                   child: Container(
-                                    height: screenHeight*0.15,
-                                    width: screenWidth*0.33,
+                                    height: screenHeight * 0.15,
+                                    width: screenWidth * 0.33,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(screenWidth*0.05),
-                                      color: Colors.lightBlue.shade50,
+                                      borderRadius: BorderRadius.circular(
+                                          screenWidth * 0.05),
+                                      color: AppTheme.primarySoft,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.withValues(alpha: 0.3),
+                                          color: AppTheme.primary
+                                              .withValues(alpha: 0.3),
                                           spreadRadius: 5,
                                           blurRadius: 5,
                                           offset: const Offset(0, 3),
@@ -344,17 +436,20 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                       ],
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Image.asset(
                                           ImageAssets.warehousegif,
-                                          height: screenHeight*0.08,
-                                          width: screenWidth*0.25,
+                                          height: screenHeight * 0.08,
+                                          width: screenWidth * 0.25,
                                           fit: BoxFit.contain,
                                         ),
-                                         Text(
+                                        Text(
                                           S.of(context).warehousing,
-                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w900),
                                         ),
                                       ],
                                     ),
@@ -364,16 +459,18 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ),
                             Flexible(
                               child: Padding(
-                                padding:  EdgeInsets.all(screenWidth*0.03),
+                                padding: EdgeInsets.all(screenWidth * 0.03),
                                 child: Container(
-                                  height: screenHeight*0.15,
-                                  width: screenWidth*0.33,
+                                  height: screenHeight * 0.15,
+                                  width: screenWidth * 0.33,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(screenWidth*0.05),
-                                    color: Colors.lightBlue.shade50,
+                                    borderRadius: BorderRadius.circular(
+                                        screenWidth * 0.05),
+                                    color: AppTheme.primarySoft,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.blue.withValues(alpha: 0.6),
+                                        color: AppTheme.primary
+                                            .withValues(alpha: 0.6),
                                         spreadRadius: 5,
                                         blurRadius: 5,
                                         offset: const Offset(0, 3),
@@ -381,29 +478,36 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                     ],
                                   ),
                                   child: InkWell(
-                                    onTap: (){
+                                    onTap: () {
                                       ///Transport Page Navigation to Partner
-                                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>const BookingScreen()));
-                                      showCustomDialog(
+                                      Navigator.push(
                                           context,
-                                          'Transportation',
-                                          '. Get ready for Effortless Truck Booking at your FingerTips!',
-                                          '. Easy fast and Reliable Transport just for you.',
-                                          '. No more Hassles Seamlessly Book Track and manage Shipment'
-                                      );
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const BookingScreen()));
+                                      // showCustomDialog(
+                                      //     context,
+                                      //     'Transportation',
+                                      //     '. Get ready for Effortless Truck Booking at your FingerTips!',
+                                      //     '. Easy fast and Reliable Transport just for you.',
+                                      //     '. No more Hassles Seamlessly Book Track and manage Shipment'
+                                      // );
                                     },
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Image.asset(
                                           ImageAssets.transportgif,
-                                          height: screenHeight*0.08,
-                                          width: screenWidth*0.25,
+                                          height: screenHeight * 0.08,
+                                          width: screenWidth * 0.25,
                                           fit: BoxFit.contain,
                                         ),
-                                         Text(
+                                        Text(
                                           S.of(context).transportation,
-                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w900),
                                         ),
                                       ],
                                     ),
@@ -413,25 +517,26 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ),
                           ],
                         ),
-                         SizedBox(height: screenHeight*0.005),
+                        SizedBox(height: screenHeight * 0.005),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             Flexible(
                               child: Padding(
-                                padding:  EdgeInsets.all(screenWidth*0.03),
+                                padding: EdgeInsets.all(screenWidth * 0.03),
                                 child: InkWell(
-                                  onTap: (){
-                                  },
+                                  onTap: () {},
                                   child: Container(
-                                    height: screenHeight*0.15,
-                                    width: screenWidth*0.33,
+                                    height: screenHeight * 0.15,
+                                    width: screenWidth * 0.33,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(screenWidth*0.05),
-                                      color: Colors.lightBlue.shade50,
+                                      borderRadius: BorderRadius.circular(
+                                          screenWidth * 0.05),
+                                      color: AppTheme.primarySoft,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.withValues(alpha: 0.3),
+                                          color: AppTheme.primary
+                                              .withValues(alpha: 0.3),
                                           spreadRadius: 5,
                                           blurRadius: 5,
                                           offset: const Offset(0, 3),
@@ -439,27 +544,29 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                       ],
                                     ),
                                     child: InkWell(
-                                      onTap: (){
+                                      onTap: () {
                                         showCustomDialog(
-                                          context,
-                                          'Manpower',
-                                          '. Your trusted partner in Land Transactions simplified and secure!',
-                                          '. Buy and sell land with confidence, Transparency and ease',
-                                          '. Seamless transaction and Expert Guidance at every step.'
-                                        );
+                                            context,
+                                            'Manpower',
+                                            '. Your trusted partner in Land Transactions simplified and secure!',
+                                            '. Buy and sell land with confidence, Transparency and ease',
+                                            '. Seamless transaction and Expert Guidance at every step.');
                                       },
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Image.asset(
                                             ImageAssets.manpowergif,
-                                            height: screenHeight*0.08,
-                                            width: screenWidth*0.25,
+                                            height: screenHeight * 0.08,
+                                            width: screenWidth * 0.25,
                                             fit: BoxFit.contain,
                                           ),
-                                           Text(
+                                          Text(
                                             S.of(context).manpower,
-                                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w900),
                                           ),
                                         ],
                                       ),
@@ -470,19 +577,20 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ),
                             Flexible(
                               child: Padding(
-                                padding:  EdgeInsets.all(screenWidth*0.03),
+                                padding: EdgeInsets.all(screenWidth * 0.03),
                                 child: InkWell(
-                                  onTap: (){
-                                  },
+                                  onTap: () {},
                                   child: Container(
-                                    height: screenHeight*0.15,
-                                    width: screenWidth*0.33,
+                                    height: screenHeight * 0.15,
+                                    width: screenWidth * 0.33,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(screenWidth*0.05),
-                                      color: Colors.lightBlue.shade50,
+                                      borderRadius: BorderRadius.circular(
+                                          screenWidth * 0.05),
+                                      color: AppTheme.primarySoft,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.withValues(alpha: 0.3),
+                                          color: AppTheme.primary
+                                              .withValues(alpha: 0.3),
                                           spreadRadius: 5,
                                           blurRadius: 5,
                                           offset: const Offset(0, 3),
@@ -490,27 +598,29 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                       ],
                                     ),
                                     child: InkWell(
-                                      onTap: (){
+                                      onTap: () {
                                         showCustomDialog(
                                             context,
                                             'Agriculture',
                                             '. Your trusted partner in Land Transactions Simplified and secure',
                                             '. Buy and sell Land with confidence Transparency and Ease.',
-                                            '. Seamless Transactions and Expert Guidance at Every step'
-                                        );
+                                            '. Seamless Transactions and Expert Guidance at Every step');
                                       },
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Image.asset(
                                             ImageAssets.agriculturalgif,
-                                            height: screenHeight*0.08,
-                                            width: screenWidth*0.25,
+                                            height: screenHeight * 0.08,
+                                            width: screenWidth * 0.25,
                                             fit: BoxFit.contain,
                                           ),
-                                           Text(
+                                          Text(
                                             S.of(context).agricultural,
-                                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w900),
                                           ),
                                         ],
                                       ),
@@ -521,17 +631,25 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ),
                           ],
                         ),
-                        SizedBox(height: screenHeight*0.025,),
+                        SizedBox(
+                          height: screenHeight * 0.025,
+                        ),
+
                         ///Warehouse Slider
                         SizedBox(
                           height: screenHeight * 0.2,
-                          width: screenWidth*0.9,
+                          width: screenWidth * 0.9,
                           child: Stack(
                             children: [
                               InkWell(
-                                onTap:(){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>UserHomePage(longitude:widget.longitude,latitude:widget.latitude)));
-                                  },
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => UserHomePage(
+                                              longitude: widget.longitude,
+                                              latitude: widget.latitude)));
+                                },
                                 child: PageView.builder(
                                   controller: _pageControllerSlider,
                                   itemCount: _warehouseImages.length,
@@ -544,48 +662,13 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                     return Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: Colors.grey, width: 3),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 3),
                                       ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: _warehouseImages[index],
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        placeholder: (context, url) => Shimmer(
-                                          child: Container(
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) => Container(
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.shade100,
-                                            borderRadius: BorderRadius.circular(3),
-                                            border: Border.all(color: Colors.red.shade200, width: 2),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline,
-                                                color: Colors.red.shade700,
-                                                size: 40,
-                                              ),
-                                              Text(
-                                                'Image failed to load!',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red.shade700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                      child: _buildPromoImage(
+                                        _warehouseImages[index],
+                                        BoxFit.cover,
+                                        screenHeight,
                                       ),
                                     );
                                   },
@@ -594,154 +677,102 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ],
                           ),
                         ),
-                        SizedBox(height: screenHeight*0.017,),
+                        SizedBox(
+                          height: screenHeight * 0.017,
+                        ),
+
                         ///Transportation Slider
-                         SizedBox(
-                           height: screenHeight*0.2,
-                           width: screenWidth*0.9,
-                           child: Stack(
-                             children: [
-                               InkWell(
-                                 onTap:(){
-                                   showCustomDialog(
-                                       context,
-                                       'Transportation',
-                                       '. Get ready for Effortless Truck Booking at your FingerTips!',
-                                       '. Easy fast and Reliable Transport just for you.',
-                                       '. No more Hassles Seamlessly Book Track and manage Shipment'
-                                   );
-                         },
-                                 child: PageView.builder(
-                                   controller: _transportController,
-                                   itemCount: _transportImages.length,
-                                   onPageChanged: (int index) {
-                                     setState(() {
-                                       _transportIndex = index;
-                                     });
-                                   },
-                                   itemBuilder: (context, index) {
-                                     return Container(
-                                       decoration: BoxDecoration(
-                                         borderRadius: BorderRadius.circular(6),
-                                         border: Border.all(color: Colors.grey, width: 3),
-                                       ),
-                                       child: CachedNetworkImage(
-                                         imageUrl: _transportImages[index],
-                                         fit: BoxFit.cover,
-                                         width: double.infinity,
-                                         placeholder: (context, url) => Shimmer(
-                                           child: Container(
-                                             width: double.infinity,
-                                             height: screenHeight*0.05,
-                                             decoration: BoxDecoration(
-                                               color: Colors.grey,
-                                               borderRadius: BorderRadius.circular(3),
-                                             ),
-                                           ),
-                                         ),
-                                         errorWidget: (context, url, error) => Container(
-                                           alignment: Alignment.center,
-                                           padding: const EdgeInsets.all(10),
-                                           decoration: BoxDecoration(
-                                             color: Colors.red.shade100,
-                                             borderRadius: BorderRadius.circular(3),
-                                             border: Border.all(color: Colors.red.shade200, width: 2),
-                                           ),
-                                           child: Column(
-                                             mainAxisAlignment: MainAxisAlignment.center,
-                                             crossAxisAlignment: CrossAxisAlignment.center,
-                                             children: [
-                                               Icon(
-                                                 Icons.error_outline,
-                                                 color: Colors.red.shade700,
-                                                 size: 40,
-                                               ),
-                                               Text(
-                                                 'Image failed to load!',
-                                                 style: TextStyle(
-                                                   fontSize: 16,
-                                                   fontWeight: FontWeight.bold,
-                                                   color: Colors.red.shade700,
-                                                 ),
-                                               ),
-                                             ],
-                                           ),
-                                         ),
-                                       ),
-                                     );
-                                   },
-                                 ),
-                               ),
-                             ],
-                           ),
-                         ),
-                        SizedBox(height: screenHeight*0.02,),
+                        SizedBox(
+                          height: screenHeight * 0.2,
+                          width: screenWidth * 0.9,
+                          child: Stack(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  showCustomDialog(
+                                      context,
+                                      'Transportation',
+                                      '. Get ready for Effortless Truck Booking at your FingerTips!',
+                                      '. Easy fast and Reliable Transport just for you.',
+                                      '. No more Hassles Seamlessly Book Track and manage Shipment');
+                                },
+                                child: PageView.builder(
+                                  controller: _transportController,
+                                  itemCount: _transportImages.length,
+                                  onPageChanged: (int index) {
+                                    setState(() {
+                                      _transportIndex = index;
+                                    });
+                                  },
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 3),
+                                      ),
+                                      child: _buildPromoImage(
+                                        _transportImages[index],
+                                        BoxFit.cover,
+                                        screenHeight,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: screenHeight * 0.02,
+                        ),
+
                         ///Horizontal Slider
                         Padding(
-                          padding:  EdgeInsets.only(right: screenWidth*0.003),
+                          padding: EdgeInsets.only(right: screenWidth * 0.003),
                           child: Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 for (int i = 0; i < 3; i++)
-                                  if (horizontalSliderImagesIndex + i < horizontalSliderImages.length)
+                                  if (horizontalSliderImagesIndex + i <
+                                      horizontalSliderImages.length)
                                     Flexible(
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 2.0),
                                         child: AspectRatio(
                                           aspectRatio: 1,
                                           child: Container(
                                             decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.grey,width: 1),
-                                              borderRadius: BorderRadius.circular(5),
+                                              border: Border.all(
+                                                  color: Colors.grey, width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                             ),
-                                            child: Shimmer(
-                                          child: CachedNetworkImage(
-                                            imageUrl: horizontalSliderImages[horizontalSliderImagesIndex + i],
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) => Container(
-                                              color: Colors.grey.shade300,
-                                            ),
-                                            errorWidget: (context, url, error) => Container(
-                                              alignment: Alignment.center,
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: Colors.red.shade100,
-                                                borderRadius: BorderRadius.circular(3),
-                                                border: Border.all(color: Colors.red.shade200, width: 2),
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.error_outline,
-                                                    color: Colors.red.shade700,
-                                                    size: 40,
-                                                  ),
-                                                  Text(
-                                                    'Image failed to load!',
-                                                    style: TextStyle(
-                                                      fontSize: 6,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.red.shade300,
-                                                    ),
-                                                  ),
-                                                ],
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              child: _buildPromoImage(
+                                                horizontalSliderImages[
+                                                    horizontalSliderImagesIndex +
+                                                        i],
+                                                BoxFit.cover,
+                                                screenHeight,
                                               ),
                                             ),
-                                          ),
-                                        ),
                                           ),
                                         ),
                                       ),
                                     ),
                                 SizedBox(
-                                  width: screenWidth*0.1,
+                                  width: screenWidth * 0.1,
                                   child: Center(
                                     child: IconButton(
-                                      icon: const Icon(Icons.arrow_circle_right_outlined, size: 20),
+                                      icon: const Icon(
+                                          Icons.arrow_circle_right_outlined,
+                                          size: 20),
                                       onPressed: _shiftImagesLeft,
                                     ),
                                   ),
@@ -750,22 +781,24 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ),
                           ),
                         ),
-                        SizedBox(height: screenHeight*0.02,),
+                        SizedBox(
+                          height: screenHeight * 0.02,
+                        ),
+
                         ///Manpower Slider
                         SizedBox(
-                          height: screenHeight*0.2,
-                          width: screenWidth*0.9,
+                          height: screenHeight * 0.2,
+                          width: screenWidth * 0.9,
                           child: Stack(
                             children: [
                               InkWell(
-                                onTap:(){
+                                onTap: () {
                                   showCustomDialog(
                                       context,
                                       'Manpower',
                                       '. Your trusted partner in Land Transactions simplified and secure!',
                                       '. Buy and sell land with confidence, Transparency and ease',
-                                      '. Seamless transaction and Expert Guidance at every step.'
-                                  );
+                                      '. Seamless transaction and Expert Guidance at every step.');
                                 },
                                 child: PageView.builder(
                                   controller: _manpowerController,
@@ -779,51 +812,13 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                     return Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: Colors.grey, width: 3),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 3),
                                       ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: _manPowerImages[index],
-                                        fit: BoxFit.fitWidth,
-                                        width: double.infinity,
-                                        placeholder: (context, url) => Shimmer(
-                                          child: Container(
-                                            width: double.infinity,
-                                            height: screenHeight*0.05,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) => Container(
-                                          alignment: Alignment.center,
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.shade100,
-                                            borderRadius: BorderRadius.circular(3),
-                                            border: Border.all(color: Colors.red.shade200, width: 2),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline,
-                                                color: Colors.red.shade700,
-                                                size: 40,
-                                              ),
-                                              Text(
-                                                'Image failed to load!', 
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red.shade700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
+                                      child: _buildPromoImage(
+                                        _manPowerImages[index],
+                                        BoxFit.cover,
+                                        screenHeight,
                                       ),
                                     );
                                   },
@@ -832,22 +827,24 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ],
                           ),
                         ),
-                        SizedBox(height: screenHeight*0.02,),
+                        SizedBox(
+                          height: screenHeight * 0.02,
+                        ),
+
                         ///Agriculture Slider
                         SizedBox(
-                          height: screenHeight*0.2,
-                          width: screenWidth*0.9,
+                          height: screenHeight * 0.2,
+                          width: screenWidth * 0.9,
                           child: Stack(
                             children: [
                               InkWell(
-                                onTap:(){
+                                onTap: () {
                                   showCustomDialog(
                                       context,
                                       'Agriculture',
                                       '. Your trusted partner in Land Transactions Simplified and secure',
                                       '. Buy and sell Land with confidence Transparency and Ease.',
-                                      '. Seamless Transactions and Expert Guidance at Every step'
-                                  );
+                                      '. Seamless Transactions and Expert Guidance at Every step');
                                 },
                                 child: PageView.builder(
                                   controller: _agricultureController,
@@ -861,51 +858,13 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                     return Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: Colors.grey, width: 3),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 3),
                                       ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: _agriculturalImages[index],
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        placeholder: (context, url) => Shimmer(
-                                          child: Container(
-                                            width: double.infinity,
-                                            height: screenHeight*0.07,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) => Container(
-                                          alignment: Alignment.center,
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.shade100,
-                                            borderRadius: BorderRadius.circular(3),
-                                            border: Border.all(color: Colors.red.shade200, width: 2),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline,
-                                                color: Colors.red.shade700,
-                                                size: 40,
-                                              ),
-                                              Text(
-                                                'Image failed to load!',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red.shade700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
+                                      child: _buildPromoImage(
+                                        _agriculturalImages[index],
+                                        BoxFit.cover,
+                                        screenHeight,
                                       ),
                                     );
                                   },
@@ -914,22 +873,24 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                             ],
                           ),
                         ),
-                        SizedBox(height: screenHeight*0.02,),
+                        SizedBox(
+                          height: screenHeight * 0.02,
+                        ),
+
                         ///Advertising Slider
                         SizedBox(
-                          height: screenHeight*0.18,
-                          width: screenWidth*0.9,
+                          height: screenHeight * 0.18,
+                          width: screenWidth * 0.9,
                           child: Stack(
                             children: [
                               InkWell(
-                                onTap:(){
+                                onTap: () {
                                   showCustomDialog(
                                       context,
                                       'Agriculture',
                                       '. Your trusted partner in Land Transactions Simplified and secure',
                                       '. Buy and sell Land with confidence Transparency and Ease.',
-                                      '. Seamless Transactions and Expert Guidance at Every step'
-                                  );
+                                      '. Seamless Transactions and Expert Guidance at Every step');
                                 },
                                 child: PageView.builder(
                                   controller: _advertisingController,
@@ -943,51 +904,13 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
                                     return Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(6),
-                                        border: Border.all(color: Colors.grey, width: 3),
+                                        border: Border.all(
+                                            color: Colors.grey, width: 3),
                                       ),
-                                      child: CachedNetworkImage(
-                                        imageUrl: _advertisingImages[index],
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                        placeholder: (context, url) => Shimmer(
-                                          child: Container(
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey,
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) => Container(
-                                          alignment: Alignment.center,
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.shade100,
-                                            borderRadius: BorderRadius.circular(3),
-                                            border: Border.all(color: Colors.red.shade200, width: 2),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline,
-                                                color: Colors.red.shade700,
-                                                size: 40,
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                'Image failed to load!',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red.shade700,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
+                                      child: _buildPromoImage(
+                                        _advertisingImages[index],
+                                        BoxFit.cover,
+                                        screenHeight,
                                       ),
                                     );
                                   },
@@ -1011,20 +934,18 @@ class NewHomePageState extends State<NewHomePage>with SingleTickerProviderStateM
       ),
     );
   }
+
   Widget _buildAccountPage(double screenWidth, double screenHeight) {
     return const UserProfileScreen();
   }
-  void showAdvancedFiltersBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) {
-        return const AdvancedFiltersBottomSheet();
-      },
-    );
-  }
+  // void showAdvancedFiltersBottomSheet(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (BuildContext context) {
+  //       return const AdvancedFiltersBottomSheet();
+  //     },
+  //   );
+  // }
 }
-
-
-

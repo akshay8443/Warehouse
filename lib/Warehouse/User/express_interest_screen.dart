@@ -1,3 +1,4 @@
+import 'package:Lisofy/resources/app_theme.dart';
 
 import 'package:Lisofy/Warehouse/User/express_interest_date_time.dart';
 import 'package:Lisofy/generated/l10n.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 class ExpressInterestScreen extends StatefulWidget {
   final dynamic id;
   const ExpressInterestScreen({super.key, required this.id});
@@ -52,7 +54,6 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
     }
   }
 
-
   List<String> possessions = [
     'Immediate',
     'Within 15 days',
@@ -69,6 +70,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
     designationController.dispose();
     messengerController.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -78,13 +80,13 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
         children: [
           Expanded(
             child: Container(
-              color: Colors.blue,
+              color: AppTheme.primary,
               width: double.infinity,
               child: SafeArea(
                 child: Column(
                   children: [
                     Container(
-                      color: Colors.blue,
+                      color: AppTheme.primary,
                       height: screenHeight * 0.13,
                       child: Padding(
                         padding: EdgeInsets.only(
@@ -136,7 +138,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                               children: [
                                 Container(
                                   height: screenHeight * 0.07,
-                                  padding:  EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.06),
                                   child: TextFormField(
                                     controller: nameController,
@@ -187,7 +189,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                 ),
                                 Container(
                                   height: screenHeight * 0.07,
-                                  padding:  EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.06),
                                   child: TextFormField(
                                     controller: emailController,
@@ -239,7 +241,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                 ),
                                 Container(
                                   height: screenHeight * 0.07,
-                                  padding:  EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.06),
                                   child: TextFormField(
                                     controller: phoneController,
@@ -287,7 +289,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                 ),
                                 Container(
                                   height: screenHeight * 0.07,
-                                  padding:  EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.06),
                                   child: TextFormField(
                                     controller: companyController,
@@ -341,7 +343,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                 ),
                                 Container(
                                   height: screenHeight * 0.07,
-                                  padding:  EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.06),
                                   child: TextFormField(
                                     validator: (value) {
@@ -409,8 +411,9 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                 ),
                                 Container(
                                   height: screenHeight * 0.07,
-                                  padding:  EdgeInsets.only(left: screenWidth * 0.04),
-                                  margin:  EdgeInsets.symmetric(
+                                  padding:
+                                      EdgeInsets.only(left: screenWidth * 0.04),
+                                  margin: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.06),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
@@ -432,8 +435,8 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                           value: value,
                                           child: Container(
                                             height: screenHeight * 0.04,
-                                            margin:
-                                                 EdgeInsets.only(top: screenWidth * 0.04),
+                                            margin: EdgeInsets.only(
+                                                top: screenWidth * 0.04),
                                             width: screenWidth * 0.3,
                                             decoration: BoxDecoration(
                                               border: Border.all(
@@ -472,7 +475,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                         Container(
                                           width: screenWidth * 0.15,
                                           height: double.infinity,
-                                          color: Colors.blue,
+                                          color: AppTheme.primary,
                                           child: const Icon(
                                             Icons.keyboard_arrow_down,
                                             size: 35,
@@ -500,15 +503,13 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                   ),
                                 ),
                                 Container(
-                                  margin:  EdgeInsets.symmetric(
+                                  margin: EdgeInsets.symmetric(
                                       horizontal: screenWidth * 0.05),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                        color: Colors.grey,
-                                        width: 1.5),
-                                    color: Colors
-                                        .white,
+                                        color: Colors.grey, width: 1.5),
+                                    color: Colors.white,
                                   ),
                                   child: TextFormField(
                                     controller: messengerController,
@@ -537,10 +538,12 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                         color: Colors.grey, width: 2),
-                                    borderRadius: BorderRadius.circular(screenWidth * 0.38),
+                                    borderRadius: BorderRadius.circular(
+                                        screenWidth * 0.38),
                                   ),
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(screenWidth * 0.38),
+                                    borderRadius: BorderRadius.circular(
+                                        screenWidth * 0.38),
                                     child: ElevatedButton(
                                       onPressed: () {
                                         if (_formKey.currentState!.validate()) {
@@ -576,7 +579,7 @@ class _ExpressInterestScreenState extends State<ExpressInterestScreen> {
                                       },
                                       style: ElevatedButton.styleFrom(
                                         foregroundColor: Colors.white,
-                                        backgroundColor: Colors.blue,
+                                        backgroundColor: AppTheme.primary,
                                         minimumSize: Size(double.infinity,
                                             screenHeight * 0.06),
                                         shape: RoundedRectangleBorder(

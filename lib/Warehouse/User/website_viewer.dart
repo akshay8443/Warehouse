@@ -1,6 +1,8 @@
+import 'package:Lisofy/resources/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
 class WebViewScreen extends StatefulWidget {
   final String url;
   final String title;
@@ -59,7 +61,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
       setState(() {
         _isLoading = false;
         _hasError = true;
-        _errorMessage = "Failed to load the page. Please check your internet connection.";
+        _errorMessage =
+            "Failed to load the page. Please check your internet connection.";
       });
     }
   }
@@ -68,8 +71,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.w400, color: Colors.white)),
-        backgroundColor: Colors.blue,
+        title: Text(widget.title,
+            style: const TextStyle(
+                fontWeight: FontWeight.w400, color: Colors.white)),
+        backgroundColor: AppTheme.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
@@ -91,7 +96,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                       color: Colors.white.withValues(alpha: 0.8),
                       child: const Center(
                         child: SpinKitCircle(
-                          color: Colors.blue,
+                          color: AppTheme.primary,
                           size: 50,
                         ),
                       ),
@@ -105,16 +110,20 @@ class _WebViewScreenState extends State<WebViewScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.wifi_off, color: Colors.red, size: 80),
+                              const Icon(Icons.wifi_off,
+                                  color: Colors.red, size: 80),
                               const SizedBox(height: 10),
-                              Text(_errorMessage, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+                              Text(_errorMessage,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 16)),
                               const SizedBox(height: 10),
                               ElevatedButton.icon(
                                 onPressed: _loadPage,
                                 icon: const Icon(Icons.refresh),
                                 label: const Text("Retry"),
                                 style: ElevatedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
                                 ),
                               ),
                             ],
