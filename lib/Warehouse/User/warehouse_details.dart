@@ -46,8 +46,10 @@ class _WareHouseDetailsState extends State<WareHouseDetails> {
     super.initState();
 
     /// Fetch shortlist status on page load
-    Provider.of<CartProvider>(context, listen: false)
-        .fetchShortlistStatus(widget.warehouses.id, widget.phone);
+    if (widget.phone.trim().isNotEmpty) {
+      Provider.of<CartProvider>(context, listen: false)
+          .fetchShortlistStatus(widget.warehouses.id, widget.phone);
+    }
 
     //Address
     _getAddressFromLatLng(widget.warehouses.latitude.toString(),
@@ -131,6 +133,11 @@ class _WareHouseDetailsState extends State<WareHouseDetails> {
 
   @override
   Widget build(BuildContext context) {
+    String displayValue(Object? value) {
+      final text = value?.toString().trim();
+      return text == null || text.isEmpty || text == 'null' ? 'N/A' : text;
+    }
+
     final cartProvider = Provider.of<CartProvider>(context);
     final isShortlisted = cartProvider.isShortlisted(widget.warehouses.id);
     final screenHeight = MediaQuery.of(context).size.height;
@@ -164,17 +171,17 @@ class _WareHouseDetailsState extends State<WareHouseDetails> {
     ];
     final Map<String, String> sampleData = {
       "Construction Age(in Month)":
-          widget.warehouses.constructionAge.toString(),
-      "Ground Floor": widget.warehouses.groundFloor,
-      "Lock-in Period": widget.warehouses.wHouseLockinPeriod.toString(),
-      "Token Advance": widget.warehouses.wHouseTokenAdvance!,
-      "Maintenance Cost": widget.warehouses.wHouseMaintenance!,
-      "Inner Length": widget.warehouses.length,
-      "Inner Width": widget.warehouses.width,
-      "Side Height": widget.warehouses.sideHeight,
-      "Centre Height": widget.warehouses.centerHeight,
-      "No. of Docks": widget.warehouses.numberOfDocks,
-      "Docks Height(feet)": widget.warehouses.docksOfHeight,
+          displayValue(widget.warehouses.constructionAge),
+      "Ground Floor": displayValue(widget.warehouses.groundFloor),
+      "Lock-in Period": displayValue(widget.warehouses.wHouseLockinPeriod),
+      "Token Advance": displayValue(widget.warehouses.wHouseTokenAdvance),
+      "Maintenance Cost": displayValue(widget.warehouses.wHouseMaintenance),
+      "Inner Length": displayValue(widget.warehouses.length),
+      "Inner Width": displayValue(widget.warehouses.width),
+      "Side Height": displayValue(widget.warehouses.sideHeight),
+      "Centre Height": displayValue(widget.warehouses.centerHeight),
+      "No. of Docks": displayValue(widget.warehouses.numberOfDocks),
+      "Docks Height(feet)": displayValue(widget.warehouses.docksOfHeight),
     };
     return Scaffold(
       body: Column(
@@ -218,6 +225,16 @@ class _WareHouseDetailsState extends State<WareHouseDetails> {
                               children: [
                                 InkWell(
                                   onTap: () {
+                                    if (widget.phone.trim().isEmpty) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              "Please login to shortlist warehouses."),
+                                        ),
+                                      );
+                                      return;
+                                    }
                                     cartProvider.toggleWarehouse(
                                         widget.warehouses.id,
                                         widget.phone,
@@ -1054,7 +1071,7 @@ class ShareWarehouseHelper {
 📸 Photo: $warehousePhotoUrl
 🗺️ Location URL: $locationUrl
     ''';
-      Share.share(message);
+      SharePlus.instance.share(ShareParams(text: message));
     } catch (e) {
       if (kDebugMode) {
         print("Error: ${e.toString()}");

@@ -89,6 +89,7 @@ class UserHomePageState extends State<UserHomePage>
     }
 
     ///Warehouse Fetching
+    _loadPhoneNumber();
     futureWarehouses = fetchWarehouses(
         widget.latitude, widget.longitude, 20, [], [], rentRange);
     _pageControllerSlider = PageController(initialPage: _currentIndex);
@@ -124,6 +125,29 @@ class UserHomePageState extends State<UserHomePage>
     return (searchedValue != null && searchedValue != 0)
         ? searchedValue
         : fallbackValue;
+  }
+
+  Future<void> _loadPhoneNumber() async {
+    final pref = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      phone = pref.getString("phone") ?? "";
+    });
+  }
+
+  void _syncWarehouseCount(int count) {
+    if (warehouseCount == count) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || warehouseCount == count) {
+        return;
+      }
+      setState(() {
+        warehouseCount = count;
+      });
+    });
   }
 
   Future<void> _refreshData() async {
@@ -231,11 +255,13 @@ class UserHomePageState extends State<UserHomePage>
         final List<dynamic> jsonResponse =
             responseData is List ? responseData : responseData['data'] ?? [];
 
-        warehouseCount = jsonResponse.length;
-
-        return jsonResponse
+        final warehouses = jsonResponse
+            .whereType<Map<String, dynamic>>()
             .map((data) => WarehouseModel.fromJson(data))
             .toList();
+        warehouseCount = warehouses.length;
+
+        return warehouses;
       } else {
         throw Exception(
             'Failed to fetch warehouses. Status code: ${response.statusCode}');
@@ -244,6 +270,7 @@ class UserHomePageState extends State<UserHomePage>
       if (kDebugMode) {
         print("Error fetching warehouses: $e");
       }
+      warehouseCount = 0;
       return [];
     }
   }
@@ -977,6 +1004,7 @@ class UserHomePageState extends State<UserHomePage>
                                   ));
                                 } else if (!snapshot.hasData ||
                                     snapshot.data!.isEmpty) {
+                                  _syncWarehouseCount(0);
                                   return SingleChildScrollView(
                                     child: Center(
                                         child: Column(
@@ -1023,6 +1051,7 @@ class UserHomePageState extends State<UserHomePage>
                                       (context, sortingProvider, child) {
                                     final List<WarehouseModel> warehouses =
                                         List.from(snapshot.data!);
+                                    _syncWarehouseCount(warehouses.length);
                                     if (sortingProvider.selectedSortOption ==
                                         'PriceMinToMax') {
                                       warehouses.sort((a, b) {
@@ -1056,8 +1085,9 @@ class UserHomePageState extends State<UserHomePage>
                                             b.warehouseCarpetArea == null) {
                                           return 0;
                                         }
-                                        if (a.warehouseCarpetArea == null)
+                                        if (a.warehouseCarpetArea == null) {
                                           return 1;
+                                        }
                                         if (b.warehouseCarpetArea == null) {
                                           return -1;
                                         }
@@ -1072,8 +1102,9 @@ class UserHomePageState extends State<UserHomePage>
                                             b.warehouseCarpetArea == null) {
                                           return 0;
                                         }
-                                        if (a.warehouseCarpetArea == null)
+                                        if (a.warehouseCarpetArea == null) {
                                           return 1;
+                                        }
                                         if (b.warehouseCarpetArea == null) {
                                           return -1;
                                         }
@@ -1414,7 +1445,8 @@ class UserHomePageState extends State<UserHomePage>
                                                         WareHouseDetails(
                                                             warehouses:
                                                                 warehouse,
-                                                            phone: phone!)));
+                                                            phone:
+                                                                phone ?? "")));
                                           },
                                         );
                                       },
@@ -1536,8 +1568,9 @@ class UserHomePageState extends State<UserHomePage>
   Future<bool> _requestPermission() async {
     if (Platform.isAndroid) {
       if (await Permission.storage.request().isGranted) return true;
-      if (await Permission.manageExternalStorage.request().isGranted)
+      if (await Permission.manageExternalStorage.request().isGranted) {
         return true;
+      }
       if (await Permission.photos.request().isGranted) return true;
     }
     return false;
@@ -1886,8 +1919,6 @@ class DottedBorderPainter extends CustomPainter {
     const double dashWidth = 4.0;
     const double dashSpace = 4.0;
     double startX = 0;
-
-    final path = Path()..addRect(Rect.fromLTWH(0, 0, size.width, size.height));
 
     // Draw dotted border
     while (startX < size.width) {

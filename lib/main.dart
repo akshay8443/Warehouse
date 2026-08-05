@@ -22,6 +22,7 @@ import 'package:Lisofy/resources/ImageAssets/ImagesAssets.dart';
 import 'package:Lisofy/resources/app_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -98,6 +99,11 @@ void main() async {
 
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   bool isUserLoggedIn = prefs.getBool('isUserLoggedIn') ?? false;
+  final hasFirebaseSession = FirebaseAuth.instance.currentUser != null;
+  if (hasFirebaseSession && !isLoggedIn && !isUserLoggedIn) {
+    isUserLoggedIn = true;
+    await prefs.setBool('isUserLoggedIn', true);
+  }
   String name = prefs.getString('name') ?? '';
   double latitude = prefs.getDouble('latitude') ?? 0.00;
   double longitude = prefs.getDouble('longitude') ?? 0.00;
@@ -168,13 +174,13 @@ class _MyAppState extends State<MyApp> {
   final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   final FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance);
+  bool _didRequestLaunchPermissions = false;
 
   @override
   void initState() {
     super.initState();
 
     /// **Initialize Notification Services**
-    _notificationServices.requestNotificationPermission();
     _notificationServices.firebaseInit();
     _notificationServices.initLocalNotifications();
     _notificationServices.listenForTokenRefresh();
@@ -195,41 +201,48 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> requestPermissions() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    PermissionStatus notificationPermission =
-        await Permission.notification.request();
-    if (notificationPermission.isDenied ||
-        notificationPermission.isPermanentlyDenied) {
+    if (_didRequestLaunchPermissions) return;
+    _didRequestLaunchPermissions = true;
+
+    final notificationPermission =
+        await _requestPermissionIfNeeded(Permission.notification);
+    if (notificationPermission.isPermanentlyDenied) {
       _showNotificationPermissionDialog();
     }
+
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
     if (androidInfo.version.sdkInt >= 33) {
-      PermissionStatus mediaImagesPermission =
-          await Permission.photos.request();
-      PermissionStatus mediaVideosPermission =
-          await Permission.videos.request();
-      PermissionStatus cameraPermission = await Permission.camera.request();
-      if (mediaImagesPermission.isDenied ||
-          mediaVideosPermission.isDenied ||
-          cameraPermission.isDenied) {
-        _showPermissionDeniedDialog();
-      } else if (mediaImagesPermission.isPermanentlyDenied ||
+      final mediaImagesPermission =
+          await _requestPermissionIfNeeded(Permission.photos);
+      final mediaVideosPermission =
+          await _requestPermissionIfNeeded(Permission.videos);
+      final cameraPermission =
+          await _requestPermissionIfNeeded(Permission.camera);
+      if (mediaImagesPermission.isPermanentlyDenied ||
+          mediaVideosPermission.isPermanentlyDenied ||
           cameraPermission.isPermanentlyDenied) {
-        openAppSettings();
+        _showPermissionDeniedDialog();
       }
     } else {
-      PermissionStatus photoPermission = await Permission.photos.request();
-      PermissionStatus storagePermission = await Permission.storage.request();
-      PermissionStatus cameraPermission = await Permission.camera.request();
-      if (photoPermission.isDenied ||
-          cameraPermission.isDenied ||
-          storagePermission.isDenied) {
-        _showPermissionDeniedDialog();
-      } else if (photoPermission.isPermanentlyDenied ||
+      final storagePermission =
+          await _requestPermissionIfNeeded(Permission.storage);
+      final cameraPermission =
+          await _requestPermissionIfNeeded(Permission.camera);
+      if (storagePermission.isPermanentlyDenied ||
           cameraPermission.isPermanentlyDenied) {
-        openAppSettings();
+        _showPermissionDeniedDialog();
       }
     }
+  }
+
+  Future<PermissionStatus> _requestPermissionIfNeeded(
+      Permission permission) async {
+    final status = await permission.status;
+    if (status.isGranted || status.isLimited) return status;
+    if (status.isPermanentlyDenied || status.isRestricted) return status;
+    return permission.request();
   }
 
   BuildContext? get _navigatorContext =>
@@ -389,7 +402,8 @@ class _MyAppState extends State<MyApp> {
       canPop: false,
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, child) {
-          if (widget.isUserLoggedIn) {
+          final hasActiveSession = widget.isLoggedIn || widget.isUserLoggedIn;
+          if (hasActiveSession) {
             _updateCurrentLocation();
           }
           return MaterialApp(
@@ -439,7 +453,7 @@ class _MyAppState extends State<MyApp> {
                       fit: BoxFit.fitHeight,
                     ));
                   }
-                  return widget.isUserLoggedIn
+                  return hasActiveSession
                       ? NewHomePage(
                           latitude: widget.latitude,
                           longitude: widget.longitude)

@@ -238,6 +238,9 @@ class VerifyOtpScreenState extends State<VerifyOtpScreen> {
       if (response.statusCode == 200) {
         debugPrint('✅ Login success');
         await prefs.setBool('isLoggedIn', true);
+        await prefs.setBool('isUserLoggedIn', false);
+        await prefs.setString('phone', phoneNumber);
+        await prefs.setString('phoneNumber', phoneNumber);
 
         // Extract and save userId if present
         final userId =
@@ -304,6 +307,8 @@ class VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
     await prefs.setString('phone', phoneNumber);
     await prefs.setString('phoneNumber', phoneNumber);
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setBool('isUserLoggedIn', false);
 
     if (!mounted) return;
     _showSnackBar(context, '$message Please complete registration.');

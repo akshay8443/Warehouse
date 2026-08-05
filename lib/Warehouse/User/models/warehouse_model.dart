@@ -110,72 +110,89 @@ class WarehouseModel {
   });
 
   factory WarehouseModel.fromJson(Map<String, dynamic> json) {
+    double parseDouble(dynamic value) {
+      if (value is num) return value.toDouble();
+      return double.tryParse(value?.toString() ?? '') ?? 0.0;
+    }
+
+    double? parseNullableDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      return double.tryParse(value.toString());
+    }
+
+    int parseInt(dynamic value) {
+      if (value is num) return value.toInt();
+      return int.tryParse(value?.toString() ?? '') ?? 0;
+    }
+
+    int? parseNullableInt(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toInt();
+      return int.tryParse(value.toString());
+    }
+
+    bool parseBool(dynamic value) {
+      if (value is bool) return value;
+      if (value is num) return value == 1;
+      final text = value?.toString().toLowerCase();
+      return text == 'true' || text == '1';
+    }
+
     return WarehouseModel(
-      id: int.tryParse(json['id'].toString()) ?? 0,
-      distance: (json['distance'] as num).toDouble(),
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+      id: parseInt(json['id']),
+      distance: parseDouble(json['distance']),
+      latitude: parseDouble(json['latitude']),
+      longitude: parseDouble(json['longitude']),
       whouseAddress: json['whouse_address'] ?? '',
-      wHouseRentPerSQFT: json['whouse_rentPerSQFT'] != null
-          ? (json['whouse_rentPerSQFT'] as num).toDouble()
-          : null,
-      securityDeposit: json['securityDeposit'] != null
-          ? int.tryParse(json['securityDeposit'].toString())
-          : null,
+      wHouseRentPerSQFT: parseNullableDouble(json['whouse_rentPerSQFT']),
+      securityDeposit: parseNullableInt(json['securityDeposit']),
       totalArea: json['totalArea'] ?? '',
       currentAddress: json['current_address'] ?? '',
-      constructionAge: json['cunstructiontAge'] != null
-          ? int.tryParse(json['cunstructiontAge'].toString())
-          : null,
+      constructionAge: parseNullableInt(json['cunstructiontAge']),
       groundFloor: json['graundFloor'] ?? '',
       wHouseType1: json['whouse_type1'],
       wHouseType: json['whouse_type'] ?? '',
       wHouseType2: json['whouse_type2'],
       wHouseConstructionType: json['whouse_Cunstructiontype'] ?? '',
-      wHouseFloor: int.tryParse(json['whouse_floor'].toString()) ?? 0,
-      wHouseCarpetArea: json['whouse_carperarea'] != null
-          ? (json['whouse_carperarea'] as num).toDouble()
-          : null,
-      warehouseCarpetArea: json['warehouse_carpetarea'] != null
-          ? (json['warehouse_carpetarea'] as num).toDouble()
-          : null,
-      isAvailable: json['isavilable'],
-      isAvailableForRent: int.tryParse(json['isavilableForRent'].toString()) ?? 0,
-      wHouseRent: json['whouse_rent'] != null
-          ? (json['whouse_rent'] as num).toDouble()
-          : null,
+      wHouseFloor: parseInt(json['whouse_floor']),
+      wHouseCarpetArea: parseNullableDouble(json['whouse_carperarea']),
+      warehouseCarpetArea: parseNullableDouble(json['warehouse_carpetarea']),
+      isAvailable: parseNullableInt(json['isavilable']),
+      isAvailableForRent: parseInt(json['isavilableForRent']),
+      wHouseRent: parseNullableDouble(json['whouse_rent']),
       wHouseMaintenance: json['whouse_maintenance'],
       wHouseTokenAdvance: json['whouse_tokenAdvance'],
       wHouseExpected: json['whouse_expected'],
       wHouseToken: json['whouse_token'],
-      wHouseLockinPeriod: int.tryParse(json['whouseLockinPeriod'].toString()) ?? 0,
+      wHouseLockinPeriod: parseInt(json['whouseLockinPeriod']),
       wHouseName: json['whouse_name'] ?? '',
       status: json['status'] ?? '',
       filePath: json['filepath'] ?? '',
       mobile: json['mobile'] ?? '',
       image: json['image'],
-      amenityId: int.tryParse(json['amenityId'].toString()) ?? 0,
+      amenityId: parseInt(json['amenityId']),
       electricity: json['electricity'] ?? '',
-      powerBackup: json['power_backup'] ?? false,
-      officeSpace: json['office_space'] ?? false,
-      dockLevelers: json['dock_levelers'] ?? false,
-      numberOfToilets: int.tryParse(json['numberOfToilets'].toString()) ?? 0,
-      truckParkingSlot: int.tryParse(json['truck_ParkingSlot'].toString()) ?? 0,
-      bikeParkingSlot: int.tryParse(json['bike_ParkingSlot'].toString()) ?? 0,
-      numberOfFans: int.tryParse(json['numberOfFans'].toString()) ?? 0,
-      numberOfLights: int.tryParse(json['numberOfLights'].toString()) ?? 0,
-      fireComplaints: json['fireComplaints'] ?? false,
+      powerBackup: parseBool(json['power_backup']),
+      officeSpace: parseBool(json['office_space']),
+      dockLevelers: parseBool(json['dock_levelers']),
+      numberOfToilets: parseInt(json['numberOfToilets']),
+      truckParkingSlot: parseInt(json['truck_ParkingSlot']),
+      bikeParkingSlot: parseInt(json['bike_ParkingSlot']),
+      numberOfFans: parseInt(json['numberOfFans']),
+      numberOfLights: parseInt(json['numberOfLights']),
+      fireComplaints: parseBool(json['fireComplaints']),
       numberOfDocks: json['numberOfDocks'] ?? '',
       length: json['length'] ?? '',
       width: json['width'] ?? '',
       sideHeight: json['sideHeight'] ?? '',
       centerHeight: json['centerHeight'] ?? '',
       docksOfHeight: json['docksOfHeight'] ?? '',
-      flexingModel: json['flexiModel'] ?? false,
+      flexingModel: parseBool(json['flexiModel']),
       flooringType: json['flooringType'] ?? '',
       furnishingType: json['furnishingType'] ?? '',
-      cluDocument: json['cluDocument'] ?? false,
-      whouseId: int.tryParse(json['whouseId'].toString()) ?? 0,
+      cluDocument: parseBool(json['cluDocument']),
+      whouseId: parseInt(json['whouseId']),
     );
   }
 }

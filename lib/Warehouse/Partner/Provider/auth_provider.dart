@@ -63,6 +63,7 @@ class AuthProvider extends ChangeNotifier {
           await prefs.setString('userEmail', user.email ?? '');
           await prefs.setString('userName', user.displayName ?? '');
           await prefs.setBool('isLoggedIn', true);
+          await prefs.setBool('isUserLoggedIn', false);
 
           if (context.mounted) {
             Navigator.of(context).pushAndRemoveUntil(

@@ -41,7 +41,7 @@ class _AddWareHouseState extends State<AddWareHouse> {
   String? _selectedConstructionType;
   String? selectedLocation;
   bool isLoading = false;
-  late final LatLng finalAddress;
+  LatLng? finalAddress;
   String groundFloor = "";
 
   //NEW CODE............
@@ -247,6 +247,10 @@ class _AddWareHouseState extends State<AddWareHouse> {
       }
 
       if (!_formKey.currentState!.validate()) return;
+      if (finalAddress == null) {
+        _showErrorMessage("Please select warehouse location.");
+        return;
+      }
       setState(() => isLoading = true);
 
       final Map<String, dynamic> data = {

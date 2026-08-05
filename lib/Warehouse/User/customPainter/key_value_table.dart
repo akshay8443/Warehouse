@@ -10,16 +10,18 @@ class KeyValueTable extends StatelessWidget {
   Widget build(BuildContext context) {
     final showAll = context.watch<AuthUserProvider>().showAll;
     final dataEntries = data ?? {};
-    final entries = showAll ? dataEntries.entries.toList() : dataEntries.entries.take(3).toList();
+    final entries = showAll
+        ? dataEntries.entries.toList()
+        : dataEntries.entries.take(3).toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.8),
+            color: Colors.black.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +46,8 @@ class KeyValueTable extends StatelessWidget {
                       context.read<AuthUserProvider>().toggleShowAll();
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: Colors.amber.shade400,
                         borderRadius: BorderRadius.circular(10),
@@ -66,7 +69,9 @@ class KeyValueTable extends StatelessWidget {
               // Key-Value List with Constraints
               ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: showAll ? constraints.maxHeight * 0.6 : constraints.maxHeight * 0.3,
+                  maxHeight: showAll
+                      ? constraints.maxHeight * 0.6
+                      : constraints.maxHeight * 0.3,
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -96,7 +101,7 @@ class KeyValueTable extends StatelessWidget {
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(

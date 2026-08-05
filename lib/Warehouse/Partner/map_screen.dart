@@ -16,26 +16,50 @@ class LocationSelectionScreen extends StatefulWidget {
 class LocationSelectionScreenState extends State<LocationSelectionScreen> {
   GoogleMapController? mapController;
   LatLng? currentLocation;
-  TextEditingController addressController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  bool isLoadingLocation = true;
+
   @override
   void initState() {
     super.initState();
     _getCurrentLocation();
   }
 
+  @override
+  void dispose() {
+    addressController.dispose();
+    mapController?.dispose();
+    super.dispose();
+  }
+
   Future<void> _getCurrentLocation() async {
-    final locationProvider =
-        Provider.of<LocationProvider>(context, listen: false);
-    Position position = await _determinePosition();
-    setState(() {
-      currentLocation = LatLng(position.latitude, position.longitude);
-    });
-    mapController?.animateCamera(CameraUpdate.newLatLng(currentLocation!));
-    _getAddressFromLatLng(currentLocation!);
-    locationProvider.updateLocation(
-      addressController.text,
-      currentLocation!,
-    );
+    try {
+      final locationProvider =
+          Provider.of<LocationProvider>(context, listen: false);
+      Position position = await _determinePosition();
+      if (!mounted) return;
+
+      final location = LatLng(position.latitude, position.longitude);
+      setState(() {
+        currentLocation = location;
+        isLoadingLocation = false;
+      });
+      mapController?.animateCamera(CameraUpdate.newLatLng(location));
+      await _getAddressFromLatLng(location);
+      if (!mounted) return;
+      locationProvider.updateLocation(addressController.text, location);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting current location: $e');
+      }
+      if (!mounted) return;
+      setState(() {
+        isLoadingLocation = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
   }
 
   Future<void> _getAddressFromLatLng(LatLng position) async {
@@ -46,6 +70,7 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
         Placemark place = placeMarks[0];
         String address =
             '${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
+        if (!mounted) return;
         setState(() {
           addressController.text = address;
         });
@@ -82,16 +107,34 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
   }
 
   void _selectAddress() async {
-    String address = addressController.text;
+    String address = addressController.text.trim();
+    if (address.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter an address.')),
+      );
+      return;
+    }
     final locationProvider =
         Provider.of<LocationProvider>(context, listen: false);
-    List<Location> locations = await locationFromAddress(address);
-    if (locations.isNotEmpty) {
-      setState(() {
-        currentLocation = LatLng(locations[0].latitude, locations[0].longitude);
-      });
-      mapController?.animateCamera(CameraUpdate.newLatLng(currentLocation!));
-      locationProvider.updateLocation(address, currentLocation!);
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isNotEmpty) {
+        if (!mounted) return;
+        final location = LatLng(locations[0].latitude, locations[0].longitude);
+        setState(() {
+          currentLocation = location;
+        });
+        mapController?.animateCamera(CameraUpdate.newLatLng(location));
+        locationProvider.updateLocation(address, location);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error selecting address: $e');
+      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to find this address.')),
+      );
     }
   }
 
@@ -126,30 +169,43 @@ class LocationSelectionScreenState extends State<LocationSelectionScreen> {
               height: screenHeight * 0.4,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: GoogleMap(
-                  onMapCreated: (controller) {
-                    mapController = controller;
-                    if (currentLocation != null) {
-                      _getCurrentLocation();
-                    }
-                  },
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(28.596634, 77.404570),
-                    zoom: 14,
-                  ),
-                  markers: currentLocation != null
-                      ? {
-                          Marker(
-                              markerId: const MarkerId('currentLocation'),
-                              position: currentLocation!)
+                child: Stack(
+                  children: [
+                    GoogleMap(
+                      onMapCreated: (controller) {
+                        mapController = controller;
+                        if (currentLocation != null) {
+                          mapController?.animateCamera(
+                            CameraUpdate.newLatLng(currentLocation!),
+                          );
                         }
-                      : {},
-                  onTap: (position) {
-                    setState(() {
-                      currentLocation = position;
-                    });
-                    _getAddressFromLatLng(position);
-                  },
+                      },
+                      initialCameraPosition: const CameraPosition(
+                        target: LatLng(28.596634, 77.404570),
+                        zoom: 14,
+                      ),
+                      markers: currentLocation != null
+                          ? {
+                              Marker(
+                                markerId: const MarkerId('currentLocation'),
+                                position: currentLocation!,
+                              )
+                            }
+                          : {},
+                      onTap: (position) {
+                        setState(() {
+                          currentLocation = position;
+                        });
+                        _getAddressFromLatLng(position);
+                      },
+                    ),
+                    if (isLoadingLocation)
+                      const Center(
+                        child: CircularProgressIndicator(
+                          color: AppTheme.primary,
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),

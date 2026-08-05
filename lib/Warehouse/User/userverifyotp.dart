@@ -324,6 +324,10 @@ class UserVerifyOtpState extends State<UserVerifyOtp> {
 
       if (response.statusCode == 200) {
         debugPrint('✅ Login success');
+        await prefs.setBool('isUserLoggedIn', true);
+        await prefs.setBool('isLoggedIn', false);
+        await prefs.setString('phone', phoneNumber);
+        await prefs.setString('phoneNumber', phoneNumber);
 
         // Extract and save userId if present
         final userId =

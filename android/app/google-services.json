@@ -28,6 +28,14 @@
             "package_name": "com.xspace.warehouse",
             "certificate_hash": "ed3b3e502f3054e829274ac857386beb7c25aa6b"
           }
+        },
+        {
+          "client_id": "731856525652-rcvdo06allbh499nmdg14ikkrotssokh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xspace.warehouse",
+            "certificate_hash": "a85340cd792adfba90c0ffb1d5205fc2a05a58eb"
+          }
         }
       ],
       "api_key": [
